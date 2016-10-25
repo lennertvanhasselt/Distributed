@@ -1,5 +1,7 @@
+import java.util.HashMap;
 import java.util.Scanner;
 import java.lang.*;
+import java.net.InetAddress;
 
 //GROUP 8 FTW zwam
 
@@ -23,6 +25,10 @@ public class Main {
 		sum = Math.abs(sum)%32768;
 		
 		System.out.println(sum);
+		
+		HashMap<Integer,InetAddress> Table = new HashMap<Integer,InetAddress>();
+		
+		
 		
 		sc.close();
 	}

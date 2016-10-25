@@ -3,6 +3,9 @@ package node1;
 import java.net.InetAddress;
 import java.rmi.Naming;
 import java.util.Scanner;
+import java.net.InetAddress;
+import java.rmi.*;
+import node1.ClientInterface;
 
 public class Node1 {
 

@@ -1,13 +1,30 @@
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.Scanner;
 import java.lang.*;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.rmi.AlreadyBoundException;
+import java.rmi.Naming;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
 
 //GROUP 8 FTW zwam
 
 public class Main {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws RemoteException {
+		ClientInfo cli = new ClientInfo();
+		String bindLocation = "//localhost/cliNode";
+		
+		try{
+			LocateRegistry.createRegistry(1099);
+			Naming.bind(bindLocation, cli);
+	        System.out.println("NameServer is ready at:" + bindLocation);
+            System.out.println("java RMI registry created.");
+        } catch (MalformedURLException | AlreadyBoundException e) {
+            System.out.println("java RMI registry already exists.");
+		}
+		/*		Original code
 		Scanner sc = new Scanner(System.in);
 		String filename;
 		
@@ -26,11 +43,13 @@ public class Main {
 		
 		System.out.println(sum);
 		
-		HashMap<Integer,InetAddress> Table = new HashMap<Integer,InetAddress>();
+		TreeMap<Integer,InetAddress> Table = new TreeMap<Integer,InetAddress>();
+		//TreeMap zodat het direct geordend staat
 		
 		
 		
 		sc.close();
+		*/
 	}
 
 }

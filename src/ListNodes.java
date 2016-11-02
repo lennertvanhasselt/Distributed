@@ -18,5 +18,7 @@ public class ListNodes {
 	public static void AddToTable(int hashed, InetAddress IP)
 	{
 		table.put(hashed,IP);
+		System.out.println(table.get(hashed));
+		return;
 	}
 }

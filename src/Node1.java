@@ -2,8 +2,7 @@
 import java.net.InetAddress;
 import java.rmi.Naming;
 import java.util.Scanner;
-import java.net.InetAddress;
-import java.rmi.*;
+
 
 public class Node1 {
 

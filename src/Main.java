@@ -1,7 +1,3 @@
-import java.util.TreeMap;
-import java.util.Scanner;
-import java.lang.*;
-import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.Naming;
@@ -16,10 +12,12 @@ public class Main {
 		ClientInfo cli = new ClientInfo();
 		String bindLocation = "//localhost/cliNode";
 		
+		ListNodes list = new ListNodes();
+		
 		try{
 			LocateRegistry.createRegistry(1099);
 			Naming.bind(bindLocation, cli);
-	        System.out.println("NameServer is ready at:" + bindLocation);
+	        System.out.println("NodeServer is ready at:" + bindLocation);
             System.out.println("java RMI registry created.");
         } catch (MalformedURLException | AlreadyBoundException e) {
             System.out.println("java RMI registry already exists.");

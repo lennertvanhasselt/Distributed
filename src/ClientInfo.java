@@ -20,6 +20,8 @@ public class ClientInfo extends UnicastRemoteObject implements ClientInterface{
 		
 		ListNodes.AddToTable(hashed, IP);
 		
+		System.out.println(hashed+" "+IP);
+		
 		return hashed;
 	}
 	

@@ -16,9 +16,9 @@ public class Node1 {
    	 		System.out.println("Give the name of the node: ");
    	 		Nodename=scan.nextLine();
    	 		
-   	 		//InetAddress address = InetAddress.getByName("192.168.0.4");
+   	 		InetAddress address = InetAddress.getByName("192.168.0.4");
    	 		
-   	 		int ownNode = cf.setNode(Nodename, InetAddress.getLocalHost()); //not sure of this (could do manual? like ^)
+   	 		int ownNode = cf.setNode(Nodename, address); 
    	 		
    	 		//HIER WHILE LUS MET OPTIES TOEVOEGEN OM TE BESTUREN
    	 		

@@ -17,7 +17,7 @@ public class Node1 {
    	 		System.out.println("Give the name of the node: ");
    	 		Nodename=scan.nextLine();
    	 		
-   	 		InetAddress address = InetAddress.getByName("192.168.0.10");
+   	 		InetAddress address = InetAddress.getByName("192.168.1.11");
    	 		
    	 		int ownNode = cf.setNode(Nodename, address); 
    	 		
@@ -60,6 +60,7 @@ public class Node1 {
 	{
 		System.out.println("Which file do you want?");
 	 	String search = scan.nextLine();
+	 	search = scan.nextLine();
 	 	try {
 	 	InetAddress adrFile = cf.searchFile(search); 
 	 	return adrFile;	

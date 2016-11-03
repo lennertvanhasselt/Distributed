@@ -60,16 +60,29 @@ public class Node1 {
 	{
 		System.out.println("Which file do you want?");
 	 	String search = scan.nextLine();
+	 	try {
 	 	InetAddress adrFile = cf.searchFile(search); 
-		return adrFile;	
+	 	return adrFile;	
+	 	} catch(Exception e) {
+	         System.err.println("FileServer exception: "+ e.getMessage());
+	       e.printStackTrace();
+	       return null;
+	    }
 	}
 	
 	static void deleteNode(ClientInterface cf, int ownNode) {
+		try{
 		Boolean answer = cf.deleteNode(ownNode); 
 		if (answer == true)
 	 	 System.out.println("Node deleted");
 		else
 		 System.out.println("Node is not deleted");
+		return;
+		} catch(Exception e) {
+	         System.err.println("FileServer exception: "+ e.getMessage());
+	       e.printStackTrace();
+	       return;
+	    }
 	}
 
 }

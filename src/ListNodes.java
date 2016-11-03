@@ -33,9 +33,11 @@ public class ListNodes {
 		return table.containsValue(IP);
 	}
 	
-	public static InetAddress getFileIP(int hashed)
+	public static InetAddress getFileIP(int hash)
 	{
-		return table.get(table.higherKey(hashed));
+		int key = table.higherKey(hash);
+		InetAddress IP = table.get(key);
+		return IP;
 	}
 	
 	public static boolean deleteNode(int hash)

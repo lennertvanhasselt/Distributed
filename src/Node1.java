@@ -65,7 +65,11 @@ public class Node1 {
 	}
 	
 	static void deleteNode(ClientInterface cf, int ownNode) {
-		cf.deleteNode(ownNode); 
+		Boolean answer = cf.deleteNode(ownNode); 
+		if (answer == true)
+	 	 System.out.println("Node deleted");
+		else
+		 System.out.println("Node is not deleted");
 	}
 
 }

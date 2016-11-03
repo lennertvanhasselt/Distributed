@@ -8,6 +8,7 @@ public class Node1 {
 	public static void main(String[] args) {
 		Scanner scan = new Scanner(System.in);
 	 	String Nodename;
+	 	boolean exit = false;
 	 	int choice=0;
 		try {
 			String name = "//192.168.1.3/cliNode";
@@ -16,13 +17,21 @@ public class Node1 {
    	 		System.out.println("Give the name of the node: ");
    	 		Nodename=scan.nextLine();
    	 		
-   	 		InetAddress address = InetAddress.getByName("192.168.0.4");
+   	 		InetAddress address = InetAddress.getByName("192.168.0.10");
    	 		
    	 		int ownNode = cf.setNode(Nodename, address); 
    	 		
-   	 		while(choice < 4)
+   	 		while(exit == false)
    	 		{
    	 			choice = menu(scan);
+   	 			switch (choice) {
+   	 			case 1: int destinationAdr = searchFile(cf, scan);
+   	 					break;
+   	 			case 4: exit = true;
+   	 					break;
+   	 			default: exit = false;
+   	 					break;
+   	 			}
    	 		}
    	 		scan.close();
 	
@@ -36,13 +45,21 @@ public class Node1 {
 	{
 	 	System.out.println("                  Menu                  ");
 	 	System.out.println("----------------------------------------");
-	 	System.out.println("1) Bestand opvragen");
+	 	System.out.println("1) Search file");
 	 	System.out.println("2) ");
 	 	System.out.println("3) ");
-	 	System.out.println("4) Afsluiten");
-	 	System.out.println("Geef u keuzen in: ");
+	 	System.out.println("4) Exit");
+	 	System.out.println("Give your choice: ");
 	 	int menuChoice = scan.nextInt();
 		return menuChoice;	
+	}
+	
+	static int searchFile(ClientInterface cf, Scanner scan)
+	{
+		System.out.println("Which file do you want?");
+	 	String search = scan.nextLine();
+		int adrFile = cf.searchFile(search); 
+		return adrFile;	
 	}
 
 }

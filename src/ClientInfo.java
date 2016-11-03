@@ -34,6 +34,11 @@ public class ClientInfo extends UnicastRemoteObject implements ClientInterface{
 		return IP;
 	}
 	
+	public boolean deleteNode(int ownNode)
+	{
+		return ListNodes.deleteNode(ownNode);
+	}
+	
 	public int hashing(String name)
 	{
 		int hashed;

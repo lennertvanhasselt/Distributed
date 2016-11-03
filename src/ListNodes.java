@@ -21,4 +21,9 @@ public class ListNodes {
 		System.out.println(table.get(hashed));
 		return;
 	}
+	
+	public boolean keyInTable(int hash)
+	{
+		return table.containsKey(hash);
+	}
 }

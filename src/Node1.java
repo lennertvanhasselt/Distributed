@@ -28,9 +28,8 @@ public class Node1 {
    	 			switch (choice) {
    	 			case 1: InetAddress destinationAdr = searchFile(cf, scan);
    	 					break;
-   	 			case 3: deleteNode(cf, ownNode);
-   	 					break;
-   	 			case 4: exit = true;
+   	 			case 4: deleteNode(cf, ownNode);
+   	 					exit = true;
    	 					break;
    	 			default:exit = false;
    	 					break;
@@ -50,8 +49,8 @@ public class Node1 {
 	 	System.out.println("----------------------------------------");
 	 	System.out.println("1) Search file");
 	 	System.out.println("2) ");
-	 	System.out.println("3) Delete node from server");
-	 	System.out.println("4) Exit");
+	 	System.out.println("3) ");
+	 	System.out.println("4) Exit and delete node");
 	 	System.out.println("Give your choice: ");
 	 	int menuChoice = scan.nextInt();
 		return menuChoice;	

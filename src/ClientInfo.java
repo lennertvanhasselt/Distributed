@@ -30,7 +30,7 @@ public class ClientInfo extends UnicastRemoteObject implements ClientInterface{
 		
 		InetAddress IP = ListNodes.getFileIP(hashed);
 		
-		System.out.println("Found file "+search+" found at "+IP);
+		System.out.println("Found file "+search+" at "+IP);
 		
 		return IP;
 	}

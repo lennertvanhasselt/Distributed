@@ -35,7 +35,9 @@ public class ListNodes {
 	
 	public static InetAddress getFileIP(int hash)
 	{
+		System.out.println(hash);
 		int key = table.higherKey(hash);
+		System.out.println(key);
 		InetAddress IP = table.get(key);
 		return IP;
 	}

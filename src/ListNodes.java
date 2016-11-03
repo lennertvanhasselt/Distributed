@@ -26,4 +26,10 @@ public class ListNodes {
 	{
 		return table.containsKey(hash);
 	}
+	
+	public static boolean ipInTable(InetAddress IP)
+	{
+		return table.containsValue(IP);
+	}
+	
 }

@@ -49,7 +49,7 @@ public class ClientInfo extends UnicastRemoteObject implements ClientInterface{
 	
 	public int hashing(String name)
 	{
-		int hashed = (int) Integer.toUnsignedLong(name.hashCode())%32768;//number between 0 and 32768
+		int hashed = Math.abs((int) Integer.toUnsignedLong(name.hashCode())%32768);//number between 0 and 32768
 		//to unsigned Long is to make it absolute
 		return hashed;
 	}

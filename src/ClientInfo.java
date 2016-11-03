@@ -18,7 +18,12 @@ public class ClientInfo extends UnicastRemoteObject implements ClientInterface{
 		
 		System.out.println(hashed);
 		
+		while(ListNodes.keyInTable(hashed))
+			hashed++;
+		
 		ListNodes.AddToTable(hashed, IP);
+		
+	
 		
 		System.out.println(hashed+" "+IP);
 		

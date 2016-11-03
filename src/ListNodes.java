@@ -22,7 +22,7 @@ public class ListNodes {
 		return;
 	}
 	
-	public boolean keyInTable(int hash)
+	public static boolean keyInTable(int hash)
 	{
 		return table.containsKey(hash);
 	}

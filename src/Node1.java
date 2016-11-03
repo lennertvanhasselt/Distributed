@@ -13,12 +13,11 @@ public class Node1 {
 		try {
 			String name = "//192.168.1.3/cliNode";
    	 		ClientInterface cf = (ClientInterface) Naming.lookup(name);
-		
+	
    	 		System.out.println("Give the name of the node: ");
    	 		Nodename=scan.nextLine();
-   	 		
-   	 		InetAddress address = InetAddress.getByName("192.168.1.11");
-   	 		
+   	 		InetAddress address = InetAddress.getLocalHost();
+   	 		address = InetAddress.getByName(address.getHostAddress());
    	 		int ownNode = cf.setNode(Nodename, address); 
    	 		
    	 		while(exit == false)

@@ -32,4 +32,9 @@ public class ListNodes {
 		return table.containsValue(IP);
 	}
 	
+	public static InetAddress getFileIP(int hashed)
+	{
+		return table.get(table.higherKey(hashed));
+	}
+	
 }

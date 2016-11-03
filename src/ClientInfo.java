@@ -12,7 +12,7 @@ public class ClientInfo extends UnicastRemoteObject implements ClientInterface{
 		
 	public int setNode(String clientName, InetAddress IP){
 		
-		int hashed = (int) Integer.toUnsignedLong(clientName.hashCode())%32768; //number between 0 and 32768
+		int hashed = hashing(clientName); //number between 0 and 32768
 		//to unsigned Long is to make it absolute
 		
 		while(ListNodes.keyInTable(hashed))
@@ -23,6 +23,21 @@ public class ClientInfo extends UnicastRemoteObject implements ClientInterface{
 		System.out.println(hashed+" "+IP);
 		
 		return hashed;
+	}
+	
+	public InetAddress searchFile(String search)
+	{
+		int hashed = hashing(search);
+		
+		InetAddress IP = ListNodes.getFileIP(hashed);
+		
+		return IP;
+	}
+	
+	public int hashing(String name)
+	{
+		int hashed;
+		return hashed = (int) Integer.toUnsignedLong(name.hashCode())%32768;
 	}
 	
 }

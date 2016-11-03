@@ -10,7 +10,7 @@ public class ClientInfo extends UnicastRemoteObject implements ClientInterface{
 		super();
 	}
 		
-	public int setNode(String clientName, InetAddress IP){
+	public int setNode(String clientName, InetAddress IP) throws ClassNotFoundException{
 		
 		int hashed = hashing(clientName); 
 		
@@ -24,7 +24,7 @@ public class ClientInfo extends UnicastRemoteObject implements ClientInterface{
 		return hashed;
 	}
 	
-	public InetAddress searchFile(String search)
+	public InetAddress searchFile(String search) throws ClassNotFoundException
 	{
 		int hashed = hashing(search);
 		
@@ -35,8 +35,9 @@ public class ClientInfo extends UnicastRemoteObject implements ClientInterface{
 		return IP;
 	}
 	
-	public boolean deleteNode(int ownNode)
+	public boolean deleteNode(int ownNode) throws ClassNotFoundException
 	{
+		
 		String answer;
 		boolean nodeDeleted = ListNodes.deleteNode(ownNode);
 		if(nodeDeleted)

@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.Naming;
@@ -8,7 +9,7 @@ import java.rmi.registry.LocateRegistry;
 
 public class Main {
 
-	public static void main(String[] args) throws RemoteException {
+	public static void main(String[] args) throws ClassNotFoundException, IOException {
 		ClientInfo cli = new ClientInfo();
 		String bindLocation = "//localhost/cliNode";
 		

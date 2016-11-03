@@ -4,5 +4,5 @@ import java.rmi.RemoteException;
 
 public interface ClientInterface extends Remote{
 	int setNode(String clientName, InetAddress IP)throws RemoteException;
-	int searchFile(String search);
+	InetAddress searchFile(String search);
 }

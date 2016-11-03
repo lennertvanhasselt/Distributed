@@ -25,7 +25,7 @@ public class Node1 {
    	 		{
    	 			choice = menu(scan);
    	 			switch (choice) {
-   	 			case 1: int destinationAdr = searchFile(cf, scan);
+   	 			case 1: InetAddress destinationAdr = searchFile(cf, scan);
    	 					break;
    	 			case 4: exit = true;
    	 					break;
@@ -54,11 +54,11 @@ public class Node1 {
 		return menuChoice;	
 	}
 	
-	static int searchFile(ClientInterface cf, Scanner scan)
+	static InetAddress searchFile(ClientInterface cf, Scanner scan)
 	{
 		System.out.println("Which file do you want?");
 	 	String search = scan.nextLine();
-		int adrFile = cf.searchFile(search); 
+	 	InetAddress adrFile = cf.searchFile(search); 
 		return adrFile;	
 	}
 

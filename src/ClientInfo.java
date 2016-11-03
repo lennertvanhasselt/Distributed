@@ -30,12 +30,21 @@ public class ClientInfo extends UnicastRemoteObject implements ClientInterface{
 		
 		InetAddress IP = ListNodes.getFileIP(hashed);
 		
+		System.out.println("Found file "+search+" found at "+IP);
+		
 		return IP;
 	}
 	
 	public boolean deleteNode(int ownNode)
 	{
-		return ListNodes.deleteNode(ownNode);
+		String answer;
+		boolean nodeDeleted = ListNodes.deleteNode(ownNode);
+		if(nodeDeleted)
+			answer = "succes!";
+		else
+			answer = "failed!";
+		System.out.println("Node "+ownNode+" deleted.  "+answer);
+		return nodeDeleted;
 	}
 	
 	public int hashing(String name)

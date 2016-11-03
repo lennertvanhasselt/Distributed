@@ -1,3 +1,5 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.rmi.Naming;
 import java.util.Scanner;
@@ -30,7 +32,7 @@ public class Node1 {
    	 					break;
    	 			case 4: exit = true;
    	 					break;
-   	 			default: exit = false;
+   	 			default:exit = false;
    	 					break;
    	 			}
    	 		}
@@ -61,7 +63,21 @@ public class Node1 {
 	 	String search = scan.nextLine();
 	 	search = scan.nextLine();
 	 	try {
-	 	InetAddress adrFile = cf.searchFile(search); 
+	 	InetAddress adrFile = cf.searchFile(search);
+	 	String IP = adrFile.toString();
+	 	
+	 	// Ping the host of the file
+	 	IP=IP.substring(1);
+		System.out.println(IP);
+	 	Process p = Runtime.getRuntime().exec("ping "+IP);
+		BufferedReader inputStream = new BufferedReader(
+				new InputStreamReader(p.getInputStream()));
+
+		String s = "";
+		// reading output stream of the command
+		while ((s = inputStream.readLine()) != null) {
+			System.out.println(s);
+		}
 	 	return adrFile;	
 	 	} catch(Exception e) {
 	         System.err.println("FileServer exception: "+ e.getMessage());

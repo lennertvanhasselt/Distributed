@@ -28,12 +28,12 @@ public class ListNodes {
 		return table.containsKey(hash);
 	}
 	
-	public static boolean ipInTable(InetAddress IP)
+	public synchronized static boolean ipInTable(InetAddress IP)
 	{
 		return table.containsValue(IP);
 	}
 	
-	public static InetAddress getFileIP(int hash)
+	public synchronized static InetAddress getFileIP(int hash)
 	{
 		int key;
 		if(hash < table.lastKey())
@@ -45,7 +45,7 @@ public class ListNodes {
 		return IP;
 	}
 	
-	public static boolean deleteNode(int hash)
+	public synchronized static boolean deleteNode(int hash)
 	{
 		if (table.containsKey(hash))
 			{

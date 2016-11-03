@@ -32,4 +32,15 @@ public class ListNodes {
 		return table.containsValue(IP);
 	}
 	
+	public static int deleteNode(int hash)
+	{
+		if (table.containsKey(hash))
+			{
+				table.remove(hash);
+				return 0;
+			}
+		else
+			return -1;
+	}
+	
 }

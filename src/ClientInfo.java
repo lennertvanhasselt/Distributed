@@ -9,7 +9,8 @@ public class ClientInfo extends UnicastRemoteObject implements ClientInterface{
 	public ClientInfo() throws RemoteException {
 		super();
 	}
-		
+	
+	// A new node will be added to a TreeMap.
 	public int setNode(String clientName, InetAddress IP){
 		
 		int hashed = hashing(clientName); 
@@ -24,6 +25,7 @@ public class ClientInfo extends UnicastRemoteObject implements ClientInterface{
 		return hashed;
 	}
 	
+	// If a filename is received the server will search for the node which possesses this file and return an IP.
 	public InetAddress searchFile(String search)
 	{
 		int hashed = hashing(search);
@@ -35,6 +37,7 @@ public class ClientInfo extends UnicastRemoteObject implements ClientInterface{
 		return IP;
 	}
 	
+	// If the node wants to exit the menu and leave the network, it will return if deleting the node was a success or not.
 	public boolean deleteNode(int ownNode)
 	{
 		String answer;
@@ -47,6 +50,7 @@ public class ClientInfo extends UnicastRemoteObject implements ClientInterface{
 		return nodeDeleted;
 	}
 	
+	// This is used for hashing the name and to receive a unique number.
 	public int hashing(String name)
 	{
 		int hashed = Math.abs((int) Integer.toUnsignedLong(name.hashCode())%32768);//number between 0 and 32768

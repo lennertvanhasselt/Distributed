@@ -78,6 +78,16 @@ public class Node {
 		this.ownNode = ownNode;
 	}
 	
+	public void setPreviousNode(int previousNode)
+	{
+		this.previousNode = previousNode;
+	}
+	
+	public void setNextNode(int nextNode)
+	{
+		this.nextNode = nextNode;
+	}
+	
 	public void setTotalNodes(int totalNodes)
 	{
 		this.totalNodes = totalNodes;
@@ -86,10 +96,6 @@ public class Node {
 		{
 			previousNode = ownNode;
 			nextNode = ownNode;
-		}
-		else if(totalNodes <= 1)
-		{
-			
 		}
 	}
 	
@@ -108,10 +114,21 @@ public class Node {
 		return ownNode;
 	}
 	
-	public int hashing(String name)
+	public boolean hashing(ClientInterface cf, String name)
 	{
 		int hashed = Math.abs((int) Integer.toUnsignedLong(name.hashCode())%32768);//number between 0 and 32768
 		//to unsigned Long is to make it absolute
+		
+		if(ownNode== previousNode && ownNode == nextNode)
+		{
+			informNewcomer();
+			previousNode = hashed;
+			nextNode = hashed;
+		}
+		else if()
+		
 		return hashed;
 	}
+	
+	
 }

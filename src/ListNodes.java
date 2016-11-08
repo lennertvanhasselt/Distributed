@@ -37,7 +37,7 @@ public class ListNodes {
 		}
 	}
 	// Returning the values of the TreeMap.
-	public TreeMap<Integer, InetAddress> GetMap() throws ClassNotFoundException
+	public TreeMap<Integer, InetAddress> getMap() throws ClassNotFoundException
 	
 	
 	{
@@ -58,7 +58,7 @@ public class ListNodes {
 		 //we could return the table or all values independently 
 	}
 	// Adding another entry to the TreeMap.
-	public void AddToTable(int hashed, InetAddress IP) throws ClassNotFoundException
+	public void addToTable(int hashed, InetAddress IP) throws ClassNotFoundException
 	{
 		try{
 			FileInputStream fileIn = new FileInputStream("/temp/table.ser");

@@ -20,7 +20,7 @@ public class ClientInfo extends UnicastRemoteObject implements ClientInterface{
 		while(list.keyInTable(hashed))
 			hashed++;
 			
-		list.AddToTable(hashed, IP);
+		list.addToTable(hashed, IP);
 			
 		System.out.println(hashed+" "+IP);
 		
@@ -40,16 +40,16 @@ public class ClientInfo extends UnicastRemoteObject implements ClientInterface{
 	}
 	
 	//If the node wants to exit the menu and leave the network, it will return if deleting the node was a success or not.
-	public boolean deleteNode(int ownNode) throws ClassNotFoundException
+	public boolean deleteNode(int aNode) throws ClassNotFoundException
 	{
 		
 		String answer;
-		boolean nodeDeleted = list.deleteNode(ownNode);
+		boolean nodeDeleted = list.deleteNode(aNode);
 		if(nodeDeleted)
 			answer = "succes!";
 		else
 			answer = "failed!";
-		System.out.println("Node "+ownNode+" deleted.  "+answer);
+		System.out.println("Node "+aNode+" deleted.  "+answer);
 		return nodeDeleted;
 	}
 	

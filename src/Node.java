@@ -6,9 +6,7 @@ import java.util.Scanner;
 
 public class Node {
 	
-	public Node() {
-		
-	}
+	public Node() {	}
 	
 	// This is the menu that will appear on the console ones the connection with the server is established.
 	public int menu(Scanner scan)

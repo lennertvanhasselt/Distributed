@@ -164,11 +164,8 @@ public class ListNodes {
 		} catch(IOException i) {
 	          i.printStackTrace();
 	          return false;
-	    }
-		
-		
-	}
-	
+	    }		
+	}	
 }
 
 

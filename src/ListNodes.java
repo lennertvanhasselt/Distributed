@@ -156,6 +156,11 @@ public class ListNodes {
 	        if (table.containsKey(hash))
 			{
 				table.remove(hash);
+				FileOutputStream fileOut = new FileOutputStream("/temp/table.ser");
+				ObjectOutputStream out = new ObjectOutputStream(fileOut);
+				out.writeObject(table);
+				out.close();
+				fileOut.close();
 				return true;
 			}
 	        else

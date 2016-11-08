@@ -21,6 +21,8 @@ public class MainNode {
    	 		Nodename=scan.nextLine();
    	 		InetAddress address = InetAddress.getLocalHost();
    	 		address = InetAddress.getByName(address.getHostAddress());
+   	 		new Thread(new MulticastReceive(address,Nodename)).start();
+   	 		new Thread(new MulticastSender(address,Nodename)).start();
    	 		int ownNode = cf.setNode(Nodename, address); 
    	 		node.setOwnNode(ownNode);
    	 		

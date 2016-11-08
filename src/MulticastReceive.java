@@ -28,6 +28,8 @@ public void run(){
 				InetAddress ip = msgPacket.getAddress();
 	            hostname = new String(buf, 0, buf.length);
 	            System.out.println(ip+ " "+hostname);
+	            
+	            
 	         }
 			 } catch (IOException e) {
 					// TODO Auto-generated catch block

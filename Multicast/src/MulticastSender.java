@@ -16,7 +16,7 @@ public class MulticastSender implements Runnable {
 	public void run() {
         try (MulticastSocket socket = new MulticastSocket(port)){
         	socket.joinGroup(group);
-        	String msg = "192.168.1.12";
+        	String msg = "#zwan";
 
            // Create a packet that will contain the data
            // (in the form of bytes) and send it.

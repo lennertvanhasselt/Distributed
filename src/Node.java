@@ -6,7 +6,11 @@ import java.util.Scanner;
 
 public class Node {
 	
-	public Node() {	}
+	private int ownNode, previousNode, nextNode, totalNodes = 0;
+	
+	public Node() {	
+		
+	}
 	
 	// This is the menu that will appear on the console ones the connection with the server is established.
 	public int menu(Scanner scan)
@@ -68,5 +72,46 @@ public class Node {
 	       return;
 	    }
 	}
-
+	
+	public void setOwnNode(int ownNode)
+	{
+		this.ownNode = ownNode;
+	}
+	
+	public void setTotalNodes(int totalNodes)
+	{
+		this.totalNodes = totalNodes;
+		
+		if (totalNodes == 0)
+		{
+			previousNode = ownNode;
+			nextNode = ownNode;
+		}
+		else if(totalNodes <= 1)
+		{
+			
+		}
+	}
+	
+	public int getPreviousNode()
+	{
+		return previousNode;
+	}
+	
+	public int getNextNode()
+	{
+		return nextNode;
+	}
+	
+	public int getOwnNode()
+	{
+		return ownNode;
+	}
+	
+	public int hashing(String name)
+	{
+		int hashed = Math.abs((int) Integer.toUnsignedLong(name.hashCode())%32768);//number between 0 and 32768
+		//to unsigned Long is to make it absolute
+		return hashed;
+	}
 }

@@ -8,10 +8,12 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.util.TreeMap;
 
+// This includes all functions that are needed for the correct working of ClientInfo
 public class ListNodes {
 	
 	static TreeMap<Integer,InetAddress> table;
-	
+
+	//Creating a new TreeMap with the hashvalue and IP.
 	public ListNodes() throws ClassNotFoundException, IOException
 	{
 		table = new TreeMap<Integer,InetAddress>();
@@ -34,8 +36,10 @@ public class ListNodes {
 	        }
 		}
 	}
-	
+	// Returning the values of the TreeMap.
 	public TreeMap<Integer, InetAddress> GetMap() throws ClassNotFoundException
+	
+	
 	{
 		try{
 			FileInputStream fileIn = new FileInputStream("/temp/table.ser");
@@ -53,7 +57,7 @@ public class ListNodes {
 		
 		 //we could return the table or all values independently 
 	}
-	
+	// Adding another entry to the TreeMap.
 	public static void AddToTable(int hashed, InetAddress IP) throws ClassNotFoundException
 	{
 		try{
@@ -77,7 +81,7 @@ public class ListNodes {
 	          return;
 	    }
 	}
-	
+	// Returns true if the given hash is already located in the TreeMap.
 	public static boolean keyInTable(int hash) throws ClassNotFoundException
 	{
 		try{
@@ -95,7 +99,8 @@ public class ListNodes {
 	    }
 		
 	}
-	
+
+	//Returns true if the given IP is already located in the TreeMap.
 	public synchronized static boolean ipInTable(InetAddress IP) throws ClassNotFoundException
 	{
 		try{
@@ -114,7 +119,7 @@ public class ListNodes {
 		
 		
 	}
-	
+	// Gives the key where the hash is located and retursn the IP of this node.	
 	public synchronized static InetAddress getFileIP(int hash) throws ClassNotFoundException
 	{
 		try{
@@ -138,7 +143,7 @@ public class ListNodes {
 	          return null;
 	    }
 	}
-	
+	// A node will be deleted from the TreeMap and returns true when it was removed successful and the other way around.
 	public synchronized static boolean deleteNode(int hash) throws ClassNotFoundException
 	{
 		try{

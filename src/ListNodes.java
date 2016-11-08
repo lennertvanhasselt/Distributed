@@ -11,7 +11,7 @@ import java.util.TreeMap;
 // This includes all functions that are needed for the correct working of ClientInfo
 public class ListNodes {
 	
-	static TreeMap<Integer,InetAddress> table;
+	private TreeMap<Integer,InetAddress> table;
 
 	//Creating a new TreeMap with the hashvalue and IP.
 	public ListNodes() throws ClassNotFoundException, IOException
@@ -58,7 +58,7 @@ public class ListNodes {
 		 //we could return the table or all values independently 
 	}
 	// Adding another entry to the TreeMap.
-	public static void AddToTable(int hashed, InetAddress IP) throws ClassNotFoundException
+	public void AddToTable(int hashed, InetAddress IP) throws ClassNotFoundException
 	{
 		try{
 			FileInputStream fileIn = new FileInputStream("/temp/table.ser");
@@ -82,7 +82,7 @@ public class ListNodes {
 	    }
 	}
 	// Returns true if the given hash is already located in the TreeMap.
-	public static boolean keyInTable(int hash) throws ClassNotFoundException
+	public boolean keyInTable(int hash) throws ClassNotFoundException
 	{
 		try{
 			FileInputStream fileIn = new FileInputStream("/temp/table.ser");
@@ -101,7 +101,7 @@ public class ListNodes {
 	}
 
 	//Returns true if the given IP is already located in the TreeMap.
-	public synchronized static boolean ipInTable(InetAddress IP) throws ClassNotFoundException
+	public synchronized boolean ipInTable(InetAddress IP) throws ClassNotFoundException
 	{
 		try{
 			FileInputStream fileIn = new FileInputStream("/temp/table.ser");
@@ -120,7 +120,7 @@ public class ListNodes {
 		
 	}
 	// Gives the key where the hash is located and retursn the IP of this node.	
-	public synchronized static InetAddress getFileIP(int hash) throws ClassNotFoundException
+	public synchronized InetAddress getFileIP(int hash) throws ClassNotFoundException
 	{
 		try{
 			FileInputStream fileIn = new FileInputStream("/temp/table.ser");
@@ -144,7 +144,7 @@ public class ListNodes {
 	    }
 	}
 	// A node will be deleted from the TreeMap and returns true when it was removed successful and the other way around.
-	public synchronized static boolean deleteNode(int hash) throws ClassNotFoundException
+	public synchronized boolean deleteNode(int hash) throws ClassNotFoundException
 	{
 		try{
 			FileInputStream fileIn = new FileInputStream("/temp/table.ser");

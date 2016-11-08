@@ -1,10 +1,9 @@
-import java.io.IOException;
-import java.net.DatagramPacket;
+
 import java.net.InetAddress;
-import java.net.MulticastSocket;
+
 import java.net.UnknownHostException;
 
-public class MainMulticast extends Thread {
+public class MainMulticast{
     
     final static String INET_ADDR = "225.1.1.1";
     final static int PORT = 8888;
@@ -14,18 +13,7 @@ public class MainMulticast extends Thread {
         InetAddress group = InetAddress.getByName(INET_ADDR);
      
         // Open a new DatagramSocket, which will be used to send the data.
-        try (MulticastSocket serverSocket = new MulticastSocket(PORT)) {
-        	serverSocket.joinGroup(group);
-                String msg = "192.168.1.12";
+        	new Thread(new MulticastSender(PORT,group)).start();
 
-                // Create a packet that will contain the data
-                // (in the form of bytes) and send it.
-                DatagramPacket msgPacket = new DatagramPacket(msg.getBytes(),
-                        msg.getBytes().length, group, PORT);
-                serverSocket.send(msgPacket);
-                System.out.println("Server sent multicast packet with message: " + msg);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
     }
 }

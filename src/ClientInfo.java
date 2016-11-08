@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.net.InetAddress;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -5,19 +6,21 @@ import java.rmi.server.UnicastRemoteObject;
 public class ClientInfo extends UnicastRemoteObject implements ClientInterface{
 	
 	private static final long serialVersionUID = 1L;
+	private ListNodes list;
 	
-	public ClientInfo() throws RemoteException {
+	public ClientInfo() throws ClassNotFoundException, IOException, RemoteException {
 		super();
+		list = new ListNodes();
 	}
 	// A new node will be added to a TreeMap.
 	public int setNode(String clientName, InetAddress IP) throws ClassNotFoundException
 	{
 		int hashed = hashing(clientName); 
 		
-		while(ListNodes.keyInTable(hashed))
+		while(list.keyInTable(hashed))
 			hashed++;
 			
-		ListNodes.AddToTable(hashed, IP);
+		list.AddToTable(hashed, IP);
 			
 		System.out.println(hashed+" "+IP);
 		
@@ -29,7 +32,7 @@ public class ClientInfo extends UnicastRemoteObject implements ClientInterface{
 	{
 		int hashed = hashing(search);
 		
-		InetAddress IP = ListNodes.getFileIP(hashed);
+		InetAddress IP = list.getFileIP(hashed);
 		
 		System.out.println("Found file "+search+" at "+IP);
 		
@@ -41,7 +44,7 @@ public class ClientInfo extends UnicastRemoteObject implements ClientInterface{
 	{
 		
 		String answer;
-		boolean nodeDeleted = ListNodes.deleteNode(ownNode);
+		boolean nodeDeleted = list.deleteNode(ownNode);
 		if(nodeDeleted)
 			answer = "succes!";
 		else

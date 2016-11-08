@@ -22,6 +22,7 @@ public class MainNode {
    	 		InetAddress address = InetAddress.getLocalHost();
    	 		address = InetAddress.getByName(address.getHostAddress());
    	 		int ownNode = cf.setNode(Nodename, address); 
+   	 		node.setOwnNode(ownNode);
    	 		
    	 		while(exit == false)
    	 		{

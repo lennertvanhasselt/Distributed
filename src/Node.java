@@ -1,15 +1,20 @@
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.rmi.Naming;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
 
 
-public class Node {
+public class Node extends UnicastRemoteObject implements NodeInterface {
 	
+	private static final long serialVersionUID = 1L;
 	private int ownNode, previousNode, nextNode, totalNodes = 0;
 	
-	public Node() {	
-		
+	public Node() throws ClassNotFoundException, IOException, RemoteException {	
+		NodeInterface nf = (NodeInterface) Naming.lookup(nameVerkregenVanDeServer);
 	}
 	
 	// This is the menu that will appear on the console ones the connection with the server is established.
@@ -114,21 +119,24 @@ public class Node {
 		return ownNode;
 	}
 	
-	public boolean hashing(ClientInterface cf, String name)
+	public boolean hashing(String name)
 	{
 		int hashed = Math.abs((int) Integer.toUnsignedLong(name.hashCode())%32768);//number between 0 and 32768
 		//to unsigned Long is to make it absolute
 		
-		if(ownNode== previousNode && ownNode == nextNode)
+		if(previousNode != 0 && nextNode != 0)
 		{
-			informNewcomer();
-			previousNode = hashed;
-			nextNode = hashed;
+			nf.changePrevNext(nextNode,previousNode);
 		}
 		else if()
 		
 		return hashed;
 	}
 	
+	public void changePrevNext(int next, int previous)
+	{
+		nextNode = next;
+		previousNode = previous;
+	}
 	
 }

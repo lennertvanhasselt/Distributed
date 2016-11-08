@@ -6,9 +6,6 @@ import java.util.Scanner;
 
 public class Node {
 	
-	// Make connection with the server and give the name of your node.
-	// After the connection is established a menu appears where different options are available to use.
-	// To make a choice in the menu, just press the number in front of the option.
 	public Node() {
 		
 	}

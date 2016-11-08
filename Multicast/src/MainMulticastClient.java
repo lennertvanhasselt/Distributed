@@ -19,6 +19,6 @@ public class MainMulticastClient {
         // to join it as well.
             
         new Thread(new MultiCastReciever(address,PORT)).start();
-            
+        new Thread(new MulticastSender(PORT,address)).start(); 
     }
 }

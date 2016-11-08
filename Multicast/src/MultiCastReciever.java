@@ -15,19 +15,20 @@ public class MultiCastReciever implements Runnable{
 	}
 	
 public void run(){
-		byte[] buf = new byte[256];
+		
 		try {
 			MulticastSocket socket = new MulticastSocket(PORT);
 			
 			socket.joinGroup(address);
 			
 			while (true) {
-        	
+				byte[] buf = new byte[256];
 				// Receive the information and print it.
 	            DatagramPacket msgPacket = new DatagramPacket(buf, buf.length);
-					socket.receive(msgPacket);
+				socket.receive(msgPacket);
+				InetAddress IP = msgPacket.getAddress();
 	            String msg = new String(buf, 0, buf.length);
-	            System.out.println("Socket 1 received msg: " + msg);
+	            System.out.println(IP+ " received msg: " + msg);
 	         }
 			 } catch (IOException e) {
 					// TODO Auto-generated catch block

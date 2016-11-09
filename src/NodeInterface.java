@@ -1,7 +1,10 @@
+import java.net.InetAddress;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 
-/**
- * @author Jonas
- */
+// Interface for RMI.
 public interface NodeInterface {
-
+	void changePrevNext(int nextNode, int previousNode, String nextIP, String previousIP)throws RemoteException, ClassNotFoundException;
+	void setPreviousNode(int previousNode, String previousIP)throws RemoteException, ClassNotFoundException;
+	void setNextNode(int nextNode, String nextIP)throws RemoteException, ClassNotFoundException;
 }

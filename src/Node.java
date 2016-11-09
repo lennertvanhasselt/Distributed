@@ -2,7 +2,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
@@ -11,10 +13,11 @@ import java.util.Scanner;
 public class Node extends UnicastRemoteObject implements NodeInterface {
 	
 	private static final long serialVersionUID = 1L;
-	private int ownNode, previousNode, nextNode, totalNodes = 0;
+	private int ownNode, previousNode, nextNode, totalNodes = -1;
+	private String ownIP, previousIP, nextIP = null;
+	private NodeInterface nf;
 	
 	public Node() throws ClassNotFoundException, IOException, RemoteException {	
-		NodeInterface nf = (NodeInterface) Naming.lookup(nameVerkregenVanDeServer);
 	}
 	
 	// This is the menu that will appear on the console ones the connection with the server is established.
@@ -65,6 +68,13 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	// When the node decides to leave the menu and the network it will close and the server will delete the node from it's map.
 	public void deleteNode(ClientInterface cf, int ownNode) {
 		try{
+		if(ownNode != previousNode && ownNode != nextNode)
+		{
+			nf = (NodeInterface) Naming.lookup("//"+previousIP+"/cliNode");
+			nf.setNextNode(nextNode, nextIP);
+			nf = (NodeInterface) Naming.lookup("//"+nextIP+"/cliNode");
+			nf.setPreviousNode(previousNode, previousIP);
+		}
 		Boolean answer = cf.deleteNode(ownNode); 
 		if (answer == true)
 	 	 System.out.println("Node deleted");
@@ -78,30 +88,22 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	    }
 	}
 	
-	public void setOwnNode(int ownNode)
+	public void setOwnNode(int ownNode, InetAddress ownIP)
 	{
+		this.ownIP = ownIP.toString().substring(1);
 		this.ownNode = ownNode;
 	}
 	
-	public void setPreviousNode(int previousNode)
+	public void setPreviousNode(int previousNode, String previousIP)
 	{
 		this.previousNode = previousNode;
+		this.previousIP = previousIP;
 	}
 	
-	public void setNextNode(int nextNode)
+	public void setNextNode(int nextNode, String nextIP)
 	{
 		this.nextNode = nextNode;
-	}
-	
-	public void setTotalNodes(int totalNodes)
-	{
-		this.totalNodes = totalNodes;
-		
-		if (totalNodes == 0)
-		{
-			previousNode = ownNode;
-			nextNode = ownNode;
-		}
+		this.nextIP = nextIP;
 	}
 	
 	public int getPreviousNode()
@@ -119,24 +121,66 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		return ownNode;
 	}
 	
-	public boolean hashing(String name)
+	public boolean hashing(String name, InetAddress IPraw) throws RemoteException, ClassNotFoundException, MalformedURLException, NotBoundException
 	{
+		String IP = IPraw.toString();
+		IP=IP.substring(1);
+		nf = (NodeInterface) Naming.lookup("//"+IP+"/cliNode");
 		int hashed = Math.abs((int) Integer.toUnsignedLong(name.hashCode())%32768);//number between 0 and 32768
 		//to unsigned Long is to make it absolute
-		
-		if(previousNode != 0 && nextNode != 0)
+		if (previousNode == -1 && nextNode == -1)
 		{
-			nf.changePrevNext(nextNode,previousNode);
+			previousIP = IP;
+			nextIP = IP;
+			previousNode = ownNode;
+			nextNode = ownNode;
+			
 		}
-		else if()
-		
-		return hashed;
+		else if(ownNode == previousNode && ownNode == nextNode)
+		{
+			nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
+			previousNode = hashed;
+			nextNode = hashed;
+			previousIP = IP;
+			nextIP = IP;
+			
+		}
+		else if(hashed < ownNode && hashed > previousNode)
+		{
+			nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
+			previousNode = hashed;
+			previousIP = IP;
+		}
+		else if(hashed < ownNode && hashed == previousNode)
+		{
+			nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
+			previousNode = hashed+1;
+			previousIP = IP;
+		}
+		else if(hashed == ownNode)
+		{
+			nextNode = hashed+1;
+			nextIP = IP;
+		}
+		else if(hashed > ownNode && hashed < nextNode)
+		{
+			nextNode = hashed;
+			nextIP = IP;
+		}
+		return true;
 	}
 	
-	public void changePrevNext(int next, int previous)
+	public void setTotalNodes(int totalNodes)
 	{
-		nextNode = next;
-		previousNode = previous;
+		this.totalNodes = totalNodes;
+	}
+	
+	public void changePrevNext(int nextNode, int previousNode, String nextIP, String previousIP)
+	{
+		this.nextNode = nextNode;
+		this.previousNode = previousNode;
+		this.nextIP = nextIP;
+		this.previousIP = previousIP;
 	}
 	
 }

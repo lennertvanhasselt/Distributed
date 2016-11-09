@@ -1,45 +1,44 @@
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.net.MalformedURLException;
+import java.rmi.AlreadyBoundException;
 import java.rmi.Naming;
-import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
 import java.util.Scanner;
 
 // Make connection with the server and give the name of your node.
 // After the connection is established a menu appears where different options are available to use.
 // To make a choice in the menu, just press the number in front of the option.
-public class MainNode implements MainNodeInterface{
+public class MainNode {
 
-	public static String servername;
-	public static boolean check;
-	public static int ownNode;
-	public static int numberOfNodes;
-	
-	public static void main(String[] args) throws ClassNotFoundException, RemoteException, IOException {
-		
-		Scanner scan = new Scanner(System.in);
-		
-		System.out.println("Give the name of the node: ");
-		String Nodename=scan.nextLine();
-		
-		InetAddress address = InetAddress.getLocalHost();
-	 	address = InetAddress.getByName(address.getHostAddress());
-		
-		new Thread(new MulticastSender(address,Nodename)).start();
-		check = false;
-		Node node = new Node();
+	public static void main(String[] args) throws ClassNotFoundException, IOException {
+	 	String Nodename;
 	 	boolean exit = false;
-	 	while(check==false)
-	 	{
-	 		
-	 	}
 	 	int choice=0;
+		Scanner scan = new Scanner(System.in);
+		Node node = new Node();
+		String bindLocationNode = "//localhost/cliNode";
+		try{
+			LocateRegistry.createRegistry(1099);
+			Naming.bind(bindLocationNode, node);
+	        System.out.println("NodeServer is ready at:" + bindLocationNode);
+            System.out.println("java RMI registry created.");
+        } catch (MalformedURLException | AlreadyBoundException e) {
+            System.out.println("java RMI registry already exists.");
+		}
+		
 		try {
 			String name = "//192.168.1.3/cliNode";
    	 		ClientInterface cf = (ClientInterface) Naming.lookup(name);
 	
+   	 		System.out.println("Give the name of the node: ");
+   	 		Nodename=scan.nextLine();
+   	 		InetAddress address = InetAddress.getLocalHost();
+   	 		address = InetAddress.getByName(address.getHostAddress());
+   	 		new Thread(new MulticastReceive(address,Nodename)).start();
+   	 		new Thread(new MulticastSender(address,Nodename)).start();
    	 		int ownNode = cf.setNode(Nodename, address); 
-   	 		node.setOwnNode(ownNode);
+   	 		node.setOwnNode(ownNode, address);
    	 		
    	 		while(exit == false)
    	 		{
@@ -60,14 +59,5 @@ public class MainNode implements MainNodeInterface{
 	         System.err.println("FileServer exception: "+ e.getMessage());
 	       e.printStackTrace();
 	    }
-	}
-
-	@Override
-	public void setNameServerIP(String ip, int ownNode, int numberOfNodes) {
-		servername = ip;
-		this.ownNode = ownNode;
-		this.numberOfNodes = numberOfNodes;
-		
-		check = true;	
 	}
 }

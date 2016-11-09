@@ -37,9 +37,10 @@ public class MainNode {
 		new Thread(new MulticastSender(InetAddress.getByName("225.1.1.1"),Nodename)).start();
 		
 		//wait for rmi to be performed by server
+		System.out.println("Wait for rmi to be performed by server");
 	 	while(node.check==false)
 	 	{
-	 		System.out.println("system is waiting to receive rmi");
+
 	 	}
 	 	
 	 	System.out.println("nameserver recognized: " + node.mainServer);
@@ -52,7 +53,7 @@ public class MainNode {
    	 		{
    	 			choice = node.menu(scan);
    	 			switch (choice) {
-   	 			case 1: InetAddress destinationAdr = node.searchFile(cf, scan);
+   	 			case 1: node.searchFile(cf, scan);
    	 					break;
    	 			case 4: node.deleteNode(cf, node.ownNode);
    	 					exit = true;

@@ -1,6 +1,5 @@
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;

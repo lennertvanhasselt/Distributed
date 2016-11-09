@@ -36,10 +36,9 @@ public class ListNodes {
 	        }
 		}
 	}
+	
 	// Returning the values of the TreeMap.
 	public TreeMap<Integer, InetAddress> getMap() throws ClassNotFoundException
-	
-	
 	{
 		try{
 			FileInputStream fileIn = new FileInputStream("/temp/table.ser");
@@ -57,6 +56,7 @@ public class ListNodes {
 		
 		 //we could return the table or all values independently 
 	}
+	
 	// Adding another entry to the TreeMap.
 	public void addToTable(int hashed, InetAddress IP) throws ClassNotFoundException
 	{
@@ -81,6 +81,7 @@ public class ListNodes {
 	          return;
 	    }
 	}
+	
 	// Returns true if the given hash is already located in the TreeMap.
 	public boolean keyInTable(int hash) throws ClassNotFoundException
 	{
@@ -119,7 +120,8 @@ public class ListNodes {
 		
 		
 	}
-	// Gives the key where the hash is located and retursn the IP of this node.	
+	
+	// Gives the key where the hash is located and returns the IP of this node.	
 	public synchronized InetAddress getFileIP(int hash) throws ClassNotFoundException
 	{
 		try{
@@ -143,6 +145,7 @@ public class ListNodes {
 	          return null;
 	    }
 	}
+	
 	// A node will be deleted from the TreeMap and returns true when it was removed successful and the other way around.
 	public synchronized boolean deleteNode(int hash) throws ClassNotFoundException
 	{

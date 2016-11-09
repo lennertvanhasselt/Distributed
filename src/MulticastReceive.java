@@ -5,11 +5,9 @@ import java.net.InetAddress;
 
 public class MulticastReceive implements Runnable{
 	
-	private InetAddress ip;
 	private String hostname;
 	
 	public MulticastReceive(InetAddress ip, String hostname){
-		this.ip=ip;
 		this.hostname=hostname;
 	}
 	
@@ -18,7 +16,7 @@ public void run(){
 		try {
 			MulticastSocket socket = new MulticastSocket(8888);
 			
-			socket.joinGroup(ip);
+			socket.joinGroup(InetAddress.getByName("225.1.1.1"));
 			
 			while (true) {
 				byte[] buf = new byte[256];
@@ -27,9 +25,7 @@ public void run(){
 				socket.receive(msgPacket);
 				InetAddress ip = msgPacket.getAddress();
 	            hostname = new String(buf, 0, buf.length);
-	            System.out.println(ip+ " "+hostname);
-	            
-	            
+	            System.out.println(ip+ " "+hostname);	            
 	         }
 			 } catch (IOException e) {
 					// TODO Auto-generated catch block

@@ -1,6 +1,8 @@
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
@@ -14,7 +16,7 @@ public class ClientInfo extends UnicastRemoteObject implements ClientInterface{
 		list = new ListNodes();
 	}
 	// A new node will be added to a TreeMap.
-	public int setNode(String clientName, InetAddress IP) throws ClassNotFoundException
+	public int setNode(String clientName, InetAddress IP) throws ClassNotFoundException, NotBoundException, IOException
 	{
 		int hashed = hashing(clientName); 
 		

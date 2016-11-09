@@ -1,6 +1,8 @@
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.rmi.Naming;
+import java.rmi.RemoteException;
 import java.util.Scanner;
 
 // Make connection with the server and give the name of your node.
@@ -13,7 +15,7 @@ public class MainNode implements MainNodeInterface{
 	public static int ownNode;
 	public static int numberOfNodes;
 	
-	public static void main(String[] args) throws UnknownHostException {
+	public static void main(String[] args) throws ClassNotFoundException, RemoteException, IOException {
 		
 		Scanner scan = new Scanner(System.in);
 		

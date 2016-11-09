@@ -1,4 +1,5 @@
 import java.net.MulticastSocket;
+import java.rmi.NotBoundException;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -30,6 +31,9 @@ public void run(){
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NotBoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}

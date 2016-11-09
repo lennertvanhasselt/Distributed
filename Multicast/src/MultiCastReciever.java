@@ -27,7 +27,7 @@ public class MultiCastReciever implements Runnable{
 				socket.receive(msgPacket);
 				InetAddress IP = msgPacket.getAddress();
 		        String msg = new String(buf, 0, buf.length);
-		        msg=msg.replaceAll("\\W+","");
+		        msg=msg.replaceAll(Character.toString((char)0),"");
 		        System.out.println(IP+" received message:" + msg);
 			}
 			

@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.net.InetAddress;
+import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
@@ -24,7 +25,10 @@ public class ClientInfo extends UnicastRemoteObject implements ClientInterface{
 			
 		System.out.println(hashed+" "+IP);
 		
-		setNameServerIP("//192.168.1.3/cliNode",hashed,list.getNumberOfNodes());
+		String name = "/"+IP.toString()+"/cliNode";
+	 	MainNodeInterface mni = (MainNodeInterface) Naming.lookup(name);
+		
+		mni.setNameServerIP("//192.168.1.3/cliNode",hashed,list.getNumberOfNodes());
 		
 		return hashed;
 	}

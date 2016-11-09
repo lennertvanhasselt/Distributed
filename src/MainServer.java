@@ -7,9 +7,12 @@ import java.rmi.registry.LocateRegistry;
 //GROUP 8 #ZWAM
 
 public class MainServer {
+	
+	
+	public static ClientInfo cli;
 	// New clients will be created if there is a valuable request from a node which includes a name and IP.
 	public static void main(String[] args) throws ClassNotFoundException, IOException {
-		ClientInfo cli = new ClientInfo();
+		cli = new ClientInfo();
 		String bindLocation = "//localhost/cliNode";
 				
 		try{
@@ -17,6 +20,7 @@ public class MainServer {
 			Naming.bind(bindLocation, cli);
 	        System.out.println("NodeServer is ready at:" + bindLocation);
             System.out.println("java RMI registry created.");
+            new Thread(new MulticastReceiverServer()).start();
         } catch (MalformedURLException | AlreadyBoundException e) {
             System.out.println("java RMI registry already exists.");
 		}

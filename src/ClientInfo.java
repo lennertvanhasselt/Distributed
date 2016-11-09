@@ -24,6 +24,8 @@ public class ClientInfo extends UnicastRemoteObject implements ClientInterface{
 			
 		System.out.println(hashed+" "+IP);
 		
+		setNameServerIP("//192.168.1.3/cliNode",hashed,list.getNumberOfNodes());
+		
 		return hashed;
 	}
 	
@@ -60,5 +62,7 @@ public class ClientInfo extends UnicastRemoteObject implements ClientInterface{
 		//to unsigned Long is to make it absolute
 		return hashed;
 	}
+	
+	
 	
 }

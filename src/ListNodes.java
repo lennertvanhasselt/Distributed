@@ -170,7 +170,18 @@ public class ListNodes {
 	          i.printStackTrace();
 	          return false;
 	    }		
-	}	
+	}
+	
+	public int getNumberOfNodes() throws IOException, ClassNotFoundException
+	{
+		FileInputStream fileIn = new FileInputStream("/temp/table.ser");
+        ObjectInputStream in = new ObjectInputStream(fileIn);
+        table = (TreeMap) in.readObject();
+        in.close();
+        fileIn.close();
+        
+        return table.size();
+	}
 }
 
 

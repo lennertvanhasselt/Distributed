@@ -34,12 +34,12 @@ public class MainNode {
 		//start multicast to discover nameserver
 		InetAddress address = InetAddress.getLocalHost();
 	 	address = InetAddress.getByName(address.getHostAddress());
-		new Thread(new MulticastSender(address,Nodename)).start();
+		new Thread(new MulticastSender(InetAddress.getByName("225.1.1.1"),Nodename)).start();
 		
 		//wait for rmi to be performed by server
 	 	while(node.check==false)
 	 	{
-	 		
+	 		System.out.println("system is waiting to receive rmi");
 	 	}
 	 	
 	 	System.out.println("nameserver recognized: " + node.mainServer);

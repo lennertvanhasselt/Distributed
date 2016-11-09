@@ -28,6 +28,7 @@ public class ClientInfo extends UnicastRemoteObject implements ClientInterface{
 		System.out.println(hashed+" "+IP);
 		
 		String name = "/"+IP.toString()+"/Node";
+		System.out.println("test: "+name);
 	 	NodeInterface mni = (NodeInterface) Naming.lookup(name);
 		
 		mni.setNameServer("192.168.1.3",hashed,list.getNumberOfNodes());

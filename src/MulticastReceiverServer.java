@@ -14,7 +14,7 @@ public void run(){
 		try {
 			MulticastSocket socket = new MulticastSocket(8888);
 			
-			socket.joinGroup(InetAddress.getByName("255.1.1.1"));
+			socket.joinGroup(InetAddress.getByName("225.1.1.1"));
 			
 			while (true) {
 				byte[] buf = new byte[256];

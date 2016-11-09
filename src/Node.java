@@ -13,11 +13,16 @@ import java.util.Scanner;
 public class Node extends UnicastRemoteObject implements NodeInterface {
 	
 	private static final long serialVersionUID = 1L;
-	private int ownNode, previousNode, nextNode, totalNodes = -1;
+	private int previousNode, nextNode, totalNodes = -1;
+	public int ownNode;
 	private String ownIP, previousIP, nextIP = null;
 	private NodeInterface nf;
+	public String mainServer;
+	public boolean check;
 	
 	public Node() throws ClassNotFoundException, IOException, RemoteException {	
+		mainServer = "";
+		check = false;
 	}
 	
 	// This is the menu that will appear on the console ones the connection with the server is established.
@@ -181,6 +186,16 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		this.previousNode = previousNode;
 		this.nextIP = nextIP;
 		this.previousIP = previousIP;
+	}
+	
+	public void setNameServer(String ip, int ownNode, int totalNodes)
+	{
+		mainServer = ip;
+		this.ownNode = ownNode;
+		this.totalNodes = totalNodes;
+		
+		check = true;
+		
 	}
 	
 }

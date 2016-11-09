@@ -12,6 +12,8 @@ public class MainServer {
 	public static ClientInfo cli;
 	// New clients will be created if there is a valuable request from a node which includes a name and IP.
 	public static void main(String[] args) throws ClassNotFoundException, IOException {
+		
+		//make sure nodes wil be able to perform rmi to server clientinfo
 		cli = new ClientInfo();
 		String bindLocation = "//localhost/cliNode";
 				
@@ -24,6 +26,8 @@ public class MainServer {
         } catch (MalformedURLException | AlreadyBoundException e) {
             System.out.println("java RMI registry already exists.");
 		}
+		
+		new Thread(new MulticastReceiverServer()).start();
 	}
 
 }

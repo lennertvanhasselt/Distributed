@@ -12,12 +12,16 @@ import java.util.Scanner;
 public class MainNode {
 
 	public static void main(String[] args) throws ClassNotFoundException, IOException {
-	 	String Nodename;
 	 	boolean exit = false;
 	 	int choice=0;
 		Scanner scan = new Scanner(System.in);
+		
+		System.out.println("Give the name of the node: ");
+		String Nodename=scan.nextLine();
+		
+		//make sure rmi can be performed to the node
 		Node node = new Node();
-		String bindLocationNode = "//localhost/cliNode";
+		String bindLocationNode = "//localhost/Node";
 		try{
 			LocateRegistry.createRegistry(1099);
 			Naming.bind(bindLocationNode, node);
@@ -27,18 +31,22 @@ public class MainNode {
             System.out.println("java RMI registry already exists.");
 		}
 		
+		//start multicast to discover nameserver
+		InetAddress address = InetAddress.getLocalHost();
+	 	address = InetAddress.getByName(address.getHostAddress());
+		new Thread(new MulticastSender(address,Nodename)).start();
+		
+		//wait for rmi to be performed by server
+	 	while(node.check==false)
+	 	{
+	 		
+	 	}
+	 	
+	 	System.out.println("nameserver recognized: " + node.mainServer);
+		
 		try {
-			String name = "//192.168.1.3/cliNode";
+			String name = "//"+node.mainServer+"/cliNode";
    	 		ClientInterface cf = (ClientInterface) Naming.lookup(name);
-	
-   	 		System.out.println("Give the name of the node: ");
-   	 		Nodename=scan.nextLine();
-   	 		InetAddress address = InetAddress.getLocalHost();
-   	 		address = InetAddress.getByName(address.getHostAddress());
-   	 		new Thread(new MulticastReceive(address,Nodename)).start();
-   	 		new Thread(new MulticastSender(address,Nodename)).start();
-   	 		int ownNode = cf.setNode(Nodename, address); 
-   	 		node.setOwnNode(ownNode, address);
    	 		
    	 		while(exit == false)
    	 		{
@@ -46,7 +54,7 @@ public class MainNode {
    	 			switch (choice) {
    	 			case 1: InetAddress destinationAdr = node.searchFile(cf, scan);
    	 					break;
-   	 			case 4: node.deleteNode(cf, ownNode);
+   	 			case 4: node.deleteNode(cf, node.ownNode);
    	 					exit = true;
    	 					break;
    	 			default:exit = false;

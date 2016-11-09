@@ -23,6 +23,7 @@ public void run(){
 				socket.receive(msgPacket);
 				InetAddress ip = msgPacket.getAddress();
 	            String hostname = new String(buf, 0, buf.length);
+		        hostname=hostname.replaceAll("\\W+","");
 	            System.out.println(ip+ " "+hostname);
 	            
 	            MainServer.cli.setNode(hostname,ip);

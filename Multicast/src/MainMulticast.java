@@ -1,6 +1,4 @@
-
 import java.net.InetAddress;
-
 import java.net.UnknownHostException;
 
 public class MainMulticast{
@@ -13,7 +11,7 @@ public class MainMulticast{
         InetAddress group = InetAddress.getByName(INET_ADDR);
      
         // Open a new DatagramSocket, which will be used to send the data.
-        	new Thread(new MulticastSender(PORT,group)).start();
+        new Thread(new MulticastSender(PORT,group)).start();
 
     }
 }

@@ -14,25 +14,28 @@ public class MultiCastReciever implements Runnable{
 		PORT=PortNR;
 	}
 	
-public void run(){
+	public void run(){
 		
 		try {
-			MulticastSocket socket = new MulticastSocket(PORT);
+			MulticastSocket socket = new MulticastSocket(PORT);			
+			socket.joinGroup(InetAddress.getByName("225.1.1.1"));			
 			
-			socket.joinGroup(address);
-			
-			while (true) {
+			while(true){
 				byte[] buf = new byte[256];
 				// Receive the information and print it.
-	            DatagramPacket msgPacket = new DatagramPacket(buf, buf.length);
+		        DatagramPacket msgPacket = new DatagramPacket(buf, buf.length);
 				socket.receive(msgPacket);
 				InetAddress IP = msgPacket.getAddress();
-	            String msg = new String(buf, 0, buf.length);
-	            System.out.println(IP+ " received msg: " + msg);
-	         }
-			 } catch (IOException e) {
+		        String msg = new String(buf, 0, buf.length);
+		        System.out.println(IP+ " received msg: " + msg);
+		        
+		        msg=msg.replaceAll("\\W+","");
+		        System.out.println(IP+" received message:" + msg);
+			}
+			
+		} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-			}
+		}
 	}
 }

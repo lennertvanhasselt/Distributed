@@ -15,8 +15,8 @@ public class MulticastSender implements Runnable {
 
 	@Override
 	public void run() {
-		try{
-			MulticastSocket socket = new MulticastSocket(8888);
+		try(MulticastSocket socket = new MulticastSocket(8888);){
+			
 			socket.joinGroup(ip);
 			
 	        DatagramPacket msgPacket = new DatagramPacket(hostname.getBytes(),hostname.getBytes().length, ip, 8888);

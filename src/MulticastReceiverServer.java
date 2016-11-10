@@ -11,8 +11,7 @@ public class MulticastReceiverServer implements Runnable{
 	
 public void run(){
 		
-		try {
-			MulticastSocket socket = new MulticastSocket(8888);
+		try (MulticastSocket socket = new MulticastSocket(8888);){
 			
 			socket.joinGroup(InetAddress.getByName("225.1.1.1"));
 			
@@ -24,7 +23,7 @@ public void run(){
 				InetAddress ip = msgPacket.getAddress();
 	            String hostname = new String(buf, 0, buf.length);
 		        hostname=hostname.replaceAll(Character.toString((char) 0),"");
-	            System.out.println("mutlicast received: "+ip+ " "+hostname);
+	            System.out.println(ip+ " "+hostname);
 	            
 	            MainServer.cli.setNode(hostname,ip);
 	         }
@@ -40,3 +39,4 @@ public void run(){
 			}
 	}
 }
+

@@ -6,15 +6,14 @@ import java.net.MulticastSocket;
 public class MulticastSender implements Runnable {
 	
 	public int port;
-	public InetAddress group;
 	
-	public MulticastSender(int port, InetAddress group ){
+	public MulticastSender(int port){
 		this.port = port;
-		this.group = group;
 	}
 
 	public void run() {
         try (MulticastSocket socket = new MulticastSocket(port)){
+        	InetAddress group = InetAddress.getByName("225.1.1.1"); //multicast ip
         	socket.joinGroup(group);
         	String msg = "#zwan";
 

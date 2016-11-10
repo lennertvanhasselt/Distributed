@@ -4,6 +4,7 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.TreeMap;
 
 public class ClientInfo extends UnicastRemoteObject implements ClientInterface{
 	
@@ -15,7 +16,7 @@ public class ClientInfo extends UnicastRemoteObject implements ClientInterface{
 		list = new ListNodes();
 	}
 	// A new node will be added to a TreeMap.
-	public int setNode(String clientName, InetAddress IP) throws ClassNotFoundException, NotBoundException, IOException
+	public void setNode(String clientName, InetAddress IP) throws ClassNotFoundException, NotBoundException, IOException
 	{
 		int hashed = hashing(clientName); 
 		
@@ -35,7 +36,7 @@ public class ClientInfo extends UnicastRemoteObject implements ClientInterface{
 		
 		mni.setNameServer(addr,hashed,list.getNumberOfNodes());
 		
-		return hashed;
+		return;
 	}
 	
 	//If a filename is received the server will search for the node which possesses this file and return an IP.
@@ -72,6 +73,8 @@ public class ClientInfo extends UnicastRemoteObject implements ClientInterface{
 		return hashed;
 	}
 	
-	
+	public TreeMap<Integer, InetAddress> getPreviousNext(int node) throws RemoteException, ClassNotFoundException {
+		return list.getPreviousNext(node);
+	}
 	
 }

@@ -5,17 +5,17 @@ import java.net.MulticastSocket;
 
 public class MulticastSender implements Runnable {
 	
-	private InetAddress ip;
 	private String hostname;
 	
-	public MulticastSender(InetAddress ip, String hostname){
-		this.ip = ip;
+	public MulticastSender(String hostname){
 		this.hostname = hostname;
 	}
 
 	@Override
 	public void run() {
 		try(MulticastSocket socket = new MulticastSocket(8888);){
+			
+			InetAddress ip = InetAddress.getByName("225.1.1.1"); //multicast ip-address
 			
 			socket.joinGroup(ip);
 			

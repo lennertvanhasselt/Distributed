@@ -28,13 +28,13 @@ public void run(){
 	            MainServer.cli.setNode(hostname,ip);
 	         }
 			 } catch (IOException e) {
-					// TODO Auto-generated catch block
+					System.err.println("IOException");
 					e.printStackTrace();
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
+				System.err.println("ClassNotFoundException");
 				e.printStackTrace();
 			} catch (NotBoundException e) {
-				// TODO Auto-generated catch block
+				System.err.println("NotBoundException");
 				e.printStackTrace();
 			}
 	}

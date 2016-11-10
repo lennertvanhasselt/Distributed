@@ -68,7 +68,7 @@ public class ListNodes {
 	        fileIn.close();
 	        
 	        table.put(hashed,IP);
-			System.out.println(table.get(hashed));
+			System.out.println("added: "+hashed+" "+table.get(hashed));
 			
 			FileOutputStream fileOut = new FileOutputStream("/temp/table.ser");
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
@@ -133,7 +133,7 @@ public class ListNodes {
 	        
 	        int key;
 			if(hash <= table.lastKey())
-				key = table.higherKey(hash-1);
+				key = table.higherKey(hash-1);//-1 cause the file could be same hash then node
 			else
 				key = table.firstKey();
 			System.out.println(hash+" found at "+key);
@@ -184,6 +184,15 @@ public class ListNodes {
         fileIn.close();
         
         return table.size();
+	}
+	
+	public TreeMap<Integer, InetAddress> getPreviousNext(int node){
+		TreeMap<Integer,InetAddress> prevNext =new TreeMap<Integer,InetAddress>();
+		int previousNode = table.higherKey(node);
+		prevNext.put(previousNode,table.get(previousNode));
+		int nextNode = table.lowerKey(node);
+		prevNext.put(nextNode,table.get(nextNode));
+		return prevNext;		
 	}
 }
 

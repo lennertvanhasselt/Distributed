@@ -8,6 +8,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
+import java.util.TreeMap;
 
 
 public class Node extends UnicastRemoteObject implements NodeInterface {
@@ -47,50 +48,100 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	 	String search = scan.nextLine();
 	 	search = scan.nextLine();
 	 	try {
-	 	InetAddress adrFile = cf.searchFile(search);
-	 	String IP = adrFile.toString();
+	 		InetAddress adrFile = cf.searchFile(search);
+	 		String IP = adrFile.toString();
 	 	
-	 	// Ping the host of the file
-	 	IP=IP.substring(1);
-		System.out.println(IP);
-	 	Process p = Runtime.getRuntime().exec("ping "+IP);
-		BufferedReader inputStream = new BufferedReader(
+	 		// Ping the host of the file
+	 		IP=IP.substring(1);
+	 		System.out.println(IP);
+			Process p = Runtime.getRuntime().exec("ping "+IP);
+			BufferedReader inputStream = new BufferedReader(
 				new InputStreamReader(p.getInputStream()));
 
-		String s = "";
-		// reading output stream of the command
-		while ((s = inputStream.readLine()) != null) {
-			System.out.println(s);
-		}
-	 	return adrFile;	
+			String s = "";
+			// reading output stream of the command
+			while ((s = inputStream.readLine()) != null) {
+				System.out.println(s);
+			}
+			return adrFile;	
 	 	} catch(Exception e) {
-	         System.err.println("FileServer exception: "+ e.getMessage());
-	       e.printStackTrace();
-	       return null;
+	        System.err.println("FileServer exception: "+ e.getMessage());
+	        e.printStackTrace();
+	        return null;
 	    }
 	}
 	
 	// When the node decides to leave the menu and the network it will close and the server will delete the node from it's map.
-	public void deleteNode(ClientInterface cf, int ownNode) {
-		try{
-		if(ownNode != previousNode && ownNode != nextNode)
-		{
-			nf = (NodeInterface) Naming.lookup("//"+previousIP+"/cliNode");
-			nf.setNextNode(nextNode, nextIP);
-			nf = (NodeInterface) Naming.lookup("//"+nextIP+"/cliNode");
-			nf.setPreviousNode(previousNode, previousIP);
+	public void deleteNode(ClientInterface cf, int ownNode) throws RemoteException, ClassNotFoundException{
+		int contactedNode = -1;
+		try {
+			if (ownNode != previousNode && ownNode != nextNode) {
+				contactedNode = previousNode;
+				nf = (NodeInterface) Naming.lookup("//" + previousIP + "/cliNode");
+				nf.setNextNode(nextNode, nextIP);
+				contactedNode = nextNode;
+				nf = (NodeInterface) Naming.lookup("//" + nextIP + "/cliNode");
+				nf.setPreviousNode(previousNode, previousIP);
+			}
+			Boolean answer = cf.deleteNode(ownNode);
+			if (answer == true)
+				System.out.println("Node deleted");
+			else
+				System.out.println("Node is not deleted");
+			return;
+		} catch (Exception e) {
+			System.err.println("FileServer exception: " + e.getMessage());
+			e.printStackTrace();
+			updateNetwork(contactedNode, cf);
+			return;
 		}
-		Boolean answer = cf.deleteNode(ownNode); 
-		if (answer == true)
-	 	 System.out.println("Node deleted");
-		else
-		 System.out.println("Node is not deleted");
+	}
+	
+	public void updateNetwork(int node, ClientInterface cf) throws RemoteException, ClassNotFoundException {
+		TreeMap<Integer, InetAddress> prevNext = cf.getPreviousNext(node);
+		int nn = -1;
+		int pn = -1;
+		int first = prevNext.firstKey();
+		int last = prevNext.lastKey();
+		if (first > node && last < node) {
+			nn = last;
+			pn = first;
+		} else if (first > node && last > node) {
+			nn = first;
+			pn = last;
+		} else if (first < node && last < node) {
+			nn = last;
+			pn = first;
+		}
+
+		if (pn != ownNode) {
+			String IP = prevNext.get(pn).toString().substring(1);
+			try {
+				nf = (NodeInterface) Naming.lookup("//" + IP + "/cliNode");
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			} catch (NotBoundException e) {
+				updateNetwork(pn, cf);
+				e.printStackTrace();
+			}
+			IP = prevNext.get(nn).toString().substring(1);
+			nf.setNextNode(nn, IP);
+		}
+		if (nn != ownNode) {
+			String IP = prevNext.get(nn).toString().substring(1);
+			try {
+				nf = (NodeInterface) Naming.lookup("//" + IP + "/cliNode");
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			} catch (NotBoundException e) {
+				updateNetwork(nn, cf);
+				e.printStackTrace();
+			}
+			IP = prevNext.get(pn).toString().substring(1);
+			nf.setPreviousNode(pn, IP);
+		}
+		cf.deleteNode(node);
 		return;
-		} catch(Exception e) {
-	         System.err.println("FileServer exception: "+ e.getMessage());
-	       e.printStackTrace();
-	       return;
-	    }
 	}
 	
 	public void setOwnNode(int ownNode, InetAddress ownIP)
@@ -126,53 +177,49 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		return ownNode;
 	}
 	
-	public boolean hashing(String name, InetAddress IPraw) throws RemoteException, ClassNotFoundException, MalformedURLException, NotBoundException
+	public boolean hashing(String name, InetAddress IPraw, ClientInterface cf) throws RemoteException, ClassNotFoundException, MalformedURLException
 	{
 		String IP = IPraw.toString();
-		IP=IP.substring(1);
-		nf = (NodeInterface) Naming.lookup("//"+IP+"/cliNode");
-		int hashed = Math.abs((int) Integer.toUnsignedLong(name.hashCode())%32768);//number between 0 and 32768
-		//to unsigned Long is to make it absolute
-		if (previousNode == -1 && nextNode == -1)
-		{
-			previousIP = IP;
-			nextIP = IP;
-			previousNode = ownNode;
-			nextNode = ownNode;
-			
+		IP = IP.substring(1);
+		int hashed = Math.abs((int) Integer.toUnsignedLong(name.hashCode()) % 32768);
+		// number between 0 and 32768
+		// to unsigned Long is to make it absolute
+		try {
+			nf = (NodeInterface) Naming.lookup("//" + IP + "/cliNode");
+
+			if (previousNode == -1 && nextNode == -1) {
+				previousIP = IP;
+				nextIP = IP;
+				previousNode = ownNode;
+				nextNode = ownNode;
+			} else if (ownNode == previousNode && ownNode == nextNode) {
+				nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
+				previousNode = hashed;
+				nextNode = hashed;
+				previousIP = IP;
+				nextIP = IP;
+			} else if (hashed < ownNode && hashed > previousNode) {
+				nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
+				previousNode = hashed;
+				previousIP = IP;
+			} else if (hashed < ownNode && hashed == previousNode) {
+				nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
+				previousNode = hashed + 1;
+				previousIP = IP;
+			} else if (hashed == ownNode) {
+				nextNode = hashed + 1;
+				nextIP = IP;
+			} else if (hashed > ownNode && hashed < nextNode) {
+				nextNode = hashed;
+				nextIP = IP;
+			}
+			return true;
+
+		} catch (NotBoundException e) {
+			updateNetwork(hashed, cf);
+			e.printStackTrace();
+			return false;
 		}
-		else if(ownNode == previousNode && ownNode == nextNode)
-		{
-			nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
-			previousNode = hashed;
-			nextNode = hashed;
-			previousIP = IP;
-			nextIP = IP;
-			
-		}
-		else if(hashed < ownNode && hashed > previousNode)
-		{
-			nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
-			previousNode = hashed;
-			previousIP = IP;
-		}
-		else if(hashed < ownNode && hashed == previousNode)
-		{
-			nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
-			previousNode = hashed+1;
-			previousIP = IP;
-		}
-		else if(hashed == ownNode)
-		{
-			nextNode = hashed+1;
-			nextIP = IP;
-		}
-		else if(hashed > ownNode && hashed < nextNode)
-		{
-			nextNode = hashed;
-			nextIP = IP;
-		}
-		return true;
 	}
 	
 	public void setTotalNodes(int totalNodes)

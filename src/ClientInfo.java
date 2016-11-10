@@ -29,8 +29,11 @@ public class ClientInfo extends UnicastRemoteObject implements ClientInterface{
 		String name = "/"+IP.toString()+"/Node";
 		System.out.println("test: "+name);
 	 	NodeInterface mni = (NodeInterface) Naming.lookup(name);
+	 	
+	 	InetAddress address = InetAddress.getLocalHost();
+	 	String addr = address.getHostAddress();
 		
-		mni.setNameServer("192.168.1.3",hashed,list.getNumberOfNodes());
+		mni.setNameServer(addr,hashed,list.getNumberOfNodes());
 		
 		return hashed;
 	}

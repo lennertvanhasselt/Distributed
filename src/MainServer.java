@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.Naming;
@@ -16,6 +17,9 @@ public class MainServer {
 		//make sure nodes wil be able to perform rmi to server clientinfo
 		cli = new ClientInfo();
 		String bindLocation = "//localhost/cliNode";
+		
+		InetAddress address = InetAddress.getLocalHost();
+	 	System.out.println(address.getHostAddress());
 				
 		try{
 			LocateRegistry.createRegistry(1099);

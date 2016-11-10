@@ -10,8 +10,7 @@ public class MulticastReceive implements Runnable{
 	
 	public void run(){
 		
-		try {
-			MulticastSocket socket = new MulticastSocket(8888);
+		try (MulticastSocket socket = new MulticastSocket(8888);){			
 			
 			socket.joinGroup(InetAddress.getByName("225.1.1.1"));
 			

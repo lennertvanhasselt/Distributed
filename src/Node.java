@@ -103,6 +103,10 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		int pn = -1;
 		int first = prevNext.firstKey();
 		int last = prevNext.lastKey();
+		
+		//Delete the corrupt node before checking others? otherwhise an error will result in not deleting the corrupt node
+		//cf.deleteNode(node); 
+		
 		if (first > node && last < node) {
 			nn = last;
 			pn = first;

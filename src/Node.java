@@ -108,7 +108,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		int last = prevNext.lastKey();
 		
 		//Delete the corrupt node before checking others? otherwhise an error will result in not deleting the corrupt node
-		//cf.deleteNode(node); 
+		cf.deleteNode(node); 
 		
 		if (first > node && last < node) {
 			nn = last;
@@ -119,7 +119,8 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		} else if (first < node && last < node) {
 			nn = last;
 			pn = first;
-		}
+		} else
+			System.out.println("error Node nn, pn");
 
 		if (pn != ownNode) {
 			String IP = prevNext.get(pn).toString().substring(1);
@@ -133,6 +134,9 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 			}
 			IP = prevNext.get(nn).toString().substring(1);
 			nf.setNextNode(nn, IP);
+		} else {
+			nextNode=nn;
+			nextIP = prevNext.get(nn).toString().substring(1);
 		}
 		if (nn != ownNode) {
 			String IP = prevNext.get(nn).toString().substring(1);
@@ -146,8 +150,11 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 			}
 			IP = prevNext.get(pn).toString().substring(1);
 			nf.setPreviousNode(pn, IP);
+		} else {
+			previousNode=pn;
+			previousIP = prevNext.get(pn).toString().substring(1);
 		}
-		cf.deleteNode(node);
+		//cf.deleteNode(node);
 		return;
 	}
 	

@@ -38,9 +38,9 @@ public class MainNode {
 		
 		//wait for rmi to be performed by server
 		System.out.println("Wait for rmi to be performed by server");
-	 	while(node.check==false)
+		while(node.check==false)
 	 	{
-	 		System.out.println("Wait for rmi to be performed by server");
+	 		System.out.print("");   //without print, the check doesn't update.
 	 	}
 	 	System.out.println("nameserver recognized: " + node.mainServer);
 		//node.hashing(nodename, address);

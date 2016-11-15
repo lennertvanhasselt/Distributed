@@ -175,7 +175,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		this.ownNode = ownNode;
 	}
 	
-	public void setPreviousNode(int previousNode, String previousIP)
+	public void setPreviousNode(int previousNode, String previousIP)throws RemoteException, ClassNotFoundException
 	{	
 		this.previousNode = previousNode;
 		this.previousIP = previousIP;
@@ -184,7 +184,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		System.out.println("previousIP: "+this.previousIP);
 	}
 	
-	public void setNextNode(int nextNode, String nextIP)
+	public void setNextNode(int nextNode, String nextIP)throws RemoteException, ClassNotFoundException
 	{
 		this.nextNode = nextNode;
 		this.nextIP = nextIP;
@@ -223,7 +223,8 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 				nextNode = ownNode;
 			} else if (ownNode == previousNode && ownNode == nextNode) {
 				nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
-				nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
+				System.out.println("ownNode: "+ownNode+"  ownIP: "+ownIP+ "send to "+IP);
+				nf.changePrevNext(ownNode, ownNode, ownIP, ownIP);
 				previousNode = hashed;
 				nextNode = hashed;
 				previousIP = IP;
@@ -271,7 +272,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		this.totalNodes = totalNodes;
 	}
 	
-	public void changePrevNext(int nextNode, int previousNode, String nextIP, String previousIP)
+	public void changePrevNext(int nextNode, int previousNode, String nextIP, String previousIP)throws RemoteException, ClassNotFoundException
 	{
 		System.out.println("changePrevNext");
 		this.nextNode = nextNode;
@@ -282,7 +283,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		System.out.println("nextIP: "+this.nextIP+" previousIP: "+this.previousIP);
 	}
 	
-	public void setNameServer(String ip, int ownNode, int totalNodes) throws UnknownHostException
+	public void setNameServer(String ip, int ownNode, int totalNodes) throws RemoteException, ClassNotFoundException, UnknownHostException
 	{
 		System.out.println("SetNameServer");
 		mainServer = ip;

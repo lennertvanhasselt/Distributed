@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.UnknownHostException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -215,7 +216,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		// number between 0 and 32768
 		// to unsigned Long is to make it absolute
 		try {
-			System.out.println("hier");
 			if (previousNode == -1 && nextNode == -1) {
 				previousIP = IP;
 				nextIP = IP;
@@ -282,7 +282,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		System.out.println("nextIP: "+this.nextIP+" previousIP: "+this.previousIP);
 	}
 	
-	public void setNameServer(String ip, int ownNode, int totalNodes)
+	public void setNameServer(String ip, int ownNode, int totalNodes) throws UnknownHostException
 	{
 		System.out.println("SetNameServer");
 		mainServer = ip;
@@ -292,6 +292,16 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		System.out.println(this.ownNode);
 		System.out.println(this.totalNodes);
 		
+		InetAddress address = InetAddress.getLocalHost();
+	 	address = InetAddress.getByName(address.getHostAddress());
+		String ownIP = address.toString().substring(1);
+
+		if (previousNode == -1 && nextNode == -1) {
+			previousIP = ownIP;
+			nextIP = ownIP;
+			previousNode = ownNode;
+			nextNode = ownNode;
+		}
 		check = true;
 		
 	}

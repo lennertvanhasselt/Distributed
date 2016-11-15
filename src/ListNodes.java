@@ -195,18 +195,24 @@ public class ListNodes {
         fileIn.close();
 		
 		TreeMap<Integer,InetAddress> prevNext =new TreeMap<Integer,InetAddress>();
-		int previousNode = table.higherKey(node);
-		int nextNode = table.lowerKey(node);
+		int previousNode;
+		int nextNode;
 		if(table.size()==1)
 		{
 			previousNode=node;
 			nextNode=node;
 		} else if(table.higherKey(node)==null) {
 			previousNode=table.firstKey();
+			nextNode=table.lowerKey(node);
 		} else if(table.lowerKey(node)==null) {
+			previousNode=table.higherKey(node);
 			nextNode=table.lastKey();
-		} else
-			System.out.println("ListNodes getPreviousNext error");
+		} else {
+			previousNode = table.higherKey(node);
+			nextNode = table.lowerKey(node);
+		}
+			
+			
 		
 		prevNext.put(previousNode,table.get(previousNode));
 		prevNext.put(nextNode,table.get(nextNode));

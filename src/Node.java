@@ -79,11 +79,11 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 			if (ownNode != previousNode && ownNode != nextNode) {
 				contactedNode = previousNode;
 				System.out.println(previousIP);
-				nf = (NodeInterface) Naming.lookup("//" + previousIP + "/cliNode");
+				nf = (NodeInterface) Naming.lookup("//" + previousIP + "/Node");
 				System.out.println("tot hier");
 				nf.setNextNode(nextNode, nextIP);
 				contactedNode = nextNode;
-				nf = (NodeInterface) Naming.lookup("//" + nextIP + "/cliNode");
+				nf = (NodeInterface) Naming.lookup("//" + nextIP + "/Node");
 				nf.setPreviousNode(previousNode, previousIP);
 			}
 			Boolean answer = cf.deleteNode(ownNode);
@@ -125,7 +125,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		if (pn != ownNode) {
 			String IP = prevNext.get(pn).toString().substring(1);
 			try {
-				nf = (NodeInterface) Naming.lookup("//" + IP + "/cliNode");
+				nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (NotBoundException e) {
@@ -141,7 +141,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		if (nn != ownNode) {
 			String IP = prevNext.get(nn).toString().substring(1);
 			try {
-				nf = (NodeInterface) Naming.lookup("//" + IP + "/cliNode");
+				nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (NotBoundException e) {
@@ -212,19 +212,19 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 				previousNode = ownNode;
 				nextNode = ownNode;
 			} else if (ownNode == previousNode && ownNode == nextNode) {
-				nf = (NodeInterface) Naming.lookup("//" + IP + "/cliNode");
+				nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
 				nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
 				previousNode = hashed;
 				nextNode = hashed;
 				previousIP = IP;
 				nextIP = IP;
 			} else if (hashed < ownNode && hashed > previousNode) {
-				nf = (NodeInterface) Naming.lookup("//" + IP + "/cliNode");
+				nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
 				nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
 				previousNode = hashed;
 				previousIP = IP;
 			} else if (hashed < ownNode && hashed == previousNode) {
-				nf = (NodeInterface) Naming.lookup("//" + IP + "/cliNode");
+				nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
 				nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
 				previousNode = hashed + 1;
 				previousIP = IP;

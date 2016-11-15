@@ -30,8 +30,6 @@ public class MainServer {
         } catch (MalformedURLException | AlreadyBoundException e) {
             System.out.println("java RMI registry already exists.");
 		}
-		
-		new Thread(new MulticastReceiverServer()).start();
 	}
 
 }

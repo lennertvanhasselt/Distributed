@@ -109,6 +109,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		
 		//Delete the corrupt node before checking others? otherwhise an error will result in not deleting the corrupt node
 		cf.deleteNode(node); 
+		System.out.println("Delete " + node);
 		
 		if (first > node && last < node) {
 			nn = last;
@@ -218,22 +219,34 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 				nextNode = hashed;
 				previousIP = IP;
 				nextIP = IP;
+				System.out.println("nextNode: "+this.nextNode);
+				System.out.println("nextIP: "+this.nextIP);
+				System.out.println("previousNode: "+this.previousNode);
+				System.out.println("previousIP: "+this.previousIP);
 			} else if (hashed < ownNode && hashed > previousNode) {
 				nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
 				nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
 				previousNode = hashed;
 				previousIP = IP;
+				System.out.println("previousNode: "+this.previousNode);
+				System.out.println("previousIP: "+this.previousIP);
 			} else if (hashed < ownNode && hashed == previousNode) {
 				nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
 				nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
 				previousNode = hashed + 1;
 				previousIP = IP;
+				System.out.println("previousNode: "+this.previousNode);
+				System.out.println("previousIP: "+this.previousIP);
 			} else if (hashed == ownNode) {
 				nextNode = hashed + 1;
 				nextIP = IP;
+				System.out.println("nextNode: "+this.nextNode);
+				System.out.println("nextIP: "+this.nextIP);
 			} else if (hashed > ownNode && hashed < nextNode) {
 				nextNode = hashed;
 				nextIP = IP;
+				System.out.println("nextNode: "+this.nextNode);
+				System.out.println("nextIP: "+this.nextIP);
 			}
 			return true;
 

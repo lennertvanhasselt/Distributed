@@ -73,7 +73,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	}
 	
 	// When the node decides to leave the menu and the network it will close and the server will delete the node from it's map.
-	public void deleteNode(int ownNode) throws RemoteException, ClassNotFoundException{
+	public void deleteNode(int ownNode) throws ClassNotFoundException, IOException{
 		int contactedNode = -1;
 		try {
 			if (ownNode != previousNode && ownNode != nextNode) {
@@ -100,7 +100,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		}
 	}
 	
-	public void updateNetwork(int node) throws RemoteException, ClassNotFoundException {
+	public void updateNetwork(int node) throws ClassNotFoundException, IOException {
 		TreeMap<Integer, InetAddress> prevNext = cf.getPreviousNext(node);
 		int nn = -1;
 		int pn = -1;
@@ -190,7 +190,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		return ownNode;
 	}
 	
-	public boolean hashing(String name, InetAddress IPraw) throws RemoteException, ClassNotFoundException, MalformedURLException
+	public boolean hashing(String name, InetAddress IPraw) throws ClassNotFoundException, IOException
 	{
 		String IP = IPraw.toString();
 		IP = IP.substring(1);

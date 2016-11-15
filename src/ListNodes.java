@@ -184,9 +184,16 @@ public class ListNodes {
         fileIn.close();
         
         return table.size();
-	}
+	} 
 	
-	public TreeMap<Integer, InetAddress> getPreviousNext(int node){
+	public TreeMap<Integer, InetAddress> getPreviousNext(int node) throws IOException, ClassNotFoundException{
+		
+		FileInputStream fileIn = new FileInputStream("/temp/table.ser");
+        ObjectInputStream in = new ObjectInputStream(fileIn);
+        table = (TreeMap) in.readObject();
+        in.close();
+        fileIn.close();
+		
 		TreeMap<Integer,InetAddress> prevNext =new TreeMap<Integer,InetAddress>();
 		int previousNode = table.higherKey(node);
 		int nextNode = table.lowerKey(node);

@@ -73,7 +73,7 @@ public class ClientInfo extends UnicastRemoteObject implements ClientInterface{
 		return hashed;
 	}
 	
-	public TreeMap<Integer, InetAddress> getPreviousNext(int node) throws RemoteException, ClassNotFoundException {
+	public TreeMap<Integer, InetAddress> getPreviousNext(int node) throws ClassNotFoundException, IOException {
 		return list.getPreviousNext(node);
 	}
 	

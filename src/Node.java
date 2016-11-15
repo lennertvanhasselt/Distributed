@@ -14,10 +14,11 @@ import java.util.TreeMap;
 public class Node extends UnicastRemoteObject implements NodeInterface {
 	
 	private static final long serialVersionUID = 1L;
-	private int previousNode, nextNode, totalNodes = -1;
+	private int previousNode = -1, nextNode = -1, totalNodes = -1;
 	public int ownNode;
 	private String ownIP, previousIP, nextIP = null;
 	private NodeInterface nf;
+	private ClientInterface cf;
 	public String mainServer;
 	public boolean check;
 	
@@ -42,7 +43,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	
 	// The option where the user can give a filename and receive the IP of the node who has that file.
 	// When the node has received the IP of the location it will start to ping this node to make sure it has connection with it.
-	public InetAddress searchFile(ClientInterface cf, Scanner scan)
+	public InetAddress searchFile(Scanner scan)
 	{
 		System.out.println("Which file do you want?");
 	 	String search = scan.nextLine();
@@ -72,12 +73,14 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	}
 	
 	// When the node decides to leave the menu and the network it will close and the server will delete the node from it's map.
-	public void deleteNode(ClientInterface cf, int ownNode) throws RemoteException, ClassNotFoundException{
+	public void deleteNode(int ownNode) throws RemoteException, ClassNotFoundException{
 		int contactedNode = -1;
 		try {
 			if (ownNode != previousNode && ownNode != nextNode) {
 				contactedNode = previousNode;
+				System.out.println(previousIP);
 				nf = (NodeInterface) Naming.lookup("//" + previousIP + "/cliNode");
+				System.out.println("tot hier");
 				nf.setNextNode(nextNode, nextIP);
 				contactedNode = nextNode;
 				nf = (NodeInterface) Naming.lookup("//" + nextIP + "/cliNode");
@@ -92,12 +95,12 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		} catch (Exception e) {
 			System.err.println("FileServer exception: " + e.getMessage());
 			e.printStackTrace();
-			updateNetwork(contactedNode, cf);
+			updateNetwork(contactedNode);
 			return;
 		}
 	}
 	
-	public void updateNetwork(int node, ClientInterface cf) throws RemoteException, ClassNotFoundException {
+	public void updateNetwork(int node) throws RemoteException, ClassNotFoundException {
 		TreeMap<Integer, InetAddress> prevNext = cf.getPreviousNext(node);
 		int nn = -1;
 		int pn = -1;
@@ -125,7 +128,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (NotBoundException e) {
-				updateNetwork(pn, cf);
+				updateNetwork(pn);
 				e.printStackTrace();
 			}
 			IP = prevNext.get(nn).toString().substring(1);
@@ -138,7 +141,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (NotBoundException e) {
-				updateNetwork(nn, cf);
+				updateNetwork(nn);
 				e.printStackTrace();
 			}
 			IP = prevNext.get(pn).toString().substring(1);
@@ -181,7 +184,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		return ownNode;
 	}
 	
-	public boolean hashing(String name, InetAddress IPraw, ClientInterface cf) throws RemoteException, ClassNotFoundException, MalformedURLException
+	public boolean hashing(String name, InetAddress IPraw) throws RemoteException, ClassNotFoundException, MalformedURLException
 	{
 		String IP = IPraw.toString();
 		IP = IP.substring(1);
@@ -189,24 +192,26 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		// number between 0 and 32768
 		// to unsigned Long is to make it absolute
 		try {
-			nf = (NodeInterface) Naming.lookup("//" + IP + "/cliNode");
-
+			System.out.println("hier");
 			if (previousNode == -1 && nextNode == -1) {
 				previousIP = IP;
 				nextIP = IP;
 				previousNode = ownNode;
 				nextNode = ownNode;
 			} else if (ownNode == previousNode && ownNode == nextNode) {
+				nf = (NodeInterface) Naming.lookup("//" + IP + "/cliNode");
 				nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
 				previousNode = hashed;
 				nextNode = hashed;
 				previousIP = IP;
 				nextIP = IP;
 			} else if (hashed < ownNode && hashed > previousNode) {
+				nf = (NodeInterface) Naming.lookup("//" + IP + "/cliNode");
 				nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
 				previousNode = hashed;
 				previousIP = IP;
 			} else if (hashed < ownNode && hashed == previousNode) {
+				nf = (NodeInterface) Naming.lookup("//" + IP + "/cliNode");
 				nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
 				previousNode = hashed + 1;
 				previousIP = IP;
@@ -220,7 +225,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 			return true;
 
 		} catch (NotBoundException e) {
-			updateNetwork(hashed, cf);
+			updateNetwork(hashed);
 			e.printStackTrace();
 			return false;
 		}
@@ -249,4 +254,8 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		
 	}
 	
+	public void setClientInterface(ClientInterface cf)
+	{
+		this.cf = cf;
+	}
 }

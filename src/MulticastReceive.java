@@ -4,8 +4,9 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 
 public class MulticastReceive implements Runnable{
-	
-	public MulticastReceive(){
+	Node node;
+	public MulticastReceive(Node node){
+		this.node = node;
 	}
 	
 	public void run(){
@@ -23,8 +24,10 @@ public class MulticastReceive implements Runnable{
 	            String hostname = new String(buf, 0, buf.length);
 	            hostname = hostname.replaceAll(Character.toString((char) 0),"");
 	            System.out.println(ip+ " "+hostname);	            
+	            node.hashing(hostname, ip);
+	            
 	         }
-			 } catch (IOException e) {
+			 } catch (IOException | ClassNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 			}

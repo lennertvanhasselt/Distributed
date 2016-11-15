@@ -17,7 +17,7 @@ public class MainNode {
 		Scanner scan = new Scanner(System.in);
 		
 		System.out.println("Give the name of the node: ");
-		String Nodename=scan.nextLine();
+		String nodename=scan.nextLine();
 		
 		//make sure rmi can be performed to the node
 		Node node = new Node();
@@ -34,28 +34,29 @@ public class MainNode {
 		//start multicast to discover nameserver
 		InetAddress address = InetAddress.getLocalHost();
 	 	address = InetAddress.getByName(address.getHostAddress());
-		new Thread(new MulticastSender(Nodename)).start();
+		new Thread(new MulticastSender(nodename)).start();
 		
 		//wait for rmi to be performed by server
 		System.out.println("Wait for rmi to be performed by server");
 	 	while(node.check==false)
 	 	{
-
+	 		System.out.println("Wait for rmi to be performed by server");
 	 	}
-	 	
 	 	System.out.println("nameserver recognized: " + node.mainServer);
-		
+		node.hashing(nodename, address);
+	 	new Thread(new MulticastReceive(node)).start();
 		try {
 			String name = "//"+node.mainServer+"/cliNode";
    	 		ClientInterface cf = (ClientInterface) Naming.lookup(name);
+   	 		node.setClientInterface(cf);
    	 		
    	 		while(exit == false)
    	 		{
    	 			choice = node.menu(scan);
    	 			switch (choice) {
-   	 			case 1: node.searchFile(cf, scan);
+   	 			case 1: node.searchFile(scan);
    	 					break;
-   	 			case 4: node.deleteNode(cf, node.ownNode);
+   	 			case 4: node.deleteNode(node.getOwnNode());
    	 					exit = true;
    	 					break;
    	 			default:exit = false;

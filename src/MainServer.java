@@ -17,7 +17,6 @@ public class MainServer {
 		//make sure nodes wil be able to perform rmi to server clientinfo
 		cli = new ClientInfo();
 		String bindLocation = "//localhost/cliNode";
-		
 		InetAddress address = InetAddress.getLocalHost();
 	 	System.out.println(address.getHostAddress());
 				

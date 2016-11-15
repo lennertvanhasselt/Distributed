@@ -43,7 +43,6 @@ public class MainNode {
 	 		System.out.print("");   //without print, the check doesn't update.
 	 	}
 	 	System.out.println("nameserver recognized: " + node.mainServer);
-		//node.hashing(nodename, address);
 	 	new Thread(new MulticastReceive(node)).start();
 		try {
 			String name = "//"+node.mainServer+"/cliNode";

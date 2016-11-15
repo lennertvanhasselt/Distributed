@@ -13,7 +13,7 @@ public class ListNodes {
 	
 	private TreeMap<Integer,InetAddress> table;
 
-	//Creating a new TreeMap with the hashvalue and IP.
+	//Creating a new TreeMap which includes the hashed name and the IP.
 	public ListNodes() throws ClassNotFoundException, IOException
 	{
 		table = new TreeMap<Integer,InetAddress>();
@@ -101,7 +101,7 @@ public class ListNodes {
 		
 	}
 
-	//Returns true if the given IP is already located in the TreeMap.
+	// Returns true if the given IP is already located in the TreeMap.
 	public synchronized boolean ipInTable(InetAddress IP) throws ClassNotFoundException
 	{
 		try{
@@ -125,15 +125,14 @@ public class ListNodes {
 	public synchronized TreeMap<Integer,InetAddress> getFileIP(int hash) throws ClassNotFoundException
 	{
 		try{
+			int key;
 			FileInputStream fileIn = new FileInputStream("/temp/table.ser");
 	        ObjectInputStream in = new ObjectInputStream(fileIn);
 	        table = (TreeMap) in.readObject();
 	        in.close();
 	        fileIn.close();
-	        
 	        TreeMap<Integer,InetAddress> temp = new TreeMap<Integer, InetAddress>();
 	        
-	        int key;
 			if(hash <= table.lastKey())
 				key = table.higherKey(hash-1);//-1 cause the file could be same hash then node
 			else
@@ -178,6 +177,7 @@ public class ListNodes {
 	    }		
 	}
 	
+	// Returns how many nodes are currently working in the system
 	public int getNumberOfNodes() throws IOException, ClassNotFoundException
 	{
 		FileInputStream fileIn = new FileInputStream("/temp/table.ser");
@@ -189,8 +189,9 @@ public class ListNodes {
         return table.size();
 	} 
 	
-	public TreeMap<Integer, InetAddress> getPreviousNext(int node) throws IOException, ClassNotFoundException{
-		
+	// Used to return a TreeMap which includes the name and IP of the previous and the next entry of the list.
+	public TreeMap<Integer, InetAddress> getPreviousNext(int node) throws IOException, ClassNotFoundException
+	{
 		FileInputStream fileIn = new FileInputStream("/temp/table.ser");
         ObjectInputStream in = new ObjectInputStream(fileIn);
         table = (TreeMap) in.readObject();
@@ -200,8 +201,7 @@ public class ListNodes {
 		TreeMap<Integer,InetAddress> prevNext =new TreeMap<Integer,InetAddress>();
 		int previousNode;
 		int nextNode;
-		if(table.size()==1)
-		{
+		if(table.size()==1){
 			previousNode=node;
 			nextNode=node;
 		} else if(table.higherKey(node)==null) {
@@ -214,9 +214,6 @@ public class ListNodes {
 			previousNode = table.higherKey(node);
 			nextNode = table.lowerKey(node);
 		}
-			
-			
-		
 		prevNext.put(previousNode,table.get(previousNode));
 		prevNext.put(nextNode,table.get(nextNode));
 		return prevNext;		

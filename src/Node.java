@@ -44,6 +44,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	
 	// The option where the user can give a filename and receive the IP of the node who has that file.
 	// When the node has received the IP of the location it will start to ping this node to make sure it has connection with it.
+	// If the connection is not working and it can't find the node, an update of the network will take place with the node deleted. 
 	public InetAddress searchFile(Scanner scan) throws ClassNotFoundException, IOException
 	{
 		System.out.println("Which file do you want?");
@@ -54,11 +55,8 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	 		TreeMap<Integer,InetAddress> map = new TreeMap<Integer,InetAddress>();
 	 		map = cf.searchFile(search);
 	 		String IP = map.get(map.firstKey()).toString().substring(1);
-	 		
 	 		nodeNumber=map.firstKey();
-	 		
 	 		System.out.println("ip from searchFile: "+IP);
-	 		
 	 		nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
 	 		nf.checkUpdate();
 	 	
@@ -67,8 +65,8 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 			Process p = Runtime.getRuntime().exec("ping "+IP);
 			BufferedReader inputStream = new BufferedReader(
 				new InputStreamReader(p.getInputStream()));
-
 			String s = "";
+			
 			// reading output stream of the command
 			while ((s = inputStream.readLine()) != null) {
 				System.out.println(s);
@@ -83,6 +81,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	}
 	
 	// When the node decides to leave the menu and the network it will close and the server will delete the node from it's map.
+	// The Previous and Next node in the system will have their previous or next node updated because the deleted node is not available anymore.
 	public void deleteNode(int ownNode) throws ClassNotFoundException, IOException{
 		int contactedNode = -1;
 		try {
@@ -110,6 +109,8 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		}
 	}
 	
+	// The network will be updated if a node is not available, when it is not available it will be deleted and it's previous and next node will be informed and changed.
+	// Their Previous or next node will be changed such that the deleted node will no longer be in the system.
 	public void updateNetwork(int node) throws ClassNotFoundException, IOException {
 		TreeMap<Integer, InetAddress> prevNext = cf.getPreviousNext(node);
 		int nn = -1;
@@ -117,7 +118,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		int first = prevNext.firstKey();
 		int last = prevNext.lastKey();
 		
-		//Delete the corrupt node before checking others? otherwhise an error will result in not deleting the corrupt node
+		//Delete the corrupt node before checking others? Otherwise an error will result in not deleting the corrupt node
 		cf.deleteNode(node); 
 		System.out.println("Delete " + node);
 		
@@ -132,7 +133,8 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 			pn = first;
 		} else
 			System.out.println("error Node nn, pn");
-
+		
+		// If previous node is not his own node
 		if (pn != ownNode) {
 			String IP = prevNext.get(pn).toString().substring(1);
 			try {
@@ -149,6 +151,8 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 			nextNode=nn;
 			nextIP = prevNext.get(nn).toString().substring(1);
 		}
+		
+		// If next node is not his own node
 		if (nn != ownNode) {
 			String IP = prevNext.get(nn).toString().substring(1);
 			try {
@@ -169,45 +173,8 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		return;
 	}
 	
-	public void setOwnNode(int ownNode, InetAddress ownIP)
-	{
-		this.ownIP = ownIP.toString().substring(1);
-		this.ownNode = ownNode;
-	}
-	
-	public void setPreviousNode(int previousNode, String previousIP)throws RemoteException, ClassNotFoundException
-	{	
-		this.previousNode = previousNode;
-		this.previousIP = previousIP;
-		System.out.println("set previous Node");
-		System.out.println("previousNode: "+this.previousNode);
-		System.out.println("previousIP: "+this.previousIP);
-	}
-	
-	public void setNextNode(int nextNode, String nextIP)throws RemoteException, ClassNotFoundException
-	{
-		this.nextNode = nextNode;
-		this.nextIP = nextIP;
-		System.out.println("set next Node");
-		System.out.println("nextNode: "+this.nextNode);
-		System.out.println("nextIP: "+this.nextIP);
-	}
-	
-	public int getPreviousNode()
-	{
-		return previousNode;
-	}
-	
-	public int getNextNode()
-	{
-		return nextNode;
-	}
-	
-	public int getOwnNode()
-	{
-		return ownNode;
-	}
-	
+	// When receiving a multicast, the hashvalue will be calculated and used to change the next or previous Node and IP.
+	// The change depends on how many nodes are in the system and what their previous and next are.
 	public boolean hashing(String name, InetAddress IPraw) throws ClassNotFoundException, IOException
 	{
 		String IP = IPraw.toString();
@@ -216,11 +183,16 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		// number between 0 and 32768
 		// to unsigned Long is to make it absolute
 		try {
+			// When no node is located in the system.
+			// -->It will ad his own node and ip to his previous and next
 			if (previousNode == -1 && nextNode == -1) {
 				previousIP = IP;
 				nextIP = IP;
 				previousNode = ownNode;
 				nextNode = ownNode;
+				
+			// When only 1 node is located in the system.
+			// -->It will be added as the previous and the next node.
 			} else if (ownNode == previousNode && ownNode == nextNode) {
 				nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
 				System.out.println("ownNode: "+ownNode+"  ownIP: "+ownIP+ "send to "+IP);
@@ -233,6 +205,9 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 				System.out.println("nextIP: "+this.nextIP);
 				System.out.println("previousNode: "+this.previousNode);
 				System.out.println("previousIP: "+this.previousIP);
+			
+			// When more then 1 node is located in the system and the hash is smaller than it's own but bigger than it's previous.
+			// -->It will be added as the previous node.
 			} else if (hashed < ownNode && hashed > previousNode) {
 				nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
 				nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
@@ -240,6 +215,9 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 				previousIP = IP;
 				System.out.println("previousNode: "+this.previousNode);
 				System.out.println("previousIP: "+this.previousIP);
+			
+			// When more then 1 node is located in the system and the hash is smaller than it's own but the same than it's previous.
+			// --> It will be added as the previous node.
 			} else if (hashed < ownNode && hashed == previousNode) {
 				nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
 				nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
@@ -247,11 +225,16 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 				previousIP = IP;
 				System.out.println("previousNode: "+this.previousNode);
 				System.out.println("previousIP: "+this.previousIP);
+			
+			// When the new node has the same hashvalue, it will be his next node.
 			} else if (hashed == ownNode) {
 				nextNode = hashed + 1;
 				nextIP = IP;
 				System.out.println("nextNode: "+this.nextNode);
 				System.out.println("nextIP: "+this.nextIP);
+			
+			// When more then 1 node is located in the system and the hash is bigger than it's own but smaller than it's next.
+			// -->It will be added as the next node.
 			} else if (hashed > ownNode && hashed < nextNode) {
 				nextNode = hashed;
 				nextIP = IP;
@@ -267,22 +250,8 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		}
 	}
 	
-	public void setTotalNodes(int totalNodes)
-	{
-		this.totalNodes = totalNodes;
-	}
-	
-	public void changePrevNext(int nextNode, int previousNode, String nextIP, String previousIP)throws RemoteException, ClassNotFoundException
-	{
-		System.out.println("changePrevNext");
-		this.nextNode = nextNode;
-		this.previousNode = previousNode;
-		this.nextIP = nextIP;
-		this.previousIP = previousIP;
-		System.out.println("nextNode: "+this.nextNode+" previousNode: "+this.previousNode);
-		System.out.println("nextIP: "+this.nextIP+" previousIP: "+this.previousIP);
-	}
-	
+	// First initialisation of the node when it is connected with the server.
+	// It receives it's ip, node and total amounts of nodes located in the system
 	public void setNameServer(String ip, int ownNode, int totalNodes) throws RemoteException, ClassNotFoundException, UnknownHostException
 	{
 		System.out.println("SetNameServer");
@@ -306,13 +275,78 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		check = true;
 	}
 	
+	// Changing the previous and the next node and ip for this certain node.
+	public void changePrevNext(int nextNode, int previousNode, String nextIP, String previousIP)throws RemoteException, ClassNotFoundException
+	{
+		System.out.println("changePrevNext");
+		this.nextNode = nextNode;
+		this.previousNode = previousNode;
+		this.nextIP = nextIP;
+		this.previousIP = previousIP;
+		System.out.println("nextNode: "+this.nextNode+" previousNode: "+this.previousNode);
+		System.out.println("nextIP: "+this.nextIP+" previousIP: "+this.previousIP);
+	}
+	
+	// Sets total nodes
+	public void setTotalNodes(int totalNodes)
+	{
+		this.totalNodes = totalNodes;
+	}
+	
+	// Sets ClientInterface
 	public void setClientInterface(ClientInterface cf)
 	{
 		this.cf = cf;
 	}
 
+	// Used to display that someone is checking a file on your node.
 	public void checkUpdate() throws RemoteException, ClassNotFoundException {
 		System.out.println("Someone is checking your files... weird...");
 		
 	}
+	
+	// Used to get previous node
+	public int getPreviousNode()
+	{
+		return previousNode;
+	}
+	
+	// Used to get next node
+	public int getNextNode()
+	{
+		return nextNode;
+	}
+	
+	// Used to get own node
+	public int getOwnNode()
+	{
+		return ownNode;
+	}
+	
+	// Set the ip and node of it's own node.
+	public void setOwnNode(int ownNode, InetAddress ownIP)
+	{
+		this.ownIP = ownIP.toString().substring(1);
+		this.ownNode = ownNode;
+	}
+	
+	// Set the ip and node of the previous node.
+	public void setPreviousNode(int previousNode, String previousIP)throws RemoteException, ClassNotFoundException
+	{	
+		this.previousNode = previousNode;
+		this.previousIP = previousIP;
+		System.out.println("set previous Node");
+		System.out.println("previousNode: "+this.previousNode);
+		System.out.println("previousIP: "+this.previousIP);
+	}
+		
+	// Set the ip and node of the next node.
+	public void setNextNode(int nextNode, String nextIP)throws RemoteException, ClassNotFoundException
+	{
+		this.nextNode = nextNode;
+		this.nextIP = nextIP;
+		System.out.println("set next Node");
+		System.out.println("nextNode: "+this.nextNode);
+		System.out.println("nextIP: "+this.nextIP);
+	}	
 }

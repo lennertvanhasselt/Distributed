@@ -43,7 +43,7 @@ public class MainNode {
 	 		System.out.println("Wait for rmi to be performed by server");
 	 	}
 	 	System.out.println("nameserver recognized: " + node.mainServer);
-		node.hashing(nodename, address);
+		//node.hashing(nodename, address);
 	 	new Thread(new MulticastReceive(node)).start();
 		try {
 			String name = "//"+node.mainServer+"/cliNode";

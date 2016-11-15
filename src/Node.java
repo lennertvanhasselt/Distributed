@@ -294,16 +294,15 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		
 		InetAddress address = InetAddress.getLocalHost();
 	 	address = InetAddress.getByName(address.getHostAddress());
-		String ownIP = address.toString().substring(1);
+	 	ownIP = address.toString().substring(1);
 
-		if (previousNode == -1 && nextNode == -1) {
-			previousIP = ownIP;
-			nextIP = ownIP;
-			previousNode = ownNode;
-			nextNode = ownNode;
-		}
-		check = true;
+		System.out.println("setNameServer IP: "+ownIP);
+		previousIP = ownIP;
+		nextIP = ownIP;
+		previousNode = ownNode;
+		nextNode = ownNode;
 		
+		check = true;
 	}
 	
 	public void setClientInterface(ClientInterface cf)

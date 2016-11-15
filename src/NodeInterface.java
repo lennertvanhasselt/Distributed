@@ -7,4 +7,5 @@ public interface NodeInterface extends Remote{
 	void setPreviousNode(int previousNode, String previousIP)throws RemoteException, ClassNotFoundException;
 	void setNextNode(int nextNode, String nextIP)throws RemoteException, ClassNotFoundException;
 	void setNameServer(String ip, int ownNode, int totalNodes)throws RemoteException, ClassNotFoundException;
+	void checkUpdate()throws RemoteException, ClassNotFoundException;
 }

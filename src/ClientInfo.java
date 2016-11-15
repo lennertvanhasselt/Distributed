@@ -40,15 +40,17 @@ public class ClientInfo extends UnicastRemoteObject implements ClientInterface{
 	}
 	
 	//If a filename is received the server will search for the node which possesses this file and return an IP.
-	public InetAddress searchFile(String search) throws ClassNotFoundException
+	public TreeMap<Integer,InetAddress> searchFile(String search) throws ClassNotFoundException
 	{
+		TreeMap<Integer,InetAddress> tree = new TreeMap<Integer,InetAddress>();
+		
 		int hashed = hashing(search);
 		
-		InetAddress IP = list.getFileIP(hashed);
+		tree = list.getFileIP(hashed);
 		
-		System.out.println("Found file "+search+" at "+IP);
+		System.out.println("Found file "+search+" at "+tree.get(tree.firstKey()));
 		
-		return IP;
+		return tree;
 	}
 	
 	//If the node wants to exit the menu and leave the network, it will return if deleting the node was a success or not.

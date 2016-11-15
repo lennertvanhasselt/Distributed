@@ -122,7 +122,7 @@ public class ListNodes {
 	}
 	
 	// Gives the key where the hash is located and returns the IP of this node.	
-	public synchronized InetAddress getFileIP(int hash) throws ClassNotFoundException
+	public synchronized TreeMap<Integer,InetAddress> getFileIP(int hash) throws ClassNotFoundException
 	{
 		try{
 			FileInputStream fileIn = new FileInputStream("/temp/table.ser");
@@ -131,6 +131,8 @@ public class ListNodes {
 	        in.close();
 	        fileIn.close();
 	        
+	        TreeMap<Integer,InetAddress> temp = new TreeMap<Integer, InetAddress>();
+	        
 	        int key;
 			if(hash <= table.lastKey())
 				key = table.higherKey(hash-1);//-1 cause the file could be same hash then node
@@ -138,7 +140,8 @@ public class ListNodes {
 				key = table.firstKey();
 			System.out.println(hash+" found at "+key);
 			InetAddress IP = table.get(key);
-			return IP;
+			temp.put(key, IP);
+			return temp;
 	        
 		} catch(IOException i) {
 	          i.printStackTrace();

@@ -43,17 +43,25 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	
 	// The option where the user can give a filename and receive the IP of the node who has that file.
 	// When the node has received the IP of the location it will start to ping this node to make sure it has connection with it.
-	public InetAddress searchFile(Scanner scan)
+	public InetAddress searchFile(Scanner scan) throws ClassNotFoundException, IOException
 	{
 		System.out.println("Which file do you want?");
 	 	String search = scan.nextLine();
 	 	search = scan.nextLine();
+	 	int nodeNumber=0;
 	 	try {
-	 		InetAddress adrFile = cf.searchFile(search);
-	 		String IP = adrFile.toString();
+	 		TreeMap<Integer,InetAddress> map = new TreeMap<Integer,InetAddress>();
+	 		map = cf.searchFile(search);
+	 		String IP = map.get(map.firstKey()).toString().substring(1);
+	 		
+	 		nodeNumber=map.firstKey();
+	 		
+	 		System.out.println("ip from searchFile: "+IP);
+	 		
+	 		nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
+	 		nf.checkUpdate();
 	 	
 	 		// Ping the host of the file
-	 		IP=IP.substring(1);
 	 		System.out.println(IP);
 			Process p = Runtime.getRuntime().exec("ping "+IP);
 			BufferedReader inputStream = new BufferedReader(
@@ -64,8 +72,9 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 			while ((s = inputStream.readLine()) != null) {
 				System.out.println(s);
 			}
-			return adrFile;	
+			return map.get(map.firstKey());	
 	 	} catch(Exception e) {
+	 		updateNetwork(nodeNumber);
 	        System.err.println("FileServer exception: "+ e.getMessage());
 	        e.printStackTrace();
 	        return null;
@@ -290,5 +299,10 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	public void setClientInterface(ClientInterface cf)
 	{
 		this.cf = cf;
+	}
+
+	public void checkUpdate() throws RemoteException, ClassNotFoundException {
+		System.out.println("Someone is checking your files... weird...");
+		
 	}
 }

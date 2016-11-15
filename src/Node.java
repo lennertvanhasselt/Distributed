@@ -158,15 +158,21 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	}
 	
 	public void setPreviousNode(int previousNode, String previousIP)
-	{
+	{	
 		this.previousNode = previousNode;
 		this.previousIP = previousIP;
+		System.out.println("set previous Node");
+		System.out.println("previousNode: "+this.previousNode);
+		System.out.println("previousIP: "+this.previousIP);
 	}
 	
 	public void setNextNode(int nextNode, String nextIP)
 	{
 		this.nextNode = nextNode;
 		this.nextIP = nextIP;
+		System.out.println("set next Node");
+		System.out.println("nextNode: "+this.nextNode);
+		System.out.println("nextIP: "+this.nextIP);
 	}
 	
 	public int getPreviousNode()
@@ -238,17 +244,24 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	
 	public void changePrevNext(int nextNode, int previousNode, String nextIP, String previousIP)
 	{
+		System.out.println("changePrevNext");
 		this.nextNode = nextNode;
 		this.previousNode = previousNode;
 		this.nextIP = nextIP;
 		this.previousIP = previousIP;
+		System.out.println("nextNode: "+this.nextNode+" previousNode: "+this.previousNode);
+		System.out.println("nextIP: "+this.nextIP+" previousIP: "+this.previousIP);
 	}
 	
 	public void setNameServer(String ip, int ownNode, int totalNodes)
 	{
+		System.out.println("SetNameServer");
 		mainServer = ip;
 		this.ownNode = ownNode;
 		this.totalNodes = totalNodes;
+		System.out.println(mainServer);
+		System.out.println(this.ownNode);
+		System.out.println(this.totalNodes);
 		
 		check = true;
 		

@@ -323,13 +323,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		return ownNode;
 	}
 	
-	// Set the ip and node of it's own node.
-	public void setOwnNode(int ownNode, InetAddress ownIP)
-	{
-		this.ownIP = ownIP.toString().substring(1);
-		this.ownNode = ownNode;
-	}
-	
 	// Set the ip and node of the previous node.
 	public void setPreviousNode(int previousNode, String previousIP)throws RemoteException, ClassNotFoundException
 	{	

@@ -1,4 +1,5 @@
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
@@ -8,6 +9,8 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Scanner;
 import java.util.TreeMap;
 
@@ -458,4 +461,28 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		System.out.println("nextNode: "+this.nextNode);
 		System.out.println("nextIP: "+this.nextIP);
 	}	
+	
+	public void replicateLocalFiles() throws RemoteException, ClassNotFoundException{
+		ArrayList fileList = new ArrayList<String>();
+		File[] fileArray = new File("C:/temp/").listFiles();
+		for(File file : fileArray){
+			if(file.isFile()){
+				fileList.add(file.getName());
+			}
+		}
+		
+		Iterator it = fileList.iterator();
+		
+		while(it.hasNext()){
+			String ipToSend;
+			String fileName = (String)it.next();
+			TreeMap<Integer,InetAddress> owner = cf.searchFile(fileName);
+			if(ownNode == owner.firstKey()){
+				ipToSend=previousIP;
+			} else {
+				ipToSend=owner.get(owner.firstKey()).toString().substring(1);
+			}
+			//sendFile(ipToSend, fileName);
+		}
+	}
 }

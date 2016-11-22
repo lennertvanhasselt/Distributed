@@ -17,7 +17,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	private static final long serialVersionUID = 1L;
 	private int previousNode = -1, nextNode = -1, totalNodes = -1;
 	public int ownNode;
-	private String ownIP, previousIP, nextIP = null;
+	private String ownIP = null, previousIP= null, nextIP = null;
 	private NodeInterface nf;
 	private ClientInterface cf;
 	public String mainServer;
@@ -356,10 +356,14 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	 	ownIP = address.toString().substring(1);
 
 		System.out.println("setNameServer IP: "+ownIP);
-		previousIP = ownIP;
-		nextIP = ownIP;
-		previousNode = ownNode;
-		nextNode = ownNode;
+		
+		if (nextNode == -1 && previousNode == -1)
+		{
+			previousIP = ownIP;
+			nextIP = ownIP;
+			previousNode = ownNode;
+			nextNode = ownNode;
+		}
 		
 		check = true;
 	}

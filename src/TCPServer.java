@@ -3,11 +3,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
 
 public class TCPServer implements Runnable{
 	
+	NodeInterface nf;
 	String fileToSend;
 	String IPToSend;
 	int SOCKET_PORT = 13267;
@@ -16,16 +21,21 @@ public class TCPServer implements Runnable{
 	OutputStream os;
 	ServerSocket servsock;
 	Socket sock;
+	String ownIP;
 	
-	public TCPServer(String fileToSend, String IPToSend){
+	public TCPServer(String fileToSend, String IPToSend) throws UnknownHostException{
 		this.fileToSend = fileToSend;
 		this.IPToSend = IPToSend;
+		ownIP = InetAddress.getLocalHost().getHostAddress();
 	}
 	
 	public void run(){
 		try {
 			servsock = new ServerSocket(SOCKET_PORT);
 			System.out.println("waiting...");
+			
+			nf = (NodeInterface) Naming.lookup("//" + IPToSend + "/Node"); //Let the other node know we want to send a file
+			nf.readyTCP(ownIP,fileToSend);
 			
 			sock=servsock.accept();
 			System.out.println("Accepted connection: "+sock);
@@ -40,8 +50,13 @@ public class TCPServer implements Runnable{
 	        os.write(mybytearray,0,mybytearray.length);
 	        os.flush();
 	        System.out.println("Done.");
+	        
+	        bis.close();
+	        os.close();
+	        sock.close();
+	        servsock.close();
 			
-		} catch (IOException e) {
+		} catch (IOException | NotBoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

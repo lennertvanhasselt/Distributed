@@ -463,7 +463,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	}	
 	
 	public void replicateLocalFiles() throws RemoteException, ClassNotFoundException{
-		ArrayList fileList = new ArrayList<String>();
+		ArrayList<String> fileList = new ArrayList<String>();
 		File[] fileArray = new File("C:/temp/").listFiles();
 		for(File file : fileArray){
 			if(file.isFile()){
@@ -471,7 +471,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 			}
 		}
 		
-		Iterator it = fileList.iterator();
+		Iterator<String> it = fileList.iterator();
 		
 		while(it.hasNext()){
 			String ipToSend;
@@ -482,7 +482,16 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 			} else {
 				ipToSend=owner.get(owner.firstKey()).toString().substring(1);
 			}
-			//sendFile(ipToSend, fileName);
+			try {
+				new Thread(new TCPServer(ipToSend,fileName)).start();
+			} catch (UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
+	}
+
+	public void readyTCP(String ip, String fileName) throws RemoteException {
+		new Thread(new TCPReceiver(ip, fileName)).start();
 	}
 }

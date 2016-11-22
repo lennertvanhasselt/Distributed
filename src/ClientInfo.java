@@ -77,4 +77,8 @@ public class ClientInfo extends UnicastRemoteObject implements ClientInterface{
 		return list.getPreviousNext(node);
 	}
 	
+	public ListNodes getList(){
+		return list;
+	}
+	
 }

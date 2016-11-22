@@ -206,9 +206,103 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 				System.out.println("previousNode: "+this.previousNode);
 				System.out.println("previousIP: "+this.previousIP);
 			
-			// When more then 1 node is located in the system and the hash is smaller than it's own but bigger than it's previous.
+			} else if(nextNode == previousNode) {
+				if (nextNode < ownNode) {
+						
+					if (hashed < nextNode) {
+							nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
+							nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
+							nextNode = hashed;
+							nextIP = IP;
+							System.out.println("nextNode: "+this.nextNode);
+							System.out.println("nextIP: "+this.nextIP);
+						}
+						
+						if (hashed > nextNode && hashed < ownNode) {
+							previousNode = hashed;
+							previousIP = IP;
+							System.out.println("previousNode: "+this.previousNode);
+							System.out.println("previousIP: "+this.previousIP);
+						}
+						
+						if (hashed == nextNode && hashed < ownNode) {
+							hashed++;
+							previousNode = hashed;
+							previousIP = IP;
+							System.out.println("previousNode: "+this.previousNode);
+							System.out.println("previousIP: "+this.previousIP);
+						}
+						
+						if (hashed > ownNode) {
+							nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
+							nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
+							nextNode = hashed;
+							nextIP = IP;
+							System.out.println("nextNode: "+this.nextNode);
+							System.out.println("nextIP: "+this.nextIP);
+						}
+						
+						if (hashed == ownNode) {
+							hashed++;
+							nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
+							nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
+							nextNode = hashed;
+							nextIP = IP;
+							System.out.println("nextNode: "+this.nextNode);
+							System.out.println("nextIP: "+this.nextIP);
+						}
+					} else  {
+						
+						if (hashed < ownNode) {
+							previousNode = hashed;
+							previousIP = IP;
+							System.out.println("previousNode: "+this.previousNode);
+							System.out.println("previousIP: "+this.previousIP);
+						}
+						
+						if (hashed > ownNode && hashed < nextNode) {
+							nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
+							nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
+							nextNode = hashed;
+							nextIP = IP;
+							System.out.println("nextNode: "+this.nextNode);
+							System.out.println("nextIP: "+this.nextIP);
+						}
+						
+						if (hashed == ownNode && hashed < nextNode) {
+							hashed++;
+							nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
+							nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
+							nextNode = hashed;
+							nextIP = IP;
+							System.out.println("nextNode: "+this.nextNode);
+							System.out.println("nextIP: "+this.nextIP);
+						}
+						
+						if (hashed > nextNode) {
+							previousNode = hashed;
+							previousIP = IP;
+							System.out.println("previousNode: "+this.previousNode);
+							System.out.println("previousIP: "+this.previousIP);
+						}
+						
+						if (hashed == nextNode) {
+							hashed++;
+							previousNode = hashed;
+							previousIP = IP;
+							System.out.println("previousNode: "+this.previousNode);
+							System.out.println("previousIP: "+this.previousIP);
+						}
+					}			
+			}
+				
+				
+				
+				
+				
+				// When more then 1 node is located in the system and the hash is smaller than it's own but bigger than it's previous.
 			// -->It will be added as the previous node.
-			} else if (hashed < ownNode && hashed > previousNode) {
+			/*} else if (hashed < ownNode && hashed > previousNode) {
 				nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
 				nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
 				previousNode = hashed;
@@ -240,7 +334,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 				nextIP = IP;
 				System.out.println("nextNode: "+this.nextNode);
 				System.out.println("nextIP: "+this.nextIP);
-			}
+			}*/
 			return true;
 
 		} catch (NotBoundException e) {

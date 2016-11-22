@@ -294,12 +294,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 							System.out.println("previousIP: "+this.previousIP);
 						}
 					}			
-			}
-				
-				
-				
-				
-				
+			}				
 				// When more then 1 node is located in the system and the hash is smaller than it's own but bigger than it's previous.
 			// -->It will be added as the previous node.
 			/*} else if (hashed < ownNode && hashed > previousNode) {

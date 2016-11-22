@@ -55,6 +55,8 @@ public class MainNode {
    	 			switch (choice) {
    	 			case 1: node.searchFile(scan);
    	 					break;
+   	 			case 2: System.out.println(node.getPreviousNode() + " - "+node.getNextNode());
+   	 					break;
    	 			case 4: node.deleteNode(node.getOwnNode());
    	 					exit = true;
    	 					break;

@@ -34,7 +34,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	 	System.out.println("                  Menu                  ");
 	 	System.out.println("----------------------------------------");
 	 	System.out.println("1) Search file");
-	 	System.out.println("2) ");
+	 	System.out.println("2) check Previous - next node");
 	 	System.out.println("3) ");
 	 	System.out.println("4) Exit and delete node");
 	 	System.out.println("Give your choice: ");

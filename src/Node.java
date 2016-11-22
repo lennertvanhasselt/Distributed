@@ -368,12 +368,14 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	public void changePrevNext(int nextNode, int previousNode, String nextIP, String previousIP)throws RemoteException, ClassNotFoundException
 	{
 		System.out.println("changePrevNext");
-		this.nextNode = nextNode;
+		setNextNode(nextNode, nextIP);
+		setPreviousNode(previousNode,previousIP);
+		/*this.nextNode = nextNode;
 		this.previousNode = previousNode;
 		this.nextIP = nextIP;
 		this.previousIP = previousIP;
 		System.out.println("nextNode: "+this.nextNode+" previousNode: "+this.previousNode);
-		System.out.println("nextIP: "+this.nextIP+" previousIP: "+this.previousIP);
+		System.out.println("nextIP: "+this.nextIP+" previousIP: "+this.previousIP);*/
 	}
 	
 	// Sets total nodes

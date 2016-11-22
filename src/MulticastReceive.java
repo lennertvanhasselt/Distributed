@@ -13,18 +13,18 @@ public class MulticastReceive implements Runnable{
 		
 		try (MulticastSocket socket = new MulticastSocket(8888);){			
 			
-			socket.joinGroup(InetAddress.getByName("225.1.1.1"));
+			socket.joinGroup(InetAddress.getByName("225.1.1.1")); //multicast IP same everywhere
 			
 			while (true) {
 				byte[] buf = new byte[256];
 				// Receive the information and print it.
-	            DatagramPacket msgPacket = new DatagramPacket(buf, buf.length);
-				socket.receive(msgPacket);
-				InetAddress ip = msgPacket.getAddress();
-	            String hostname = new String(buf, 0, buf.length);
-	            hostname = hostname.replaceAll(Character.toString((char) 0),"");
+	            DatagramPacket msgPacket = new DatagramPacket(buf, buf.length);  
+				socket.receive(msgPacket); 										//receive the message
+				InetAddress ip = msgPacket.getAddress();  						//extract address from packet
+	            String hostname = new String(buf, 0, buf.length); 				//message to string
+	            hostname = hostname.replaceAll(Character.toString((char) 0),""); //delete empty bytes of buf
 	            System.out.println(ip+ " "+hostname);	            
-	            node.hashing(hostname, ip);
+	            node.hashing(hostname, ip); //set prev/next node if necessary
 	            
 	         }
 			 } catch (IOException | ClassNotFoundException e) {

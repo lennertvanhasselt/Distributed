@@ -118,9 +118,9 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		int first = prevNext.firstKey();
 		int last = prevNext.lastKey();
 
-		
-		
-	//Delete the corrupt node before checking others? Otherwise an error will result in not deleting the corrupt node
+
+
+		//Delete the corrupt node before checking others? Otherwise an error will result in not deleting the corrupt node
 		cf.deleteNode(node); 
 		System.out.println("Delete " + node);
 
@@ -135,7 +135,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 			pn = last;
 		} else
 			System.out.println("error Node nn, pn");
-		
+
 		System.out.println("hier");
 
 		// If previous node is not his own node
@@ -173,7 +173,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 			previousNode=pn;
 			previousIP = prevNext.get(pn).toString().substring(1);
 		}
-		
+
 		//cf.deleteNode(node);
 		return;
 	}
@@ -211,6 +211,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 				System.out.println("previousNode: "+this.previousNode);
 				System.out.println("previousIP: "+this.previousIP);
 
+				// When 2 nodes are located in the system.
 			} else if(nextNode == previousNode) {
 				if (nextNode < ownNode) {
 
@@ -299,42 +300,63 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 						System.out.println("previousIP: "+this.previousIP);
 					}
 				}			
-			}				
-			// When more then 1 node is located in the system and the hash is smaller than it's own but bigger than it's previous.
-			// -->It will be added as the previous node.
-			/*} else if (hashed < ownNode && hashed > previousNode) {
-				nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
-				nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
-				previousNode = hashed;
-				previousIP = IP;
-				System.out.println("previousNode: "+this.previousNode);
-				System.out.println("previousIP: "+this.previousIP);
+			}
+			else {
+				if (previousNode > ownNode) {
+					if (hashed < ownNode || hashed > previousNode) {
+						previousNode = hashed;
+						previousIP = IP;
+						System.out.println("previousNode: "+this.previousNode);
+						System.out.println("previousIP: "+this.previousIP);
+					}
 
-			// When more then 1 node is located in the system and the hash is smaller than it's own but the same than it's previous.
-			// --> It will be added as the previous node.
-			} else if (hashed < ownNode && hashed == previousNode) {
-				nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
-				nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
-				previousNode = hashed + 1;
-				previousIP = IP;
-				System.out.println("previousNode: "+this.previousNode);
-				System.out.println("previousIP: "+this.previousIP);
+					else if (hashed < nextNode && hashed > ownNode) {
+						nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
+						nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
+						nextNode = hashed;
+						nextIP = IP;
+						System.out.println("nextNode: "+this.nextNode);
+						System.out.println("nextIP: "+this.nextIP);
+					}
+				}
+				
+				else if (previousNode < ownNode && nextNode > ownNode) {
+					if (hashed > previousNode && hashed < ownNode) {
+						previousNode = hashed;
+						previousIP = IP;
+						System.out.println("previousNode: "+this.previousNode);
+						System.out.println("previousIP: "+this.previousIP);
+					}
 
-			// When the new node has the same hashvalue, it will be his next node.
-			} else if (hashed == ownNode) {
-				nextNode = hashed + 1;
-				nextIP = IP;
-				System.out.println("nextNode: "+this.nextNode);
-				System.out.println("nextIP: "+this.nextIP);
+					else if (hashed > ownNode && hashed < nextNode) {
+						nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
+						nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
+						nextNode = hashed;
+						nextIP = IP;
+						System.out.println("nextNode: "+this.nextNode);
+						System.out.println("nextIP: "+this.nextIP);
+					}					
+				}
+				
+				else if (nextNode < ownNode) {
+					if (hashed > ownNode || hashed < nextNode) {
+						nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
+						nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
+						nextNode = hashed;
+						nextIP = IP;
+						System.out.println("nextNode: "+this.nextNode);
+						System.out.println("nextIP: "+this.nextIP);
+					}
 
-			// When more then 1 node is located in the system and the hash is bigger than it's own but smaller than it's next.
-			// -->It will be added as the next node.
-			} else if (hashed > ownNode && hashed < nextNode) {
-				nextNode = hashed;
-				nextIP = IP;
-				System.out.println("nextNode: "+this.nextNode);
-				System.out.println("nextIP: "+this.nextIP);
-			}*/
+					else if (hashed > previousNode && hashed < ownNode) {
+						previousNode = hashed;
+						previousIP = IP;
+						System.out.println("previousNode: "+this.previousNode);
+						System.out.println("previousIP: "+this.previousIP);
+					}					
+				}
+			}
+			
 			return true;
 
 		} catch (NotBoundException e) {
@@ -379,12 +401,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		System.out.println("changePrevNext");
 		setNextNode(nextNode, nextIP);
 		setPreviousNode(previousNode,previousIP);
-		/*this.nextNode = nextNode;
-		this.previousNode = previousNode;
-		this.nextIP = nextIP;
-		this.previousIP = previousIP;
-		System.out.println("nextNode: "+this.nextNode+" previousNode: "+this.previousNode);
-		System.out.println("nextIP: "+this.nextIP+" previousIP: "+this.previousIP);*/
 	}
 
 	// Sets total nodes

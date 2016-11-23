@@ -29,7 +29,7 @@ public class TCPReceiver implements Runnable{
 			sock = new Socket(IPToReceive, SOCKET_PORT); //ERROR
 			System.out.println("Connected with "+IPToReceive);
 			
-			// receive file
+			  // receive file
 		      byte [] mybytearray  = new byte [FILE_SIZE];
 		      InputStream is = sock.getInputStream();
 		      fos = new FileOutputStream("C:/temp/"+fileName);

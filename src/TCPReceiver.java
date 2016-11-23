@@ -25,8 +25,9 @@ public class TCPReceiver implements Runnable{
 	@Override
 	public void run() {
 		try {
-			sock = new Socket(IPToReceive, SOCKET_PORT);
-			System.out.println("Connecting with "+IPToReceive);
+			System.out.println("Trying to connect with "+IPToReceive);
+			sock = new Socket(IPToReceive, SOCKET_PORT); //ERROR
+			System.out.println("Connected with "+IPToReceive);
 			
 			// receive file
 		      byte [] mybytearray  = new byte [FILE_SIZE];

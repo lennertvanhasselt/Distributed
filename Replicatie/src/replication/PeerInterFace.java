@@ -1,3 +1,4 @@
+package replication;
 import java.net.Socket;
 import java.rmi.Remote;
 import java.rmi.RemoteException;

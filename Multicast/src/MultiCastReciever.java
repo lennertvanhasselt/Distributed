@@ -16,6 +16,8 @@ public class MultiCastReciever implements Runnable{
 	
 	public void run(){
 		
+		System.out.println("test");
+		
 		try (MulticastSocket socket = new MulticastSocket(PORT)){
 						
 			socket.joinGroup(InetAddress.getByName("225.1.1.1"));			

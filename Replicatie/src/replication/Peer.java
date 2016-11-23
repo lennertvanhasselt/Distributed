@@ -1,3 +1,4 @@
+package replication;
 import java.io.File;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -52,7 +53,9 @@ public class Peer extends UnicastRemoteObject implements PeerInterFace{
 	}
 	
 	public void setupTCPReceiver(String fileName, int fileLength, String IpSender)throws ClassNotFoundException{
+		System.out.println("Setting up tcpReceiver");
 		new Thread(new TCPReceiver(fileName, fileLength, IpSender));
+		System.out.println("thread started");
 	}
 
 }

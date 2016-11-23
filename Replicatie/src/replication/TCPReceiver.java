@@ -1,3 +1,4 @@
+package replication;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -7,7 +8,7 @@ import java.net.Socket;
 
 public class TCPReceiver implements Runnable {
 	
-	int SOCKET_PORT = 13267;
+	int SOCKET_PORT = 3248;
 	ServerSocket servsock;
 	Socket sock;
 	String fileName;
@@ -27,9 +28,13 @@ public class TCPReceiver implements Runnable {
 
 	public void run() {
 		
+		System.out.println("setting up socket");
+		
 		try {
 			
+			
 			servsock = new ServerSocket(SOCKET_PORT);
+			System.out.println("waiting for connection....");
 			sock=servsock.accept();
 			System.out.println("accepted connection");
 			

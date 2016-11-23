@@ -474,6 +474,10 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		
 		Iterator<String> it = fileList.iterator();
 		
+		if(previousNode == ownNode){
+			return;
+		}
+		
 		while(it.hasNext()){
 			String ipToSend;
 			String fileName = (String)it.next();
@@ -484,7 +488,8 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 				ipToSend=owner.get(owner.firstKey()).toString().substring(1);
 			}
 			try {
-				new Thread(new TCPServer(ipToSend,fileName)).start();
+				System.out.println("send file " + fileName + " to " +ipToSend);
+				new Thread(new TCPServer(fileName,ipToSend)).start();
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -493,6 +498,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	}
 
 	public void readyTCP(String ip, String fileName) throws RemoteException {
-		new Thread(new TCPReceiver(fileName, ip)).start();
+		new Thread(new TCPReceiver(ip, fileName)).start();
 	}
 }

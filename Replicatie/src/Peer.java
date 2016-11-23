@@ -1,14 +1,17 @@
 import java.io.File;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Scanner;
 
-public class Peer implements PeerInterFace{
+public class Peer extends UnicastRemoteObject implements PeerInterFace{
 	
+	private static final long serialVersionUID = 1L;
 	ArrayList<String> results;
 	File[] files;
 	
-	public Peer(){
+	public Peer() throws ClassNotFoundException, RemoteException{
 		results = new ArrayList<String>();
 		
 	}
@@ -26,14 +29,19 @@ public class Peer implements PeerInterFace{
 		return menuChoice;	
 	}
 	
-	public ArrayList<String> listAllFiles(String directory){
+	public void listAllFiles(String directory){
 		files = new File(directory).listFiles();
 		for(File file : files){
 			if(file.isFile()){
 				results.add(file.getName());
 			}
 		}
-		return results;	
+		
+		Iterator<String> it = results.iterator();
+		
+		while(it.hasNext()){
+			System.out.println(it.next());
+		}
 	}
 	
 	public void ReplicateLocalFiles(String ipToSend){
@@ -48,3 +56,4 @@ public class Peer implements PeerInterFace{
 	}
 
 }
+

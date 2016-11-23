@@ -25,6 +25,8 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	private ClientInterface cf;
 	public String mainServer;
 	public boolean check;
+	public ArrayList<String> replicatedFiles;
+	public ArrayList<String> fileList;
 
 	public Node() throws ClassNotFoundException, IOException, RemoteException {	
 		mainServer = "";
@@ -213,6 +215,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 				System.out.println("nextIP: "+this.nextIP);
 				System.out.println("previousNode: "+this.previousNode);
 				System.out.println("previousIP: "+this.previousIP);
+				updateFiles(hashed);
 
 				// When 2 nodes are located in the system.
 			} else if(nextNode == previousNode) {
@@ -225,6 +228,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 						nextIP = IP;
 						System.out.println("nextNode: "+this.nextNode);
 						System.out.println("nextIP: "+this.nextIP);
+						updateFiles(hashed);
 					}
 
 					else if (hashed > nextNode && hashed < ownNode) {
@@ -249,6 +253,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 						nextIP = IP;
 						System.out.println("nextNode: "+this.nextNode);
 						System.out.println("nextIP: "+this.nextIP);
+						updateFiles(hashed);
 					}
 
 					else if (hashed == ownNode) {
@@ -259,6 +264,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 						nextIP = IP;
 						System.out.println("nextNode: "+this.nextNode);
 						System.out.println("nextIP: "+this.nextIP);
+						updateFiles(hashed);
 					}
 				} else  {
 
@@ -276,6 +282,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 						nextIP = IP;
 						System.out.println("nextNode: "+this.nextNode);
 						System.out.println("nextIP: "+this.nextIP);
+						updateFiles(hashed);
 					}
 
 					else if (hashed == ownNode && hashed < nextNode) {
@@ -286,6 +293,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 						nextIP = IP;
 						System.out.println("nextNode: "+this.nextNode);
 						System.out.println("nextIP: "+this.nextIP);
+						updateFiles(hashed);
 					}
 
 					else if (hashed > nextNode) {
@@ -320,9 +328,10 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 						nextIP = IP;
 						System.out.println("nextNode: "+this.nextNode);
 						System.out.println("nextIP: "+this.nextIP);
+						updateFiles(hashed);
 					}
 				}
-				
+
 				else if (previousNode < ownNode && nextNode > ownNode) {
 					if (hashed > previousNode && hashed < ownNode) {
 						previousNode = hashed;
@@ -338,9 +347,10 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 						nextIP = IP;
 						System.out.println("nextNode: "+this.nextNode);
 						System.out.println("nextIP: "+this.nextIP);
+						updateFiles(hashed);
 					}					
 				}
-				
+
 				else if (nextNode < ownNode) {
 					if (hashed > ownNode || hashed < nextNode) {
 						nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
@@ -349,6 +359,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 						nextIP = IP;
 						System.out.println("nextNode: "+this.nextNode);
 						System.out.println("nextIP: "+this.nextIP);
+						updateFiles(hashed);
 					}
 
 					else if (hashed > previousNode && hashed < ownNode) {
@@ -359,7 +370,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 					}					
 				}
 			}
-			
+
 			return true;
 
 		} catch (NotBoundException e) {
@@ -499,5 +510,60 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 
 	public void readyTCP(String ip, String fileName) throws RemoteException {
 		new Thread(new TCPReceiver(ip, fileName)).start();
+	}
+	
+	public void updateFiles(int node) {
+		int totalRepFiles = replicatedFiles.size();
+		for (int i = 0; i < totalRepFiles; i++) {
+			int hashFile = Math.abs((int) Integer.toUnsignedLong(replicatedFiles.get(i).hashCode()) % 32768);
+
+			if (hashFile > node && hashFile < ownNode) {
+			
+				replicatedFiles.remove(i);
+			}
+			else if (hashFile > node || hashFile < ownNode) {
+
+				replicatedFiles.remove(i);
+			}
+		}		
+	}
+
+	public void replicateNewFiles() throws RemoteException, ClassNotFoundException {
+		ArrayList<String> tempFileList = new ArrayList<String>();
+		File[] fileArray = new File("C:/temp/").listFiles();
+		for(File file : fileArray){
+			if(file.isFile()){
+				tempFileList.add(file.getName());
+			}
+		}
+		int tempTotalLocalFiles = tempFileList.size();
+
+		for(int i=0; i < tempTotalLocalFiles; i++) {
+			if (!fileList.contains(tempFileList.get(i))) {
+				String ipToSend;
+				TreeMap<Integer,InetAddress> owner = cf.searchFile(tempFileList.get(i));
+				if(ownNode == owner.firstKey()){
+					ipToSend=previousIP;
+				} else {
+					ipToSend=owner.get(owner.firstKey()).toString().substring(1);
+				}
+				try {
+					new Thread(new TCPServer(ipToSend,tempFileList.get(i))).start();
+				} catch (UnknownHostException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}				
+			}
+		}
+		fileList = tempFileList;
+	}
+
+	public void sendReplicatedFilesToPrevious() throws UnknownHostException {
+		int totalRepFiles = replicatedFiles.size();
+		
+		for(int i = 0; i < totalRepFiles; i++)
+		{
+			new Thread(new TCPServer(previousIP,replicatedFiles.get(i))).start();
+		}
 	}
 }

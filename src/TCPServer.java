@@ -37,7 +37,7 @@ public class TCPServer implements Runnable{
 			nf = (NodeInterface) Naming.lookup("//" + IPToSend + "/Node"); //Let the other node know we want to send a file
 			nf.readyTCP(ownIP,fileToSend);
 			
-			sock=servsock.accept();
+			new Thread(servsockAccept()).start();
 			System.out.println("Accepted connection: "+sock);
 			
 			File myFile = new File("C:/temp/"+fileToSend);
@@ -60,6 +60,16 @@ public class TCPServer implements Runnable{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public Runnable servsockAccept(){
+		try {
+			return (Runnable) (sock=servsock.accept());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 }

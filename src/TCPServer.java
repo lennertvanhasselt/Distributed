@@ -35,12 +35,15 @@ public class TCPServer implements Runnable{
 			
 			servSockAccept servAcc = new servSockAccept(servsock);
 			
-			new Thread(servAcc).start();
+			Thread thread = new Thread(servAcc);
+			thread.start();
 			
 			System.out.println("waiting...");
 			
 			nf = (NodeInterface) Naming.lookup("//" + IPToSend + "/Node"); //Let the other node know we want to send a file
 			nf.readyTCP(ownIP,fileToSend);
+			
+			thread.join();
 			
 			sock = servAcc.getsock();
 			
@@ -62,7 +65,7 @@ public class TCPServer implements Runnable{
 	        sock.close();
 	        servsock.close();
 			
-		} catch (IOException | NotBoundException e) {
+		} catch (IOException | NotBoundException | InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

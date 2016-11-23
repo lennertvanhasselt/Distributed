@@ -7,7 +7,7 @@ import java.net.Socket;
 public class TCPReceiver implements Runnable{
 	
 	String IPToReceive, fileName;
-	int SOCKET_PORT = 13267;
+	int SOCKET_PORT = 3248;
 	
 	int FILE_SIZE = 6022386; //larger then original file
 	

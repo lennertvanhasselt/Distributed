@@ -493,6 +493,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	}
 
 	public void readyTCP(String ip, String fileName) throws RemoteException {
-		new Thread(new TCPReceiver(ip, fileName)).start();
+		new Thread(new TCPReceiver(fileName, ip)).start();
 	}
 }

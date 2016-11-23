@@ -38,7 +38,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		System.out.println("----------------------------------------");
 		System.out.println("1) Search file");
 		System.out.println("2) check Previous - next node");
-		System.out.println("3) ");
+		System.out.println("3) replicate local files");
 		System.out.println("4) Exit and delete node");
 		System.out.println("Give your choice: ");
 		int menuChoice = scan.nextInt();
@@ -462,6 +462,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		System.out.println("nextIP: "+this.nextIP);
 	}	
 	
+	//when entering the system the local files will be replicated
 	public void replicateLocalFiles() throws RemoteException, ClassNotFoundException{
 		ArrayList<String> fileList = new ArrayList<String>();
 		File[] fileArray = new File("C:/temp/").listFiles();

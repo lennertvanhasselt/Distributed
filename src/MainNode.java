@@ -57,6 +57,8 @@ public class MainNode {
    	 					break;
    	 			case 2: System.out.println(node.getPreviousNode() + " - "+node.getNextNode());
    	 					break;
+   	 			case 3: node.replicateLocalFiles();
+						break;
    	 			case 4: node.deleteNode(node.getOwnNode());
    	 					exit = true;
    	 					break;

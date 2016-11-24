@@ -13,8 +13,7 @@ public class Peer extends UnicastRemoteObject implements PeerInterFace{
 	File[] files;
 	
 	public Peer() throws ClassNotFoundException, RemoteException{
-		results = new ArrayList<String>();
-		
+		results = new ArrayList<String>();	
 	}
 	
 	public int menu(Scanner scan)
@@ -46,17 +45,28 @@ public class Peer extends UnicastRemoteObject implements PeerInterFace{
 	}
 	
 	public void ReplicateLocalFiles(String ipToSend){
-		String fileName = results.get(0);
-		File f = files[0];
-		int fileLength = (int) f.length();
-		new Thread(new TCPSender(ipToSend,fileName,fileLength)).start();		
+		String fileName;
+		int fileLength;
+		File f;
+		
+		Iterator<String> it = results.iterator();
+		while(it.hasNext()){
+			fileName = it.next();
+			f = new File("c:/temp/"+fileName);
+			fileLength = (int) f.length();
+			Thread thread = new Thread(new TCPSender(ipToSend,fileName,fileLength));	
+			thread.start();
+			try{
+				thread.join();
+			}catch(InterruptedException e){
+				e.printStackTrace();
+			}
+		}
+	
 	}
 	
-	public void setupTCPReceiver(String fileName, int fileLength, String IpSender)throws ClassNotFoundException{
-		System.out.println("Setting up tcpReceiver");
-		new Thread(new TCPReceiver(fileName, fileLength, IpSender));
-		System.out.println("thread started");
+	public void setupTCPReceiver(String fileName, int fileLength)throws ClassNotFoundException{
+		new Thread(new TCPReceiver(fileName, fileLength)).start();
 	}
-
 }
 

@@ -13,25 +13,19 @@ public class TCPReceiver implements Runnable {
 	Socket sock;
 	String fileName;
 	int fileLength;
-	String IpSender;
 	PeerInterFace pf;
 	
 	FileOutputStream fos = null;
 	BufferedOutputStream bos = null;
-	int byteRead;
 	
-	public TCPReceiver(String fileName, int fileLength, String IpSender){
+	public TCPReceiver(String fileName, int fileLength){
 		this.fileName = fileName;
 		this.fileLength = fileLength;
-		this.IpSender = IpSender;
 	}
 
 	public void run() {
 		
-		System.out.println("setting up socket");
-		
 		try {
-			
 			
 			servsock = new ServerSocket(SOCKET_PORT);
 			System.out.println("waiting for connection....");
@@ -43,7 +37,7 @@ public class TCPReceiver implements Runnable {
 		    InputStream is = sock.getInputStream();
 		    fos = new FileOutputStream("C:/temp/"+fileName);
 		    bos = new BufferedOutputStream(fos);
-		    byteRead = is.read(mybytearray,0, fileLength);
+		    is.read(mybytearray,0, fileLength);
 		   
 		    //write array to file
 			bos.write(mybytearray, 0 , fileLength);
@@ -55,8 +49,8 @@ public class TCPReceiver implements Runnable {
 			bos.close();
 			sock.close();
 			servsock.close();
-			
-		} catch (IOException e) {
+					
+		}catch (IOException e) {
 			e.printStackTrace();
 		}
 		

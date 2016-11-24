@@ -34,7 +34,7 @@ public class Main {
 				peer.listAllFiles("c:/temp/");
 				break;
 			case 2:
-				peer.ReplicateLocalFiles("192.168.1.12");
+				peer.ReplicateLocalFiles("127.0.0.1");
 				break;
 			case 3:
 				break;

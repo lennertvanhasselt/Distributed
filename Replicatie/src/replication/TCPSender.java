@@ -32,7 +32,8 @@ public class TCPSender implements Runnable{
 
 		try {
 			pf = (PeerInterFace) Naming.lookup("//" + IpToSend + "/Peer");
-			pf.setupTCPReceiver(fileName, fileLength);
+			SOCKET_PORT = pf.setupTCPReceiver(fileName, fileLength);
+			System.out.println("received port: " + SOCKET_PORT);
 			
 			sock = new Socket(IpToSend, SOCKET_PORT);
 			

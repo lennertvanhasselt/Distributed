@@ -56,17 +56,18 @@ public class Peer extends UnicastRemoteObject implements PeerInterFace{
 			fileLength = (int) f.length();
 			Thread thread = new Thread(new TCPSender(ipToSend,fileName,fileLength));	
 			thread.start();
-			try{
-				thread.join();
-			}catch(InterruptedException e){
-				e.printStackTrace();
-			}
 		}
 	
 	}
 	
-	public void setupTCPReceiver(String fileName, int fileLength)throws ClassNotFoundException{
-		new Thread(new TCPReceiver(fileName, fileLength)).start();
+	public int setupTCPReceiver(String fileName, int fileLength)throws ClassNotFoundException{
+		TCPReceiver rec = new TCPReceiver(fileName,fileLength);
+		Thread thread = new Thread(rec);
+		thread.start();
+		while(rec.SOCKET_PORT==0){
+			//wait till port is assigned
+		}
+		return rec.SOCKET_PORT;
 	}
 }
 

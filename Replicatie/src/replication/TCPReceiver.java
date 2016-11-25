@@ -42,12 +42,13 @@ public class TCPReceiver implements Runnable {
 		    bos = new BufferedOutputStream(fos);
 		    is.read(mybytearray,0, fileLength);
 		   
+		    	   
 		    //write array to file
 			bos.write(mybytearray, 0 , fileLength);
 			bos.flush();
 			System.out.println("File " + fileName
 			+ " downloaded (" + fileLength + " bytes read)");
-			      
+						      
 			fos.close();
 			bos.close();
 			sock.close();
@@ -56,6 +57,5 @@ public class TCPReceiver implements Runnable {
 		}catch (IOException e) {
 			e.printStackTrace();
 		}
-		
 	}
 }

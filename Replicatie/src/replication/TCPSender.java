@@ -48,7 +48,11 @@ public class TCPSender implements Runnable{
 	        System.out.println("Sending " + fileName + "(" + mybytearray.length + " bytes)");
 	        os.write(mybytearray);
 	        os.flush();
-	        System.out.println("Done.");			
+	        System.out.println("Done.");	
+	        
+	        bis.close();
+	        os.close();
+	        sock.close();
 			
 		} catch (IOException | NotBoundException | ClassNotFoundException e) {
 			e.printStackTrace();

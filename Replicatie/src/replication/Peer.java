@@ -49,6 +49,9 @@ public class Peer extends UnicastRemoteObject implements PeerInterFace{
 		int fileLength;
 		File f;
 		
+		results.clear();
+		listAllFiles("c:/temp/");
+		
 		Iterator<String> it = results.iterator();
 		while(it.hasNext()){
 			fileName = it.next();
@@ -60,13 +63,16 @@ public class Peer extends UnicastRemoteObject implements PeerInterFace{
 	
 	}
 	
-	public int setupTCPReceiver(String fileName, int fileLength)throws ClassNotFoundException{
+	public synchronized int setupTCPReceiver(String fileName, int fileLength)throws ClassNotFoundException{
 		TCPReceiver rec = new TCPReceiver(fileName,fileLength);
 		Thread thread = new Thread(rec);
 		thread.start();
+		
 		while(rec.SOCKET_PORT==0){
-			//wait till port is assigned
+			System.out.print("");
 		}
+		
+		System.out.println("returning " + rec.SOCKET_PORT);
 		return rec.SOCKET_PORT;
 	}
 }

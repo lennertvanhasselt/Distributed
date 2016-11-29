@@ -530,13 +530,26 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 			int hashFile = Math.abs((int) Integer.toUnsignedLong(replicatedFiles.get(i).hashCode()) % 32768);
 
 			if (hashFile > nextNode && hashFile < ownNode) {
-				new Thread(new TCPSender(nextIP,replicatedFiles.get(i),replicatedFiles.get(i).length())).start();
+				Thread thread1 = new Thread(new TCPSender(nextIP,replicatedFiles.get(i),replicatedFiles.get(i).length()));
+				thread1.start();
+				try {
+					thread1.join();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				deleteFile(fileList.get(i));
 				replicatedFiles.remove(i);
 				
 			}
 			else if (hashFile > nextNode || hashFile < ownNode) {
-				new Thread(new TCPSender(nextIP,replicatedFiles.get(i),replicatedFiles.get(i).length())).start();
+				Thread thread2 = new Thread(new TCPSender(nextIP,replicatedFiles.get(i),replicatedFiles.get(i).length()));
+				try {
+					thread2.join();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}				
 				deleteFile(fileList.get(i));
 				replicatedFiles.remove(i);
 			}
@@ -601,11 +614,27 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 			hashFile = Math.abs((int) Integer.toUnsignedLong(fileList.get(i).hashCode()) % 32768);
 			
 			if (hashFile >= node && hashFile < nextNode) {
-				new Thread(new TCPSender(ip,fileList.get(i),fileList.get(i).length())).start();
+				Thread thread1 = new Thread(new TCPSender(ip,fileList.get(i),fileList.get(i).length()));
+				thread1.start();
+				try {
+					thread1.join();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				nf.deleteFile(fileList.get(i));
 			}
 			else if (hashFile < nextNode || hashFile >= node){
-				new Thread(new TCPSender(ip,fileList.get(i),fileList.get(i).length())).start();
+				Thread thread2 = new Thread(new TCPSender(ip,fileList.get(i),fileList.get(i).length()));
+				thread2.start();
+				
+				try {
+					thread2.join();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
 				nf.deleteFile(fileList.get(i));
 			}
 		}

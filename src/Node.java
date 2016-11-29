@@ -622,10 +622,12 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	public void constructReplicatedList() throws RemoteException {
 		System.out.print(".");
 		File[] fileArray = new File("C:/temp/replicated/").listFiles();
+		ArrayList<String> replicatedFilesTemp = new ArrayList<String>();
 		for(File file : fileArray){
 			if(file.isFile()){
-				replicatedFiles.add(file.getName());
+				replicatedFilesTemp.add(file.getName());
 			}
 		}
+		replicatedFiles = replicatedFilesTemp;
 	}	
 }

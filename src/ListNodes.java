@@ -17,14 +17,14 @@ public class ListNodes {
 	public ListNodes() throws ClassNotFoundException, IOException
 	{
 		table = new TreeMap<Integer,InetAddress>();
-		try {
+		/*try {
 			//Check if there already is a file
 			FileInputStream fileIn = new FileInputStream("/temp/table.ser");
 	        ObjectInputStream in = new ObjectInputStream(fileIn);
 	        table = (TreeMap) in.readObject();
 	        in.close();
 	        fileIn.close();
-		} catch(FileNotFoundException i) {
+		} catch(FileNotFoundException i) {*/     //uncomment when for real
 	        try{
 	        	FileOutputStream fileOut = new FileOutputStream("/temp/table.ser");
 	        	ObjectOutputStream out = new ObjectOutputStream(fileOut);
@@ -34,7 +34,7 @@ public class ListNodes {
 	        }catch(IOException j){
 	        	j.printStackTrace();
 	        }
-		}
+		//}
 	}
 	
 	// Returning the values of the TreeMap.

@@ -582,7 +582,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 			}
 			fileList = tempFileList;
 		} else {
-			fileList.removeAll(fileList);
+			//fileList.removeAll(fileList);
 		}
 	}
 

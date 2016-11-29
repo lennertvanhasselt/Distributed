@@ -557,7 +557,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	}
 
 	public void replicateNewFiles() throws RemoteException, ClassNotFoundException, MalformedURLException, NotBoundException {
-		if(ownNode!=previousNode) {
+		if(ownNode!=previousNode && previousNode!=-1) {
 			ArrayList<String> tempFileList = new ArrayList<String>();
 			File[] fileArray = new File("C:/temp/local/").listFiles();
 			for(File file : fileArray){

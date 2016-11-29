@@ -419,7 +419,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	}
 
 	// Changing the previous and the next node and ip for this certain node.
-	public void changePrevNext(int nextNode, int previousNode, String nextIP, String previousIP)throws RemoteException, ClassNotFoundException
+	public void changePrevNext(int nextNode, int previousNode, String nextIP, String previousIP)throws RemoteException, ClassNotFoundException, MalformedURLException, NotBoundException
 	{
 		System.out.println("changePrevNext");
 		setNextNode(nextNode, nextIP);
@@ -489,7 +489,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	}	
 	
 	//when entering the system the local files will be replicated
-	public void replicateLocalFiles() throws RemoteException, ClassNotFoundException{
+	public void replicateLocalFiles() throws RemoteException, ClassNotFoundException, MalformedURLException, NotBoundException{
 		ArrayList<String> fileList = new ArrayList<String>();
 		File[] fileArray = new File("C:/temp/local/").listFiles();
 		for(File file : fileArray){
@@ -519,28 +519,34 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 			
 			System.out.println("send file " + fileName + " to " +ipToSend);
 			new Thread(new TCPSender(ipToSend,fileName,fileLength)).start();
+			nf = (NodeInterface) Naming.lookup("//" + ipToSend + "/Node");
+			nf.constructReplicatedList();
 		}
 	}
 	
-	public void updateFiles() throws RemoteException {
+	public void updateFiles() throws RemoteException, MalformedURLException, NotBoundException {
+		System.out.println("updateFiles");
 		int totalRepFiles = replicatedFiles.size();
 		for (int i = 0; i < totalRepFiles; i++) {
 			int hashFile = Math.abs((int) Integer.toUnsignedLong(replicatedFiles.get(i).hashCode()) % 32768);
 
 			if (hashFile > nextNode && hashFile < ownNode) {
-				new Thread(new TCPSender(nextIP,fileList.get(i),fileList.get(i).length())).start();
+				new Thread(new TCPSender(nextIP,replicatedFiles.get(i),replicatedFiles.get(i).length())).start();
 				deleteFile(fileList.get(i));
 				replicatedFiles.remove(i);
+				
 			}
 			else if (hashFile > nextNode || hashFile < ownNode) {
-				new Thread(new TCPSender(nextIP,fileList.get(i),fileList.get(i).length())).start();
+				new Thread(new TCPSender(nextIP,replicatedFiles.get(i),replicatedFiles.get(i).length())).start();
 				deleteFile(fileList.get(i));
 				replicatedFiles.remove(i);
 			}
+			nf = (NodeInterface) Naming.lookup("//" + nextIP + "/Node");
+			nf.constructReplicatedList();
 		}		
 	}
 
-	public void replicateNewFiles() throws RemoteException, ClassNotFoundException {
+	public void replicateNewFiles() throws RemoteException, ClassNotFoundException, MalformedURLException, NotBoundException {
 		ArrayList<String> tempFileList = new ArrayList<String>();
 		File[] fileArray = new File("C:/temp/local/").listFiles();
 		for(File file : fileArray){
@@ -560,19 +566,23 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 					ipToSend=owner.get(owner.firstKey()).toString().substring(1);
 				}
 				
-				new Thread(new TCPSender(ipToSend,tempFileList.get(i),tempFileList.get(i).length())).start();			
+				new Thread(new TCPSender(ipToSend,tempFileList.get(i),tempFileList.get(i).length())).start();
+				nf = (NodeInterface) Naming.lookup("//" + ipToSend + "/Node");
+				nf.constructReplicatedList();
 			}
 		}
 		fileList = tempFileList;
 	}
 
-	public void sendReplicatedFilesToPrevious() throws UnknownHostException {
+	public void sendReplicatedFilesToPrevious() throws UnknownHostException, RemoteException, MalformedURLException, NotBoundException {
 		int totalRepFiles = replicatedFiles.size();
 		
 		for(int i = 0; i < totalRepFiles; i++)
 		{
 			new Thread(new TCPSender(previousIP,replicatedFiles.get(i),replicatedFiles.get(i).length())).start();
 		}
+		nf = (NodeInterface) Naming.lookup("//" + previousIP + "/Node");
+		nf.constructReplicatedList();
 	}
 	
 	public int setupTCPReceiver(String fileName, int fileLength) throws RemoteException{
@@ -615,4 +625,13 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		}
 		return;
 	}
+	
+	public void constructReplicatedList() throws RemoteException {
+		File[] fileArray = new File("C:/temp/replicated/").listFiles();
+		for(File file : fileArray){
+			if(file.isFile()){
+				replicatedFiles.add(file.getName());
+			}
+		}
+	}	
 }

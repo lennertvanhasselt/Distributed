@@ -215,7 +215,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 				System.out.println("nextIP: "+this.nextIP);
 				System.out.println("previousNode: "+this.previousNode);
 				System.out.println("previousIP: "+this.previousIP);
-				updateFiles(hashed);
+				replicateLocalFiles();
 
 				// When 2 nodes are located in the system.
 			} else if(nextNode == previousNode) {
@@ -229,7 +229,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 						nextIP = IP;
 						System.out.println("nextNode: "+this.nextNode);
 						System.out.println("nextIP: "+this.nextIP);
-						updateFiles(hashed);
+						updateFiles();
 					}
 
 					else if (hashed > nextNode && hashed < ownNode) {
@@ -255,7 +255,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 						nextIP = IP;
 						System.out.println("nextNode: "+this.nextNode);
 						System.out.println("nextIP: "+this.nextIP);
-						updateFiles(hashed);
+						updateFiles();
 					}
 
 					else if (hashed == ownNode) {
@@ -267,7 +267,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 						nextIP = IP;
 						System.out.println("nextNode: "+this.nextNode);
 						System.out.println("nextIP: "+this.nextIP);
-						updateFiles(hashed);
+						updateFiles();
 					}
 				} else  {
 
@@ -286,7 +286,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 						nextIP = IP;
 						System.out.println("nextNode: "+this.nextNode);
 						System.out.println("nextIP: "+this.nextIP);
-						updateFiles(hashed);
+						updateFiles();
 					}
 
 					else if (hashed == ownNode && hashed < nextNode) {
@@ -298,7 +298,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 						nextIP = IP;
 						System.out.println("nextNode: "+this.nextNode);
 						System.out.println("nextIP: "+this.nextIP);
-						updateFiles(hashed);
+						updateFiles();
 					}
 
 					else if (hashed > nextNode) {
@@ -334,7 +334,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 						nextIP = IP;
 						System.out.println("nextNode: "+this.nextNode);
 						System.out.println("nextIP: "+this.nextIP);
-						updateFiles(hashed);
+						updateFiles();
 					}
 				}
 
@@ -354,7 +354,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 						nextIP = IP;
 						System.out.println("nextNode: "+this.nextNode);
 						System.out.println("nextIP: "+this.nextIP);
-						updateFiles(hashed);
+						updateFiles();
 					}					
 				}
 
@@ -367,7 +367,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 						nextIP = IP;
 						System.out.println("nextNode: "+this.nextNode);
 						System.out.println("nextIP: "+this.nextIP);
-						updateFiles(hashed);
+						updateFiles();
 					}
 
 					else if (hashed > previousNode && hashed < ownNode) {
@@ -423,6 +423,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		System.out.println("changePrevNext");
 		setNextNode(nextNode, nextIP);
 		setPreviousNode(previousNode,previousIP);
+		replicateLocalFiles();
 	}
 
 	// Sets total nodes
@@ -515,17 +516,19 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		}
 	}
 	
-	public void updateFiles(int node) {
+	public void updateFiles() throws RemoteException {
 		int totalRepFiles = replicatedFiles.size();
 		for (int i = 0; i < totalRepFiles; i++) {
 			int hashFile = Math.abs((int) Integer.toUnsignedLong(replicatedFiles.get(i).hashCode()) % 32768);
 
-			if (hashFile > node && hashFile < ownNode) {
-			
+			if (hashFile > nextNode && hashFile < ownNode) {
+				new Thread(new TCPSender(nextIP,fileList.get(i),fileList.get(i).length())).start();
+				deleteFile(fileList.get(i));
 				replicatedFiles.remove(i);
 			}
-			else if (hashFile > node || hashFile < ownNode) {
-
+			else if (hashFile > nextNode || hashFile < ownNode) {
+				new Thread(new TCPSender(nextIP,fileList.get(i),fileList.get(i).length())).start();
+				deleteFile(fileList.get(i));
 				replicatedFiles.remove(i);
 			}
 		}		

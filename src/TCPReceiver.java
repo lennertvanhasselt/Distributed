@@ -22,7 +22,8 @@ public class TCPReceiver implements Runnable {
 	}
 
 	public void run() {
-		
+		int bytesRead;
+		int current = 0;
 		try {
 			
 			//serversocket will choose an available port
@@ -34,15 +35,21 @@ public class TCPReceiver implements Runnable {
 			System.out.println("accepted connection");
 			
 			//receive array
-		    byte [] mybytearray  = new byte [fileLength];
+		    byte [] mybytearray  = new byte [fileLength+50000];
 		    InputStream is = sock.getInputStream();
 		    fos = new FileOutputStream("C:/temp/replicated/"+fileName);
 		    bos = new BufferedOutputStream(fos);
-		    is.read(mybytearray,0, mybytearray.length);
-		   
+		    bytesRead=is.read(mybytearray,0, mybytearray.length);
+		    current = bytesRead;
+		    
+		    do {
+		         bytesRead =
+		            is.read(mybytearray, current, (mybytearray.length-current));
+		         if(bytesRead >= 0) current += bytesRead;
+		      } while(bytesRead > -1);
 		    	   
 		    //write array to file
-			bos.write(mybytearray, 0 , fileLength);
+			bos.write(mybytearray, 0 , current);
 			bos.flush();
 			System.out.println("File " + fileName
 			+ " downloaded (" + fileLength + " bytes read)");

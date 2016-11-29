@@ -592,7 +592,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		
 	}
 	
-	public void deleteFile(String fileName) {
+	public void deleteFile(String fileName) throws RemoteException{
 		if(replicatedFiles.contains(fileName)) {
 			File file = new File("C:/temp/replicated/"+fileName);
 			file.delete();

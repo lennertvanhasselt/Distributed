@@ -542,12 +542,8 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 				} else {
 					ipToSend=owner.get(owner.firstKey()).toString().substring(1);
 				}
-				try {
-					new Thread(new TCPServer(ipToSend,tempFileList.get(i))).start();
-				} catch (UnknownHostException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}				
+				
+				new Thread(new TCPSender(ipToSend,tempFileList.get(i),tempFileList.get(i).length())).start();			
 			}
 		}
 		fileList = tempFileList;
@@ -558,7 +554,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		
 		for(int i = 0; i < totalRepFiles; i++)
 		{
-			new Thread(new TCPServer(previousIP,replicatedFiles.get(i))).start();
+			new Thread(new TCPSender(previousIP,replicatedFiles.get(i),replicatedFiles.get(i).length())).start();
 		}
 	}
 	

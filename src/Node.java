@@ -490,7 +490,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	
 	//when entering the system the local files will be replicated
 	public void replicateLocalFiles() throws RemoteException, ClassNotFoundException, MalformedURLException, NotBoundException{
-		ArrayList<String> fileList = new ArrayList<String>();
+		fileList = new ArrayList<String>();
 		File[] fileArray = new File("C:/temp/local/").listFiles();
 		for(File file : fileArray){
 			if(file.isFile()){

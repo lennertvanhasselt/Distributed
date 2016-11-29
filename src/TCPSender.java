@@ -52,6 +52,7 @@ public class TCPSender implements Runnable{
 	        bis.close();
 	        os.close();
 	        sock.close();
+	        nf.constructReplicatedList();
 			
 		} catch (IOException | NotBoundException e) {
 			e.printStackTrace();

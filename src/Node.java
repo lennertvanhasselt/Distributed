@@ -519,8 +519,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 			
 			System.out.println("send file " + fileName + " to " +ipToSend);
 			new Thread(new TCPSender(ipToSend,fileName,fileLength)).start();
-			nf = (NodeInterface) Naming.lookup("//" + ipToSend + "/Node");
-			nf.constructReplicatedList();
+	
 		}
 	}
 	
@@ -541,8 +540,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 				deleteFile(fileList.get(i));
 				replicatedFiles.remove(i);
 			}
-			nf = (NodeInterface) Naming.lookup("//" + nextIP + "/Node");
-			nf.constructReplicatedList();
 		}		
 	}
 
@@ -567,8 +564,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 				}
 				
 				new Thread(new TCPSender(ipToSend,tempFileList.get(i),tempFileList.get(i).length())).start();
-				nf = (NodeInterface) Naming.lookup("//" + ipToSend + "/Node");
-				nf.constructReplicatedList();
 			}
 		}
 		fileList = tempFileList;
@@ -580,9 +575,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		for(int i = 0; i < totalRepFiles; i++)
 		{
 			new Thread(new TCPSender(previousIP,replicatedFiles.get(i),replicatedFiles.get(i).length())).start();
-		}
-		nf = (NodeInterface) Naming.lookup("//" + previousIP + "/Node");
-		nf.constructReplicatedList();
+		}		
 	}
 	
 	public int setupTCPReceiver(String fileName, int fileLength) throws RemoteException{
@@ -627,6 +620,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	}
 	
 	public void constructReplicatedList() throws RemoteException {
+		System.out.print(".");
 		File[] fileArray = new File("C:/temp/replicated/").listFiles();
 		for(File file : fileArray){
 			if(file.isFile()){

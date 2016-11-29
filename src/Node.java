@@ -492,24 +492,19 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		while(it.hasNext()){
 			String ipToSend;
 			String fileName = (String)it.next();
+			File f = new File("c:/temp/"+fileName);
+			int fileLength = (int) f.length();
 			TreeMap<Integer,InetAddress> owner = cf.searchFile(fileName);
+			
 			if(ownNode == owner.firstKey()){
 				ipToSend=previousIP;
 			} else {
 				ipToSend=owner.get(owner.firstKey()).toString().substring(1);
 			}
-			try {
-				System.out.println("send file " + fileName + " to " +ipToSend);
-				new Thread(new TCPServer(fileName,ipToSend)).start();
-			} catch (UnknownHostException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			
+			System.out.println("send file " + fileName + " to " +ipToSend);
+			new Thread(new TCPSender(ipToSend,fileName,fileLength)).start();
 		}
-	}
-
-	public void readyTCP(String ip, String fileName) throws RemoteException {
-		new Thread(new TCPReceiver(ip, fileName)).start();
 	}
 	
 	public void updateFiles(int node) {
@@ -565,5 +560,18 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		{
 			new Thread(new TCPServer(previousIP,replicatedFiles.get(i))).start();
 		}
+	}
+	
+	public int setupTCPReceiver(String fileName, int fileLength) throws RemoteException{
+		TCPReceiver rec = new TCPReceiver(fileName,fileLength);
+		Thread thread = new Thread(rec);
+		thread.start();
+		
+		while(rec.SOCKET_PORT==0){
+			System.out.print("");
+		}
+		
+		System.out.println("returning " + rec.SOCKET_PORT);
+		return rec.SOCKET_PORT;
 	}
 }

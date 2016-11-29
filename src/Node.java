@@ -222,6 +222,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 				if (nextNode < ownNode) {
 
 					if (hashed < nextNode) {
+						checkOwnedFiles(hashed, IP);
 						nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
 						nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
 						nextNode = hashed;
@@ -247,6 +248,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 					}
 
 					else if (hashed > ownNode) {
+						checkOwnedFiles(hashed, IP);
 						nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
 						nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
 						nextNode = hashed;
@@ -258,6 +260,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 
 					else if (hashed == ownNode) {
 						hashed++;
+						checkOwnedFiles(hashed, IP);
 						nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
 						nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
 						nextNode = hashed;
@@ -276,6 +279,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 					}
 
 					else if (hashed > ownNode && hashed < nextNode) {
+						checkOwnedFiles(hashed, IP);
 						nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
 						nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
 						nextNode = hashed;
@@ -287,6 +291,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 
 					else if (hashed == ownNode && hashed < nextNode) {
 						hashed++;
+						checkOwnedFiles(hashed, IP);
 						nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
 						nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
 						nextNode = hashed;
@@ -322,6 +327,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 					}
 
 					else if (hashed < nextNode && hashed > ownNode) {
+						checkOwnedFiles(hashed, IP);
 						nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
 						nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
 						nextNode = hashed;
@@ -341,6 +347,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 					}
 
 					else if (hashed > ownNode && hashed < nextNode) {
+						checkOwnedFiles(hashed, IP);
 						nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
 						nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
 						nextNode = hashed;
@@ -353,6 +360,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 
 				else if (nextNode < ownNode) {
 					if (hashed > ownNode || hashed < nextNode) {
+						checkOwnedFiles(hashed, IP);
 						nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
 						nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
 						nextNode = hashed;
@@ -589,7 +597,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 				nf.deleteFile(fileList.get(i));
 			}
 		}
-		
 	}
 	
 	public void deleteFile(String fileName) throws RemoteException{

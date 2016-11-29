@@ -38,7 +38,7 @@ public class TCPReceiver implements Runnable {
 		    InputStream is = sock.getInputStream();
 		    fos = new FileOutputStream("C:/temp/replicated/"+fileName);
 		    bos = new BufferedOutputStream(fos);
-		    is.read(mybytearray,0, fileLength);
+		    is.read(mybytearray,0, mybytearray.length);
 		   
 		    	   
 		    //write array to file

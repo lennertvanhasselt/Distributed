@@ -10,4 +10,5 @@ public interface NodeInterface extends Remote{
 	void setNameServer(String ip, int ownNode, int totalNodes)throws RemoteException, ClassNotFoundException, UnknownHostException;
 	void checkUpdate()throws RemoteException, ClassNotFoundException;
 	int setupTCPReceiver(String fileName, int fileLength)throws RemoteException;
+	void deleteFile(String fileName);
 }

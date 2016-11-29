@@ -38,7 +38,7 @@ public class TCPSender implements Runnable{
 			
 			System.out.println("Sending File: " + fileName + ", with length: " + fileLength + ", to: " + IpToSend);
 			
-			File myFile = new File("C:/temp/"+fileName);
+			File myFile = new File("C:/temp/local/"+fileName);
 			byte [] mybytearray  = new byte [(int)myFile.length()];
 	        fis = new FileInputStream(myFile);
 	        bis = new BufferedInputStream(fis);

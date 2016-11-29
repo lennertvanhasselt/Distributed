@@ -570,4 +570,33 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		System.out.println("returning " + rec.SOCKET_PORT);
 		return rec.SOCKET_PORT;
 	}
+	
+	public void checkOwnedFiles(int node, String ip) throws MalformedURLException, RemoteException, NotBoundException {
+		int totalFiles = fileList.size();
+		int hashFile;
+		nf = (NodeInterface) Naming.lookup("//" + previousIP + "/Node");
+		
+		for(int i = 0; i < totalFiles; i++)
+		{
+			hashFile = Math.abs((int) Integer.toUnsignedLong(fileList.get(i).hashCode()) % 32768);
+			
+			if (hashFile >= node && hashFile < nextNode) {
+				new Thread(new TCPSender(ip,fileList.get(i),fileList.get(i).length())).start();
+				nf.deleteFile(fileList.get(i));
+			}
+			else if (hashFile < nextNode || hashFile >= node){
+				new Thread(new TCPSender(ip,fileList.get(i),fileList.get(i).length())).start();
+				nf.deleteFile(fileList.get(i));
+			}
+		}
+		
+	}
+	
+	public void deleteFile(String fileName) {
+		if(replicatedFiles.contains(fileName)) {
+			File file = new File("C:/temp/replicated/"+fileName);
+			file.delete();
+		}
+		return;
+	}
 }

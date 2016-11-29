@@ -27,6 +27,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	public boolean check;
 	public ArrayList<String> replicatedFiles;
 	public ArrayList<String> fileList;
+	public Boolean serverSet = false;
 
 	public Node() throws ClassNotFoundException, IOException, RemoteException {	
 		mainServer = "";
@@ -222,7 +223,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 				if (nextNode < ownNode) {
 
 					if (hashed < nextNode) {
-						checkOwnedFiles(hashed, IP);
+						//checkOwnedFiles(hashed, IP);
 						nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
 						nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
 						nextNode = hashed;
@@ -248,7 +249,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 					}
 
 					else if (hashed > ownNode) {
-						checkOwnedFiles(hashed, IP);
+						//checkOwnedFiles(hashed, IP);
 						nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
 						nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
 						nextNode = hashed;
@@ -260,7 +261,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 
 					else if (hashed == ownNode) {
 						hashed++;
-						checkOwnedFiles(hashed, IP);
+						//checkOwnedFiles(hashed, IP);
 						nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
 						nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
 						nextNode = hashed;
@@ -279,7 +280,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 					}
 
 					else if (hashed > ownNode && hashed < nextNode) {
-						checkOwnedFiles(hashed, IP);
+						//checkOwnedFiles(hashed, IP);
 						nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
 						nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
 						nextNode = hashed;
@@ -291,7 +292,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 
 					else if (hashed == ownNode && hashed < nextNode) {
 						hashed++;
-						checkOwnedFiles(hashed, IP);
+						//checkOwnedFiles(hashed, IP);
 						nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
 						nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
 						nextNode = hashed;
@@ -327,7 +328,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 					}
 
 					else if (hashed < nextNode && hashed > ownNode) {
-						checkOwnedFiles(hashed, IP);
+						//checkOwnedFiles(hashed, IP);
 						nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
 						nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
 						nextNode = hashed;
@@ -347,7 +348,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 					}
 
 					else if (hashed > ownNode && hashed < nextNode) {
-						checkOwnedFiles(hashed, IP);
+						//checkOwnedFiles(hashed, IP);
 						nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
 						nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
 						nextNode = hashed;
@@ -360,7 +361,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 
 				else if (nextNode < ownNode) {
 					if (hashed > ownNode || hashed < nextNode) {
-						checkOwnedFiles(hashed, IP);
+						//checkOwnedFiles(hashed, IP);
 						nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
 						nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
 						nextNode = hashed;
@@ -423,6 +424,9 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		System.out.println("changePrevNext");
 		setNextNode(nextNode, nextIP);
 		setPreviousNode(previousNode,previousIP);
+		while(!serverSet) {
+			System.out.print("");
+		}
 		replicateLocalFiles();
 	}
 
@@ -436,6 +440,8 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	public void setClientInterface(ClientInterface cf)
 	{
 		this.cf = cf;
+		serverSet = true;
+		System.out.println("setClientInterface");
 	}
 
 	// Used to display that someone is checking a file on your node.

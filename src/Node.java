@@ -484,7 +484,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	//when entering the system the local files will be replicated
 	public void replicateLocalFiles() throws RemoteException, ClassNotFoundException{
 		ArrayList<String> fileList = new ArrayList<String>();
-		File[] fileArray = new File("C:/temp/").listFiles();
+		File[] fileArray = new File("C:/temp/local/").listFiles();
 		for(File file : fileArray){
 			if(file.isFile()){
 				fileList.add(file.getName());
@@ -500,7 +500,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		while(it.hasNext()){
 			String ipToSend;
 			String fileName = (String)it.next();
-			File f = new File("c:/temp/"+fileName);
+			File f = new File("c:/temp/local/"+fileName);
 			int fileLength = (int) f.length();
 			TreeMap<Integer,InetAddress> owner = cf.searchFile(fileName);
 			
@@ -533,7 +533,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 
 	public void replicateNewFiles() throws RemoteException, ClassNotFoundException {
 		ArrayList<String> tempFileList = new ArrayList<String>();
-		File[] fileArray = new File("C:/temp/").listFiles();
+		File[] fileArray = new File("C:/temp/local/").listFiles();
 		for(File file : fileArray){
 			if(file.isFile()){
 				tempFileList.add(file.getName());

@@ -21,6 +21,9 @@ public class MainNode {
 		
 		//make sure rmi can be performed to the node
 		Node node = new Node();
+		
+		new Thread(new checkFileList(node)).start();
+		
 		String bindLocationNode = "//localhost/Node";
 		try{
 			LocateRegistry.createRegistry(1099);

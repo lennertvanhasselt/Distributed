@@ -557,29 +557,33 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	}
 
 	public void replicateNewFiles() throws RemoteException, ClassNotFoundException, MalformedURLException, NotBoundException {
-		ArrayList<String> tempFileList = new ArrayList<String>();
-		File[] fileArray = new File("C:/temp/local/").listFiles();
-		for(File file : fileArray){
-			if(file.isFile()){
-				tempFileList.add(file.getName());
-			}
-		}
-		int tempTotalLocalFiles = tempFileList.size();
-
-		for(int i=0; i < tempTotalLocalFiles; i++) {
-			if (!fileList.contains(tempFileList.get(i))) {
-				String ipToSend;
-				TreeMap<Integer,InetAddress> owner = cf.searchFile(tempFileList.get(i));
-				if(ownNode == owner.firstKey()){
-					ipToSend=previousIP;
-				} else {
-					ipToSend=owner.get(owner.firstKey()).toString().substring(1);
+		if(ownNode!=previousNode) {
+			ArrayList<String> tempFileList = new ArrayList<String>();
+			File[] fileArray = new File("C:/temp/local/").listFiles();
+			for(File file : fileArray){
+				if(file.isFile()){
+					tempFileList.add(file.getName());
 				}
-				
-				new Thread(new TCPSender(ipToSend,tempFileList.get(i),tempFileList.get(i).length())).start();
 			}
+			int tempTotalLocalFiles = tempFileList.size();
+
+			for(int i=0; i < tempTotalLocalFiles; i++) {
+				if (!fileList.contains(tempFileList.get(i))) {
+					String ipToSend;
+					TreeMap<Integer,InetAddress> owner = cf.searchFile(tempFileList.get(i));
+					if(ownNode == owner.firstKey()){
+						ipToSend=previousIP;
+					} else {
+						ipToSend=owner.get(owner.firstKey()).toString().substring(1);
+					}
+				
+					new Thread(new TCPSender(ipToSend,tempFileList.get(i),tempFileList.get(i).length())).start();
+				}
+			}
+			fileList = tempFileList;
+		} else {
+			fileList.removeAll(fileList);
 		}
-		fileList = tempFileList;
 	}
 
 	public void sendReplicatedFilesToPrevious() throws UnknownHostException, RemoteException, MalformedURLException, NotBoundException {

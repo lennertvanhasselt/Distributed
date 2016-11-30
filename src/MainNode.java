@@ -62,7 +62,7 @@ public class MainNode {
    	 					break;
    	 			case 3: node.replicateLocalFiles();
 						break;
-   	 			case 4: node.deleteNode(node.getOwnNode());
+   	 			case 4: node.deleteNode();
    	 					exit = true;
    	 					break;
    	 			default:exit = false;

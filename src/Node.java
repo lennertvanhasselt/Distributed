@@ -88,7 +88,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 
 	// When the node decides to leave the menu and the network it will close and the server will delete the node from it's map.
 	// The Previous and Next node in the system will have their previous or next node updated because the deleted node is not available anymore.
-	public void deleteNode(int ownNode) throws ClassNotFoundException, IOException{
+	public void deleteNode() throws ClassNotFoundException, IOException{
 		int contactedNode = -1;
 		try {
 			if (ownNode != previousNode && ownNode != nextNode) {
@@ -100,6 +100,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 				contactedNode = nextNode;
 				nf = (NodeInterface) Naming.lookup("//" + nextIP + "/Node");
 				nf.setPreviousNode(previousNode, previousIP);
+				deleteLocalFiles();
 			}
 			Boolean answer = cf.deleteNode(ownNode);
 			if (answer == true)
@@ -112,6 +113,20 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 			e.printStackTrace();
 			updateNetwork(contactedNode);
 			return;
+		}
+	}
+	
+	//Delete all your local files from the file system
+	public void deleteLocalFiles() throws RemoteException, ClassNotFoundException, MalformedURLException, NotBoundException {
+		int totalLocalFiles = fileList.size();
+		TreeMap<Integer,InetAddress> ownerFile;
+		String ownerIP;
+		
+		for (int i = 0; i < totalLocalFiles; i++) {
+			ownerFile = cf.searchFile(fileList.get(i));
+			ownerIP = ownerFile.get(ownerFile.firstKey()).toString().substring(1);
+			nf = (NodeInterface) Naming.lookup("//" + ownerIP + "/Node");
+			nf.deleteFile(fileList.get(i));
 		}
 	}
 

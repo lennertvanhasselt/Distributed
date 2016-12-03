@@ -70,7 +70,7 @@ public class MainNode {
    	 			}
    	 		}
    	 		scan.close();
-	
+   	 		System.exit(0);
 		} catch(Exception e) {
 	         System.err.println("FileServer exception: "+ e.getMessage());
 	       e.printStackTrace();

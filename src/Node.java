@@ -595,6 +595,21 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 					new Thread(new TCPSender(ipToSend,tempFileList.get(i),tempFileList.get(i).length())).start();
 				}
 			}
+			for(int i=0; i < fileList.size(); i++) {
+				if(!tempFileList.contains(fileList.get(i))) {
+					String ipToSend;
+					TreeMap<Integer,InetAddress> owner = cf.searchFile(tempFileList.get(i));
+					if(ownNode == owner.firstKey()){
+						ipToSend=previousIP;
+					} else {
+						ipToSend=owner.get(owner.firstKey()).toString().substring(1);
+					}
+					//implement check for downloads here?
+					
+					nf = (NodeInterface) Naming.lookup("//" + ipToSend + "/Node");
+					nf.deleteFile(fileList.get(i));
+				}
+			}
 			fileList = tempFileList;
 		} else {
 			if(!fileList.isEmpty())

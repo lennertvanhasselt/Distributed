@@ -2,11 +2,11 @@ import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
-public class checkFileList implements Runnable{
+public class CheckFileList implements Runnable{
 	
 	Node node;
 	
-	public checkFileList(Node node){
+	public CheckFileList(Node node){
 		this.node=node;
 	}
 	

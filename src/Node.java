@@ -91,11 +91,16 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	public void deleteNode() throws ClassNotFoundException, IOException{
 		int contactedNode = -1;
 		try {
+			if(previousNode != nextNode) {
+				sendReplicatedFilesToPrevious();
+			}
+			
 			if (ownNode != previousNode && ownNode != nextNode) {
 				contactedNode = previousNode;
 				System.out.println(previousIP);
 				nf = (NodeInterface) Naming.lookup("//" + previousIP + "/Node");
 				System.out.println("tot hier");
+				
 				nf.setNextNode(nextNode, nextIP);
 				contactedNode = nextNode;
 				nf = (NodeInterface) Naming.lookup("//" + nextIP + "/Node");
@@ -598,7 +603,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 			for(int i=0; i < fileList.size(); i++) {
 				if(!tempFileList.contains(fileList.get(i))) {
 					String ipToSend;
-					TreeMap<Integer,InetAddress> owner = cf.searchFile(tempFileList.get(i));
+					TreeMap<Integer,InetAddress> owner = cf.searchFile(fileList.get(i));
 					if(ownNode == owner.firstKey()){
 						ipToSend=previousIP;
 					} else {

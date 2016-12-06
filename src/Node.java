@@ -25,8 +25,8 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	private ClientInterface cf;
 	public String mainServer;
 	public boolean check;
-	public ArrayList<String> replicatedFiles;
-	public ArrayList<String> fileList;
+	public ArrayList<FileInfo> replicatedFiles;
+	public ArrayList<FileInfo> localFiles;
 	public Boolean serverSet = false;
 
 	public Node() throws ClassNotFoundException, IOException, RemoteException {	
@@ -123,15 +123,15 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	
 	//Delete all your local files from the file system
 	public void deleteLocalFiles() throws RemoteException, ClassNotFoundException, MalformedURLException, NotBoundException {
-		int totalLocalFiles = fileList.size();
+		int totalLocalFiles = localFiles.size();
 		TreeMap<Integer,InetAddress> ownerFile;
 		String ownerIP;
 		
 		for (int i = 0; i < totalLocalFiles; i++) {
-			ownerFile = cf.searchFile(fileList.get(i));
+			ownerFile = localFiles.get(i).getReplicateNode();
 			ownerIP = ownerFile.get(ownerFile.firstKey()).toString().substring(1);
 			nf = (NodeInterface) Naming.lookup("//" + ownerIP + "/Node");
-			nf.deleteFile(fileList.get(i));
+			nf.deleteFile(localFiles.get(i));
 		}
 	}
 
@@ -439,7 +439,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	}
 
 	// Changing the previous and the next node and ip for this certain node.
-	public void changePrevNext(int nextNode, int previousNode, String nextIP, String previousIP)throws RemoteException, ClassNotFoundException, MalformedURLException, NotBoundException
+	public void changePrevNext(int nextNode, int previousNode, String nextIP, String previousIP)throws RemoteException, ClassNotFoundException, MalformedURLException, NotBoundException, UnknownHostException
 	{
 		System.out.println("changePrevNext");
 		setNextNode(nextNode, nextIP);
@@ -509,27 +509,41 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	}	
 	
 	//when entering the system the local files will be replicated
-	public void replicateLocalFiles() throws RemoteException, ClassNotFoundException, MalformedURLException, NotBoundException{
-		fileList = new ArrayList<String>();
+	public void replicateLocalFiles() throws RemoteException, ClassNotFoundException, MalformedURLException, NotBoundException, UnknownHostException{
+		localFiles = new ArrayList<FileInfo>();
 		File[] fileArray = new File("C:/temp/local/").listFiles();
+		TreeMap<Integer, InetAddress> me = new TreeMap<Integer, InetAddress>();
+		InetAddress address = InetAddress.getLocalHost();
+	 	address = InetAddress.getByName(address.getHostAddress());
+		me.put(ownNode, address);
+		FileInfo fileInfo;
 		for(File file : fileArray){
 			if(file.isFile()){
-				fileList.add(file.getName());
+				fileInfo = new FileInfo(file.getName(), me);
+				localFiles.add(fileInfo);
 			}
 		}
 		
-		Iterator<String> it = fileList.iterator();
+		Iterator<FileInfo> it = localFiles.iterator();
 		
 		if(previousNode == ownNode){
 			return;
 		}
 		
+		String ipToSend;
+		String fileName;
+		File f;
+		int fileLength;
+		FileInfo fi;
+		
+		TreeMap<Integer,InetAddress> owner;
+		
 		while(it.hasNext()){
-			String ipToSend;
-			String fileName = (String)it.next();
-			File f = new File("c:/temp/local/"+fileName);
-			int fileLength = (int) f.length();
-			TreeMap<Integer,InetAddress> owner = cf.searchFile(fileName);
+			fi = it.next();
+			fileName = fi.getNameFile();
+			f = new File("c:/temp/local/"+fileName);
+			fileLength = (int) f.length();
+			owner = cf.searchFile(fileName);
 			
 			if(ownNode == owner.firstKey()){
 				ipToSend=previousIP;
@@ -538,19 +552,34 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 			}
 			
 			System.out.println("send file " + fileName + " to " +ipToSend);
-			new Thread(new TCPSender(ipToSend,fileName,fileLength)).start();
-	
+			nf = (NodeInterface) Naming.lookup("//" + ipToSend + "/Node");
+			nf.newEntryReplicatedFiles(fi);
+			new Thread(new TCPSender(ipToSend,fileName,fileLength)).start();	
 		}
 	}
 	
-	public void updateFiles() throws RemoteException, MalformedURLException, NotBoundException {
+	public void newEntryReplicatedFiles(FileInfo fi) throws RemoteException, UnknownHostException {
+		TreeMap<Integer, InetAddress> me = new TreeMap<Integer, InetAddress>();
+		InetAddress address = InetAddress.getLocalHost();
+	 	address = InetAddress.getByName(address.getHostAddress());
+		me.put(ownNode, address);
+		fi.setReplicateNode(me);
+		replicatedFiles.add(fi);
+	}
+	
+	//This method 
+	public void updateFiles() throws RemoteException, MalformedURLException, NotBoundException, UnknownHostException {
 		System.out.println("updateFiles");
 		int totalRepFiles = replicatedFiles.size();
+		ArrayList<Integer> filesToRemove = new ArrayList<Integer>();
 		for (int i = 0; i < totalRepFiles; i++) {
-			int hashFile = Math.abs((int) Integer.toUnsignedLong(replicatedFiles.get(i).hashCode()) % 32768);
+			int hashFile = Math.abs((int) Integer.toUnsignedLong(replicatedFiles.get(i).getNameFile().hashCode()) % 32768);
 
 			if (hashFile > nextNode && hashFile < ownNode) {
-				Thread thread1 = new Thread(new TCPSender(nextIP,replicatedFiles.get(i),replicatedFiles.get(i).length()));
+				nf = (NodeInterface) Naming.lookup("//" + nextIP + "/Node");
+				nf.newEntryReplicatedFiles(replicatedFiles.get(i));
+				filesToRemove.add(i);
+				Thread thread1 = new Thread(new TCPSender(nextIP,replicatedFiles.get(i).getNameFile(),replicatedFiles.get(i).getNameFile().length()));
 				thread1.start();
 				try {
 					thread1.join();
@@ -558,52 +587,58 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				deleteFile(fileList.get(i));
-				replicatedFiles.remove(i);
 				
 			}
 			else if (hashFile > nextNode || hashFile < ownNode) {
-				Thread thread2 = new Thread(new TCPSender(nextIP,replicatedFiles.get(i),replicatedFiles.get(i).length()));
+				nf = (NodeInterface) Naming.lookup("//" + nextIP + "/Node");
+				nf.newEntryReplicatedFiles(replicatedFiles.get(i));
+				filesToRemove.add(i);
+				Thread thread2 = new Thread(new TCPSender(nextIP,replicatedFiles.get(i).getNameFile(),replicatedFiles.get(i).getNameFile().length()));
+				gzeesgsqgdgd;
+				thread2.start();
 				try {
 					thread2.join();
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				}				
-				deleteFile(fileList.get(i));
-				replicatedFiles.remove(i);
+				}
 			}
-		}		
+		}
+		
+		for(int i = 0; i<filesToRemove.size(); i++) {
+			deleteFile(replicatedFiles.get(i));
+			replicatedFiles.remove(i);
+		}
 	}
 
 	public void replicateNewFiles() throws RemoteException, ClassNotFoundException, MalformedURLException, NotBoundException {
 		if(ownNode!=previousNode && previousNode!=-1) {
-			ArrayList<String> tempFileList = new ArrayList<String>();
+			ArrayList<String> templocalFiles = new ArrayList<String>();
 			File[] fileArray = new File("C:/temp/local/").listFiles();
 			for(File file : fileArray){
 				if(file.isFile()){
-					tempFileList.add(file.getName());
+					templocalFiles.add(file.getName());
 				}
 			}
-			int tempTotalLocalFiles = tempFileList.size();
+			int tempTotalLocalFiles = templocalFiles.size();
 
 			for(int i=0; i < tempTotalLocalFiles; i++) {
-				if (!fileList.contains(tempFileList.get(i))) {
+				if (!localFiles.contains(templocalFiles.get(i))) {
 					String ipToSend;
-					TreeMap<Integer,InetAddress> owner = cf.searchFile(tempFileList.get(i));
+					TreeMap<Integer,InetAddress> owner = cf.searchFile(templocalFiles.get(i));
 					if(ownNode == owner.firstKey()){
 						ipToSend=previousIP;
 					} else {
 						ipToSend=owner.get(owner.firstKey()).toString().substring(1);
 					}
 				
-					new Thread(new TCPSender(ipToSend,tempFileList.get(i),tempFileList.get(i).length())).start();
+					new Thread(new TCPSender(ipToSend,templocalFiles.get(i),templocalFiles.get(i).length())).start();
 				}
 			}
-			for(int i=0; i < fileList.size(); i++) {
-				if(!tempFileList.contains(fileList.get(i))) {
+			for(int i=0; i < localFiles.size(); i++) {
+				if(!templocalFiles.contains(localFiles.get(i))) {
 					String ipToSend;
-					TreeMap<Integer,InetAddress> owner = cf.searchFile(fileList.get(i));
+					TreeMap<Integer,InetAddress> owner = cf.searchFile(localFiles.get(i).getNameFile());
 					if(ownNode == owner.firstKey()){
 						ipToSend=previousIP;
 					} else {
@@ -612,13 +647,13 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 					//implement check for downloads here?
 					
 					nf = (NodeInterface) Naming.lookup("//" + ipToSend + "/Node");
-					nf.deleteFile(fileList.get(i));
+					nf.deleteFile(localFiles.get(i));
 				}
 			}
-			fileList = tempFileList;
+			localFiles = templocalFiles;
 		} else {
-			if(!fileList.isEmpty())
-				fileList.removeAll(fileList);
+			if(!localFiles.isEmpty())
+				localFiles.removeAll(localFiles);
 		}
 	}
 
@@ -645,16 +680,16 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	}
 	
 	public void checkOwnedFiles(int node, String ip) throws MalformedURLException, RemoteException, NotBoundException {
-		int totalFiles = fileList.size();
+		int totalFiles = localFiles.size();
 		int hashFile;
 		nf = (NodeInterface) Naming.lookup("//" + previousIP + "/Node");
 		
 		for(int i = 0; i < totalFiles; i++)
 		{
-			hashFile = Math.abs((int) Integer.toUnsignedLong(fileList.get(i).hashCode()) % 32768);
+			hashFile = Math.abs((int) Integer.toUnsignedLong(localFiles.get(i).hashCode()) % 32768);
 			
 			if (hashFile >= node && hashFile < nextNode) {
-				Thread thread1 = new Thread(new TCPSender(ip,fileList.get(i),fileList.get(i).length()));
+				Thread thread1 = new Thread(new TCPSender(ip,localFiles.get(i),localFiles.get(i).length()));
 				thread1.start();
 				try {
 					thread1.join();
@@ -662,10 +697,10 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				nf.deleteFile(fileList.get(i));
+				nf.deleteFile(localFiles.get(i));
 			}
 			else if (hashFile < nextNode || hashFile >= node){
-				Thread thread2 = new Thread(new TCPSender(ip,fileList.get(i),fileList.get(i).length()));
+				Thread thread2 = new Thread(new TCPSender(ip,localFiles.get(i),localFiles.get(i).length()));
 				thread2.start();
 				
 				try {
@@ -675,14 +710,14 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 					e.printStackTrace();
 				}
 				
-				nf.deleteFile(fileList.get(i));
+				nf.deleteFile(localFiles.get(i));
 			}
 		}
 	}
 	
-	public void deleteFile(String fileName) throws RemoteException{
-		if(replicatedFiles.contains(fileName)) {
-			File file = new File("C:/temp/replicated/"+fileName);
+	public void deleteFile(FileInfo fileInfo) throws RemoteException{
+		if(replicatedFiles.contains(fileInfo)) {
+			File file = new File("C:/temp/replicated/"+fileInfo.getNameFile());
 			file.delete();
 		}
 		return;

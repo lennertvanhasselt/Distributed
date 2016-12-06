@@ -1,27 +1,29 @@
+import java.net.InetAddress;
+import java.util.TreeMap;
 
 public class FileInfo {
 	
 	public String nameFile;
-	public int originalOwnerNode;
+	public TreeMap<Integer,InetAddress> originalOwnerNode;
 	public int downloaded;
-	public int replicateNode;
+	public TreeMap<Integer,InetAddress> replicateNode;
 	
-	public FileInfo(String nameFile, int originalOwnerNode, int replicateNode, int downloaded){
+	public FileInfo(String nameFile, TreeMap<Integer,InetAddress> originalOwnerNode){
 		this.nameFile = nameFile;
 		this.originalOwnerNode = originalOwnerNode;
-		this.replicateNode = replicateNode;
-		this.downloaded = downloaded;
+		replicateNode = null;
+		downloaded = 0;
 	}
 	
 	public void setNameFile(String nameFile) {
 		this.nameFile = nameFile;
 	}
 	
-	public void setOriginalOwnerNode(int originalOwnerNode) {
+	public void setOriginalOwnerNode(TreeMap<Integer,InetAddress> originalOwnerNode) {
 		this.originalOwnerNode = originalOwnerNode;
 	}
 	
-	public void setReplicateNode(int replicateNode){
+	public void setReplicateNode(TreeMap<Integer,InetAddress> replicateNode){
 		this.replicateNode = replicateNode;
 	}
 	
@@ -38,11 +40,11 @@ public class FileInfo {
 		return nameFile;
 	}
 	
-	public int getOriginalOwnerNode() {
+	public TreeMap<Integer,InetAddress> getOriginalOwnerNode() {
 		return originalOwnerNode;
 	}
 	
-	public int getReplicateNode(){
+	public TreeMap<Integer,InetAddress> getReplicateNode(){
 		return replicateNode;
 	}
 	

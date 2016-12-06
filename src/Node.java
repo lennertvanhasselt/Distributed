@@ -594,7 +594,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 				nf.newEntryReplicatedFiles(replicatedFiles.get(i));
 				filesToRemove.add(i);
 				Thread thread2 = new Thread(new TCPSender(nextIP,replicatedFiles.get(i).getNameFile(),replicatedFiles.get(i).getNameFile().length()));
-				gzeesgsqgdgd;
 				thread2.start();
 				try {
 					thread2.join();
@@ -605,19 +604,25 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 			}
 		}
 		
-		for(int i = 0; i<filesToRemove.size(); i++) {
+		for(int i = filesToRemove.size(); i>0; i--) {
 			deleteFile(replicatedFiles.get(i));
 			replicatedFiles.remove(i);
 		}
 	}
 
-	public void replicateNewFiles() throws RemoteException, ClassNotFoundException, MalformedURLException, NotBoundException {
+	public void replicateNewFiles() throws RemoteException, ClassNotFoundException, MalformedURLException, NotBoundException, UnknownHostException {
 		if(ownNode!=previousNode && previousNode!=-1) {
-			ArrayList<String> templocalFiles = new ArrayList<String>();
+			ArrayList<FileInfo> templocalFiles = new ArrayList<FileInfo>();
 			File[] fileArray = new File("C:/temp/local/").listFiles();
+			FileInfo fi;
+			TreeMap<Integer, InetAddress> me = new TreeMap<Integer, InetAddress>();
+			InetAddress address = InetAddress.getLocalHost();
+		 	address = InetAddress.getByName(address.getHostAddress());
+			me.put(ownNode, address);
 			for(File file : fileArray){
 				if(file.isFile()){
-					templocalFiles.add(file.getName());
+					fi = new FileInfo(file.getName(), me);
+					templocalFiles.add(fi);
 				}
 			}
 			int tempTotalLocalFiles = templocalFiles.size();
@@ -625,14 +630,13 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 			for(int i=0; i < tempTotalLocalFiles; i++) {
 				if (!localFiles.contains(templocalFiles.get(i))) {
 					String ipToSend;
-					TreeMap<Integer,InetAddress> owner = cf.searchFile(templocalFiles.get(i));
+					TreeMap<Integer,InetAddress> owner = cf.searchFile(templocalFiles.get(i).getNameFile());
 					if(ownNode == owner.firstKey()){
 						ipToSend=previousIP;
 					} else {
 						ipToSend=owner.get(owner.firstKey()).toString().substring(1);
 					}
-				
-					new Thread(new TCPSender(ipToSend,templocalFiles.get(i),templocalFiles.get(i).length())).start();
+					new Thread(new TCPSender(ipToSend,templocalFiles.get(i).getNameFile(),templocalFiles.get(i).getNameFile().length())).start();
 				}
 			}
 			for(int i=0; i < localFiles.size(); i++) {
@@ -659,10 +663,11 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 
 	public void sendReplicatedFilesToPrevious() throws UnknownHostException, RemoteException, MalformedURLException, NotBoundException {
 		int totalRepFiles = replicatedFiles.size();
-		
+		nf = (NodeInterface) Naming.lookup("//" + previousIP + "/Node");
 		for(int i = 0; i < totalRepFiles; i++)
 		{
-			new Thread(new TCPSender(previousIP,replicatedFiles.get(i),replicatedFiles.get(i).length())).start();
+			nf.newEntryReplicatedFiles(replicatedFiles.get(i));
+			new Thread(new TCPSender(previousIP,replicatedFiles.get(i).getNameFile(),replicatedFiles.get(i).getNameFile().length())).start();
 		}		
 	}
 	
@@ -679,17 +684,21 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		return rec.SOCKET_PORT;
 	}
 	
-	public void checkOwnedFiles(int node, String ip) throws MalformedURLException, RemoteException, NotBoundException {
+	//check if local files map on new next node
+	public void checkOwnedFiles(int node, String ip) throws MalformedURLException, RemoteException, NotBoundException, UnknownHostException {
 		int totalFiles = localFiles.size();
 		int hashFile;
-		nf = (NodeInterface) Naming.lookup("//" + previousIP + "/Node");
+		
 		
 		for(int i = 0; i < totalFiles; i++)
 		{
-			hashFile = Math.abs((int) Integer.toUnsignedLong(localFiles.get(i).hashCode()) % 32768);
+			hashFile = Math.abs((int) Integer.toUnsignedLong(localFiles.get(i).getNameFile().hashCode()) % 32768);
 			
+			//normal case
 			if (hashFile >= node && hashFile < nextNode) {
-				Thread thread1 = new Thread(new TCPSender(ip,localFiles.get(i),localFiles.get(i).length()));
+				nf = (NodeInterface) Naming.lookup("//" + ip + "/Node");
+				nf.newEntryReplicatedFiles(localFiles.get(i));
+				Thread thread1 = new Thread(new TCPSender(ip,localFiles.get(i).getNameFile(),localFiles.get(i).getNameFile().length()));
 				thread1.start();
 				try {
 					thread1.join();
@@ -697,20 +706,26 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				nf = (NodeInterface) Naming.lookup("//" + previousIP + "/Node");
 				nf.deleteFile(localFiles.get(i));
 			}
-			else if (hashFile < nextNode || hashFile >= node){
-				Thread thread2 = new Thread(new TCPSender(ip,localFiles.get(i),localFiles.get(i).length()));
-				thread2.start();
-				
-				try {
-					thread2.join();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+			// case: --nextNode-------------ownNode--------node------
+			else if (ownNode < node && ownNode > nextNode){
+				if (hashFile >= node || hashFile < nextNode){
+					nf = (NodeInterface) Naming.lookup("//" + ip + "/Node");
+					nf.newEntryReplicatedFiles(localFiles.get(i));
+					Thread thread2 = new Thread(new TCPSender(ip,localFiles.get(i).getNameFile(),localFiles.get(i).getNameFile().length()));
+					thread2.start();
+					
+					try {
+						thread2.join();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					nf = (NodeInterface) Naming.lookup("//" + previousIP + "/Node");
+					nf.deleteFile(localFiles.get(i));
 				}
-				
-				nf.deleteFile(localFiles.get(i));
 			}
 		}
 	}
@@ -723,13 +738,16 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		return;
 	}
 	
+	//TO COMPLETE
 	public void constructReplicatedList() throws RemoteException {
 		System.out.print(".");
 		File[] fileArray = new File("C:/temp/replicated/").listFiles();
-		ArrayList<String> replicatedFilesTemp = new ArrayList<String>();
+		ArrayList<FileInfo> replicatedFilesTemp = new ArrayList<FileInfo>();
+		FileInfo fi;
 		for(File file : fileArray){
 			if(file.isFile()){
-				replicatedFilesTemp.add(file.getName());
+				fi = new FileInfo(file.getName(), );
+				replicatedFilesTemp.add(fi);
 			}
 		}
 		replicatedFiles = replicatedFilesTemp;

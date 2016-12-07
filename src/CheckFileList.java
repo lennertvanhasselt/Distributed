@@ -1,4 +1,5 @@
 import java.net.MalformedURLException;
+import java.net.UnknownHostException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
@@ -16,7 +17,7 @@ public class CheckFileList implements Runnable{
 				Thread.sleep(30000);
 				System.out.println("30 seconds over, updating filelist...");
 				node.replicateNewFiles();
-			} catch (RemoteException | ClassNotFoundException | MalformedURLException | NotBoundException | InterruptedException e) {
+			} catch (RemoteException | ClassNotFoundException | MalformedURLException | NotBoundException | InterruptedException | UnknownHostException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}

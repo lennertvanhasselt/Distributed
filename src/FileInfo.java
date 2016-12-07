@@ -1,8 +1,10 @@
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.TreeMap;
 
-public class FileInfo {
+public class FileInfo implements Serializable {
 	
+	private static final long serialVersionUID = 1L;
 	public String nameFile;
 	public TreeMap<Integer,InetAddress> originalOwnerNode;
 	public int downloaded;

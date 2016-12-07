@@ -565,6 +565,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		me.put(ownNode, address);
 		fi.setReplicateNode(me);
 		replicatedFiles.add(fi);
+		System.out.println("FileInfo: " + fi.getNameFile());
 	}
 	
 	//This method 

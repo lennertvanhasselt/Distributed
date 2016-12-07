@@ -738,7 +738,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		return;
 	}
 	
-	//TO COMPLETE
+	/*TO COMPLETE
 	public void constructReplicatedList() throws RemoteException {
 		System.out.print(".");
 		File[] fileArray = new File("C:/temp/replicated/").listFiles();
@@ -751,5 +751,5 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 			}
 		}
 		replicatedFiles = replicatedFilesTemp;
-	}	
+	}	*/
 }

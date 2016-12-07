@@ -13,6 +13,6 @@ public interface NodeInterface extends Remote{
 	void checkUpdate()throws RemoteException, ClassNotFoundException;
 	int setupTCPReceiver(String fileName, int fileLength)throws RemoteException;
 	void deleteFile(FileInfo fileInfo)throws RemoteException;
-	void constructReplicatedList() throws RemoteException;
+	//void constructReplicatedList() throws RemoteException;
 	void newEntryReplicatedFiles(FileInfo fi) throws RemoteException, UnknownHostException;
 }

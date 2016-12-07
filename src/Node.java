@@ -33,6 +33,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		mainServer = "";
 		check = false;
 		localFiles = new ArrayList<FileInfo>();
+		replicatedFiles = new ArrayList<FileInfo>();
 	}
 
 	// This is the menu that will appear on the console ones the connection with the server is established.
@@ -629,9 +630,12 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 				}
 			}
 			int tempTotalLocalFiles = templocalFiles.size();
+			ArrayList<String> tempFileNames = new ArrayList<String>();
+			for(int i=0; i < localFiles.size(); i++)
+				tempFileNames.add(localFiles.get(i).getNameFile());
 
 			for(int i=0; i < tempTotalLocalFiles; i++) {
-				if (!localFiles.contains(templocalFiles.get(i))) {
+				if (!tempFileNames.contains(templocalFiles.get(i).getNameFile())) {
 					String ipToSend;
 					TreeMap<Integer,InetAddress> owner = cf.searchFile(templocalFiles.get(i).getNameFile());
 					if(ownNode == owner.firstKey()){

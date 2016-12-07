@@ -636,6 +636,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 
 			for(int i=0; i < tempTotalLocalFiles; i++) {
 				if (!tempFileNames.contains(templocalFiles.get(i).getNameFile())) {
+					System.out.println("========================>  "+templocalFiles.get(i).getNameFile());
 					String ipToSend;
 					TreeMap<Integer,InetAddress> owner = cf.searchFile(templocalFiles.get(i).getNameFile());
 					if(ownNode == owner.firstKey()){
@@ -646,8 +647,11 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 					new Thread(new TCPSender(ipToSend,templocalFiles.get(i).getNameFile(),templocalFiles.get(i).getNameFile().length())).start();
 				}
 			}
+			for(int i=0; i < templocalFiles.size(); i++)
+				tempFileNames.add(templocalFiles.get(i).getNameFile());
+			
 			for(int i=0; i < localFiles.size(); i++) {
-				if(!templocalFiles.contains(localFiles.get(i))) {
+				if(!tempFileNames.contains(localFiles.get(i).getNameFile())) {
 					String ipToSend;
 					TreeMap<Integer,InetAddress> owner = cf.searchFile(localFiles.get(i).getNameFile());
 					if(ownNode == owner.firstKey()){

@@ -32,6 +32,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	public Node() throws ClassNotFoundException, IOException, RemoteException {	
 		mainServer = "";
 		check = false;
+		localFiles = new ArrayList<FileInfo>();
 	}
 
 	// This is the menu that will appear on the console ones the connection with the server is established.
@@ -510,7 +511,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	
 	//when entering the system the local files will be replicated
 	public void replicateLocalFiles() throws RemoteException, ClassNotFoundException, MalformedURLException, NotBoundException, UnknownHostException{
-		localFiles = new ArrayList<FileInfo>();
 		File[] fileArray = new File("C:/temp/local/").listFiles();
 		TreeMap<Integer, InetAddress> me = new TreeMap<Integer, InetAddress>();
 		InetAddress address = InetAddress.getLocalHost();
@@ -559,6 +559,8 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	}
 	
 	public void newEntryReplicatedFiles(FileInfo fi) throws RemoteException, UnknownHostException {
+		System.out.print("newEntryReplicatedFiles: ");
+		System.out.println(fi.getNameFile());
 		TreeMap<Integer, InetAddress> me = new TreeMap<Integer, InetAddress>();
 		InetAddress address = InetAddress.getLocalHost();
 	 	address = InetAddress.getByName(address.getHostAddress());
@@ -612,7 +614,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	}
 
 	public void replicateNewFiles() throws RemoteException, ClassNotFoundException, MalformedURLException, NotBoundException, UnknownHostException {
-		if(ownNode!=previousNode && previousNode!=-1) {
+		if(previousNode!=ownNode && previousNode!=-1) {
 			ArrayList<FileInfo> templocalFiles = new ArrayList<FileInfo>();
 			File[] fileArray = new File("C:/temp/local/").listFiles();
 			FileInfo fi;
@@ -657,6 +659,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 			}
 			localFiles = templocalFiles;
 		} else {
+			System.out.println("no other nodes...");
 			if(!localFiles.isEmpty())
 				localFiles.removeAll(localFiles);
 		}

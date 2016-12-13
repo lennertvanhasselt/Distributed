@@ -643,6 +643,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 					new Thread(new TCPSender(ipToSend,templocalFiles.get(i).getNameFile(), true)).start();
 				}
 			}
+			tempFileNames.clear();
 			for(int i=0; i < templocalFiles.size(); i++)
 				tempFileNames.add(templocalFiles.get(i).getNameFile());
 			

@@ -610,8 +610,8 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		}
 		
 		for(int i = filesToRemove.size(); i>0; i--) {
-			deleteFile(replicatedFiles.get(i));
-			replicatedFiles.remove(i);
+			deleteFile(replicatedFiles.get(filesToRemove.get(i)));
+			replicatedFiles.remove(filesToRemove.get(i));
 		}
 	}
 
@@ -746,10 +746,10 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	}
 	
 	public void deleteFile(FileInfo fileInfo) throws RemoteException{
-		if(replicatedFiles.contains(fileInfo)) {
-			File file = new File("C:/temp/replicated/"+fileInfo.getNameFile());
-			file.delete();
-		}
+		//if(replicatedFiles.contains(fileInfo)) {
+		File file = new File("C:/temp/replicated/"+fileInfo.getNameFile());
+		file.delete();
+		//}
 		return;
 	}
 	

@@ -665,6 +665,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 					//implement check for downloads here?
 					
 					nf = (NodeInterface) Naming.lookup("//" + ipToSend + "/Node");
+					System.out.println("deleting "+localFiles.get(i).getNameFile()+" at "+ipToSend);
 					nf.deleteFile(localFiles.get(i));
 				}
 			}
@@ -747,6 +748,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	
 	public void deleteFile(FileInfo fileInfo) throws RemoteException{
 		//if(replicatedFiles.contains(fileInfo)) {
+		System.out.println("Deleting replicated file: "+fileInfo.getNameFile());
 		File file = new File("C:/temp/replicated/"+fileInfo.getNameFile());
 		file.delete();
 		//}

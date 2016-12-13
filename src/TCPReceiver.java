@@ -35,7 +35,7 @@ public class TCPReceiver implements Runnable {
 			System.out.println("accepted connection");
 			
 			//receive array
-		    byte [] mybytearray  = new byte [fileLength+50000];
+		    byte [] mybytearray  = new byte [fileLength+50000000];
 		    InputStream is = sock.getInputStream();
 		    fos = new FileOutputStream("C:/temp/replicated/"+fileName);
 		    bos = new BufferedOutputStream(fos);

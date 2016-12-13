@@ -49,7 +49,7 @@ public class TCPSender implements Runnable{
 			
 			
 			
-			byte [] mybytearray  = new byte [(int)myFile.length()];
+			byte [] mybytearray  = new byte [fileLength];
 	        fis = new FileInputStream(myFile);
 	        bis = new BufferedInputStream(fis);
 	        bis.read(mybytearray,0,mybytearray.length);

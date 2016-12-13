@@ -568,39 +568,44 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	}
 	
 	//This method 
-	public void updateFiles() throws RemoteException, MalformedURLException, NotBoundException, UnknownHostException {
+	public void updateFiles() throws RemoteException, MalformedURLException, NotBoundException, UnknownHostException, ClassNotFoundException {
 		System.out.println("updateFiles");
 		int totalRepFiles = replicatedFiles.size();
 		ArrayList<Integer> filesToRemove = new ArrayList<Integer>();
+		int ownerFile;
 		for (int i = 0; i < totalRepFiles; i++) {
+			ownerFile = cf.searchFile(replicatedFiles.get(i).getNameFile()).firstKey();
 			int hashFile = Math.abs((int) Integer.toUnsignedLong(replicatedFiles.get(i).getNameFile().hashCode()) % 32768);
 
-			if (hashFile > nextNode && hashFile < ownNode) {
-				nf = (NodeInterface) Naming.lookup("//" + nextIP + "/Node");
-				nf.newEntryReplicatedFiles(replicatedFiles.get(i));
-				filesToRemove.add(i);
-				Thread thread1 = new Thread(new TCPSender(nextIP,replicatedFiles.get(i).getNameFile(), false));
-				thread1.start();
-				try {
-					thread1.join();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+			if(replicatedFiles.get(i).getOriginalOwnerNode().firstKey() != ownerFile)
+			{
+				if (hashFile > nextNode && hashFile < ownNode) {
+					nf = (NodeInterface) Naming.lookup("//" + nextIP + "/Node");
+					nf.newEntryReplicatedFiles(replicatedFiles.get(i));
+					filesToRemove.add(i);
+					Thread thread1 = new Thread(new TCPSender(nextIP,replicatedFiles.get(i).getNameFile(), false));
+					thread1.start();
+					try {
+						thread1.join();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
 				}
-				
-			}
-			else if (hashFile > nextNode || hashFile < ownNode) {
-				nf = (NodeInterface) Naming.lookup("//" + nextIP + "/Node");
-				nf.newEntryReplicatedFiles(replicatedFiles.get(i));
-				filesToRemove.add(i);
-				Thread thread2 = new Thread(new TCPSender(nextIP,replicatedFiles.get(i).getNameFile(), false));
-				thread2.start();
-				try {
-					thread2.join();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				else if (hashFile > nextNode || hashFile < ownNode) {
+					nf = (NodeInterface) Naming.lookup("//" + nextIP + "/Node");
+					nf.newEntryReplicatedFiles(replicatedFiles.get(i));
+					filesToRemove.add(i);
+					Thread thread2 = new Thread(new TCPSender(nextIP,replicatedFiles.get(i).getNameFile(), false));
+					thread2.start();
+					try {
+						thread2.join();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}			
 			}
 		}
 		

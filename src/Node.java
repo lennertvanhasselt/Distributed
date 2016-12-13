@@ -610,8 +610,10 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		}
 		
 		for(int i = filesToRemove.size(); i>0; i--) {
-			deleteFile(replicatedFiles.get(filesToRemove.get(i)));
-			replicatedFiles.remove(filesToRemove.get(i));
+			System.out.print("Deleting replicated files... ");
+			File file = new File("C:/temp/replicated/"+replicatedFiles.get(filesToRemove.get(i)).getNameFile());
+			file.delete();
+			replicatedFiles.remove(replicatedFiles.get(filesToRemove.get(i)));
 		}
 	}
 

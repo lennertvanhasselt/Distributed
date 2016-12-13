@@ -533,8 +533,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		
 		String ipToSend;
 		String fileName;
-		File f;
-		int fileLength;
 		FileInfo fi;
 		
 		TreeMap<Integer,InetAddress> owner;
@@ -542,8 +540,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		while(it.hasNext()){
 			fi = it.next();
 			fileName = fi.getNameFile();
-			f = new File("c:/temp/local/"+fileName);
-			fileLength = (int) f.length();
 			owner = cf.searchFile(fileName);
 			
 			if(ownNode == owner.firstKey()){
@@ -555,7 +551,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 			System.out.println("send file " + fileName + " to " +ipToSend);
 			nf = (NodeInterface) Naming.lookup("//" + ipToSend + "/Node");
 			nf.newEntryReplicatedFiles(fi);
-			new Thread(new TCPSender(ipToSend,fileName,fileLength, true)).start();	
+			new Thread(new TCPSender(ipToSend,fileName, true)).start();	
 		}
 	}
 	
@@ -583,7 +579,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 				nf = (NodeInterface) Naming.lookup("//" + nextIP + "/Node");
 				nf.newEntryReplicatedFiles(replicatedFiles.get(i));
 				filesToRemove.add(i);
-				Thread thread1 = new Thread(new TCPSender(nextIP,replicatedFiles.get(i).getNameFile(),replicatedFiles.get(i).getNameFile().length(), false));
+				Thread thread1 = new Thread(new TCPSender(nextIP,replicatedFiles.get(i).getNameFile(), false));
 				thread1.start();
 				try {
 					thread1.join();
@@ -597,7 +593,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 				nf = (NodeInterface) Naming.lookup("//" + nextIP + "/Node");
 				nf.newEntryReplicatedFiles(replicatedFiles.get(i));
 				filesToRemove.add(i);
-				Thread thread2 = new Thread(new TCPSender(nextIP,replicatedFiles.get(i).getNameFile(),replicatedFiles.get(i).getNameFile().length(), false));
+				Thread thread2 = new Thread(new TCPSender(nextIP,replicatedFiles.get(i).getNameFile(), false));
 				thread2.start();
 				try {
 					thread2.join();
@@ -644,7 +640,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 					} else {
 						ipToSend=owner.get(owner.firstKey()).toString().substring(1);
 					}
-					new Thread(new TCPSender(ipToSend,templocalFiles.get(i).getNameFile(),templocalFiles.get(i).getNameFile().length(), true)).start();
+					new Thread(new TCPSender(ipToSend,templocalFiles.get(i).getNameFile(), true)).start();
 				}
 			}
 			for(int i=0; i < templocalFiles.size(); i++)
@@ -679,7 +675,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		for(int i = 0; i < totalRepFiles; i++)
 		{
 			nf.newEntryReplicatedFiles(replicatedFiles.get(i));
-			new Thread(new TCPSender(previousIP,replicatedFiles.get(i).getNameFile(),replicatedFiles.get(i).getNameFile().length(), false)).start();
+			new Thread(new TCPSender(previousIP,replicatedFiles.get(i).getNameFile(), false)).start();
 		}		
 	}
 	
@@ -710,7 +706,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 			if (hashFile >= node && hashFile < nextNode) {
 				nf = (NodeInterface) Naming.lookup("//" + ip + "/Node");
 				nf.newEntryReplicatedFiles(localFiles.get(i));
-				Thread thread1 = new Thread(new TCPSender(ip,localFiles.get(i).getNameFile(),localFiles.get(i).getNameFile().length(), true));
+				Thread thread1 = new Thread(new TCPSender(ip,localFiles.get(i).getNameFile(), true));
 				thread1.start();
 				try {
 					thread1.join();
@@ -726,7 +722,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 				if (hashFile >= node || hashFile < nextNode){
 					nf = (NodeInterface) Naming.lookup("//" + ip + "/Node");
 					nf.newEntryReplicatedFiles(localFiles.get(i));
-					Thread thread2 = new Thread(new TCPSender(ip,localFiles.get(i).getNameFile(),localFiles.get(i).getNameFile().length(), true));
+					Thread thread2 = new Thread(new TCPSender(ip,localFiles.get(i).getNameFile(), true));
 					thread2.start();
 					
 					try {

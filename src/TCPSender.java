@@ -14,24 +14,31 @@ public class TCPSender implements Runnable{
 	String IpToSend;
 	String fileName;
 	Boolean local;
-	int fileLength;
 	Socket sock;
 	
 	FileInputStream fis;
 	BufferedInputStream bis;
 	OutputStream os;
 	
-	public TCPSender(String IpToSend,String fileName, int fileLength, Boolean local){
+	public TCPSender(String IpToSend,String fileName, Boolean local){
 		this.IpToSend = IpToSend;
 		this.fileName = fileName;
-		this.fileLength = fileLength;
 		this.local = local;
 	}
 
 	@Override
 	public void run() {
+		
+		File myFile;
 
 		try {
+			if(local)
+				myFile = new File("C:/temp/local/"+fileName);
+			else
+				myFile = new File("C:/temp/replicated/"+fileName);
+			
+			int fileLength = (int) myFile.length();
+			
 			nf = (NodeInterface) Naming.lookup("//" + IpToSend + "/Node");
 			SOCKET_PORT = nf.setupTCPReceiver(fileName, fileLength);
 			System.out.println("received port: " + SOCKET_PORT);
@@ -39,12 +46,9 @@ public class TCPSender implements Runnable{
 			sock = new Socket(IpToSend, SOCKET_PORT);
 			
 			System.out.println("Sending File: " + fileName + ", with length: " + fileLength + ", to: " + IpToSend);
-			File myFile;
 			
-			if(local)
-				myFile = new File("C:/temp/local/"+fileName);
-			else
-				myFile = new File("C:/temp/replicated/"+fileName);
+			
+			
 			byte [] mybytearray  = new byte [(int)myFile.length()];
 	        fis = new FileInputStream(myFile);
 	        bis = new BufferedInputStream(fis);

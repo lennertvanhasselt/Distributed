@@ -648,6 +648,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 			
 			for(int i=0; i < localFiles.size(); i++) {
 				if(!tempFileNames.contains(localFiles.get(i).getNameFile())) {
+					System.out.println(localFiles.get(i).getNameFile()+" not found, deleting replicated...");
 					String ipToSend;
 					TreeMap<Integer,InetAddress> owner = cf.searchFile(localFiles.get(i).getNameFile());
 					if(ownNode == owner.firstKey()){

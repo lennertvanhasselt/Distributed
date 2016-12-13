@@ -14,7 +14,7 @@ public class CheckFileList implements Runnable{
 	public void run(){
 		while(true){
 			try {
-				Thread.sleep(30000);
+				Thread.sleep(5000); //30000
 				System.out.println("30 seconds over, updating filelist...");
 				node.replicateNewFiles();
 			} catch (RemoteException | ClassNotFoundException | MalformedURLException | NotBoundException | InterruptedException | UnknownHostException e) {

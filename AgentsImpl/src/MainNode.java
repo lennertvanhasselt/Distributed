@@ -12,7 +12,7 @@ import java.util.Scanner;
 // After the connection is established a menu appears where different options are available to use.
 // To make a choice in the menu, just press the number in front of the option.
 public class MainNode {
-	private static Node node;
+	private Node node;
 	public static void main(String[] args) throws ClassNotFoundException, IOException {
 	 	boolean exit = false;
 	 	int choice=0;
@@ -67,7 +67,10 @@ public class MainNode {
    	 			case 4: node.deleteNode();
    	 					exit = true;
    	 					break;
-   	 			case 5: initializeAgentFileList();
+   	 			case 5: AgentFileList agent = new AgentFileList(node);
+   	 					String nextIP = node.getNextIP();
+   	 					NodeInterface nf = (NodeInterface) Naming.lookup("//"+nextIP+"/Node");
+   	 					nf.startAgentFileList(agent);
    	 					break;
    	 			default:exit = false;
    	 					break;
@@ -79,12 +82,5 @@ public class MainNode {
 	         System.err.println("FileServer exception: "+ e.getMessage());
 	       e.printStackTrace();
 	    }
-	}
-	
-	public static void initializeAgentFileList() throws MalformedURLException, RemoteException, NotBoundException{
-		AgentFileList agent = new AgentFileList(node);
-		String nextIP = node.getNextIP();
-		NodeInterface nf = (NodeInterface) Naming.lookup("//"+nextIP+"/Node");
-		nf.startAgentFileList(agent);
 	}
 }

@@ -579,9 +579,8 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 	public void updateFiles() throws RemoteException, MalformedURLException, NotBoundException, UnknownHostException, ClassNotFoundException {
 		System.out.println("updateFiles");
 		int totalRepFiles = replicatedFiles.size();
-		ArrayList<Integer> filesToRemove = new ArrayList<Integer>();
 		int ownerFile;
-		for (int i = 0; i < totalRepFiles; i++) {
+		for (int i = totalRepFiles-1; i >= 0; i--) {
 			ownerFile = cf.searchFile(replicatedFiles.get(i).getNameFile()).firstKey();
 			int hashFile = Math.abs((int) Integer.toUnsignedLong(replicatedFiles.get(i).getNameFile().hashCode()) % 32768);
 
@@ -590,11 +589,12 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 				if (hashFile > nextNode && hashFile < ownNode) {
 					nf = (NodeInterface) Naming.lookup("//" + nextIP + "/Node");
 					nf.newEntryReplicatedFiles(replicatedFiles.get(i));
-					filesToRemove.add(i);
 					Thread thread1 = new Thread(new TCPSender(nextIP,replicatedFiles.get(i).getNameFile(), false));
 					thread1.start();
 					try {
 						thread1.join();
+						deleteFile(replicatedFiles.get(i));
+						replicatedFiles.remove(i);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -604,11 +604,12 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 				else if (hashFile > nextNode || hashFile < ownNode) {
 					nf = (NodeInterface) Naming.lookup("//" + nextIP + "/Node");
 					nf.newEntryReplicatedFiles(replicatedFiles.get(i));
-					filesToRemove.add(i);
 					Thread thread2 = new Thread(new TCPSender(nextIP,replicatedFiles.get(i).getNameFile(), false));
 					thread2.start();
 					try {
 						thread2.join();
+						deleteFile(replicatedFiles.get(i));
+						replicatedFiles.remove(i);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -617,10 +618,10 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 			}
 		}
 		
-		for(int i = filesToRemove.size(); i>0; i--) {
-			deleteFile(replicatedFiles.get(filesToRemove.get(i)));
-			replicatedFiles.remove(filesToRemove.get(i));
-		}
+//		for(int i = filesToRemove.size(); i>0; i--) {
+//			deleteFile(replicatedFiles.get(filesToRemove.get(i)));
+//			replicatedFiles.remove(filesToRemove.get(i));
+//		}
 	}
 
 	public void replicateNewFiles() throws RemoteException, ClassNotFoundException, MalformedURLException, NotBoundException, UnknownHostException {

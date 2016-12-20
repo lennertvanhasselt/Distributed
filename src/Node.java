@@ -474,6 +474,11 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 		System.out.println("Someone is checking your files... weird...");
 
 	}
+	
+	public String getNextIP()
+	{
+		return nextIP;
+	}
 
 	// Used to get previous node
 	public int getPreviousNode()

@@ -67,7 +67,7 @@ public class MainNode {
    	 			case 4: node.deleteNode();
    	 					exit = true;
    	 					break;
-   	 			case 5: AgentFileList agent = new AgentFileList(node);
+   	 			case 5: AgentFileList agent = new AgentFileList();
    	 					String nextIP = node.getNextIP();
    	 					System.out.println(nextIP);
    	 					NodeInterface nf = (NodeInterface) Naming.lookup("//"+nextIP+"/Node");

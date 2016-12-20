@@ -8,9 +8,9 @@ public class AgentFileList implements Runnable, Serializable {
 	private Node nodeagent;
 	private ArrayList<FileInfo> TotalFileList = new ArrayList<FileInfo>();
 
-	public AgentFileList(Node node)
+	public AgentFileList()
 	{
-		this.nodeagent = node;
+		
 	}
 	@Override
 	public void run() {	
@@ -35,10 +35,11 @@ public class AgentFileList implements Runnable, Serializable {
 			}
 		}
 		
+		nodeagent=null;
 	}
 	
-//	public void setNode(Node node){
-//		this.nodeagent=node;
-//	}
+	public void setNode(Node node){
+		this.nodeagent=node;
+	}
 
 }

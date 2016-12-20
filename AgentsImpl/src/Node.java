@@ -37,6 +37,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 		localFiles = new ArrayList<FileInfo>();
 		replicatedFiles = new ArrayList<FileInfo>();
 		deletedFiles = new ArrayList<String>();
+
 	}
 
 	// This is the menu that will appear on the console ones the connection with the server is established.

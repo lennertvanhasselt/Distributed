@@ -255,7 +255,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 						nextIP = IP;
 						System.out.println("nextNode: "+this.nextNode);
 						System.out.println("nextIP: "+this.nextIP);
-						updateFiles();
+						//updateFiles();
 					}
 
 					else if (hashed > nextNode && hashed < ownNode) {
@@ -281,7 +281,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 						nextIP = IP;
 						System.out.println("nextNode: "+this.nextNode);
 						System.out.println("nextIP: "+this.nextIP);
-						updateFiles();
+						//updateFiles();
 					}
 
 					else if (hashed == ownNode) {
@@ -293,7 +293,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 						nextIP = IP;
 						System.out.println("nextNode: "+this.nextNode);
 						System.out.println("nextIP: "+this.nextIP);
-						updateFiles();
+						//updateFiles();
 					}
 				} else  {
 
@@ -312,7 +312,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 						nextIP = IP;
 						System.out.println("nextNode: "+this.nextNode);
 						System.out.println("nextIP: "+this.nextIP);
-						updateFiles();
+						//updateFiles();
 					}
 
 					else if (hashed == ownNode && hashed < nextNode) {
@@ -324,7 +324,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 						nextIP = IP;
 						System.out.println("nextNode: "+this.nextNode);
 						System.out.println("nextIP: "+this.nextIP);
-						updateFiles();
+						//updateFiles();
 					}
 
 					else if (hashed > nextNode) {
@@ -341,7 +341,8 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 						System.out.println("previousNode: "+this.previousNode);
 						System.out.println("previousIP: "+this.previousIP);
 					}
-				}			
+				}
+				updateFiles();
 			}
 			else {
 				if (previousNode > ownNode) {

@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
@@ -15,7 +16,7 @@ import java.util.Scanner;
 import java.util.TreeMap;
 
 
-public class Node extends UnicastRemoteObject implements NodeInterface {
+public class Node extends UnicastRemoteObject implements NodeInterface, Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private int previousNode = -1, nextNode = -1, totalNodes = -1;
@@ -760,7 +761,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	}
 	
 	public void startAgentFileList(AgentFileList agent)throws RemoteException, MalformedURLException, NotBoundException{
-		agent.setNode(this);
+		//agent.setNode(this);
 		Thread thread = new Thread(agent);
 		System.out.println("print 1");
 		thread.start();

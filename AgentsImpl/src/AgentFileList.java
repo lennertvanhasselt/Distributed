@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class AgentFileList implements Runnable, Serializable {
+	private static final long serialVersionUID = 1L;
 	private Node nodeagent;
 	private ArrayList<FileInfo> TotalFileList = new ArrayList<FileInfo>();
+
 	public AgentFileList(Node node)
 	{
 		this.nodeagent = node;
 	}
-	private static final long serialVersionUID = 1L;
 	@Override
 	public void run() {	
 		System.out.println("#zwam");
@@ -36,8 +37,8 @@ public class AgentFileList implements Runnable, Serializable {
 		
 	}
 	
-	public void setNode(Node node){
-		this.nodeagent=node;
-	}
+//	public void setNode(Node node){
+//		this.nodeagent=node;
+//	}
 
 }

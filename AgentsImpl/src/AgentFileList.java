@@ -1,12 +1,16 @@
 
 import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 public class AgentFileList implements Runnable, Serializable {
 	private static final long serialVersionUID = 1L;
 	private Node nodeagent;
-	private ArrayList<FileInfo> TotalFileList = new ArrayList<FileInfo>();
+	private ArrayList<String> TotalFileList = new ArrayList<String>();
 
 	public AgentFileList()
 	{
@@ -16,25 +20,37 @@ public class AgentFileList implements Runnable, Serializable {
 	public void run() {	
 		System.out.println("#zwam");
 		update();
+		try {
+			NodeInterface nf = (NodeInterface) Naming.lookup("//"+nodeagent.getNextIP()+"/Node");
+			nf.startAgentFileList(this);
+		} catch (RemoteException | MalformedURLException | NotBoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	private void update()
 	{
-		Iterator<FileInfo> it1 = nodeagent.deletedFiles.iterator();
-		while(it1.hasNext()){
-			if(TotalFileList.contains(it1.next())){
-				TotalFileList.remove(it1.next());
-				nodeagent.deletedFiles.remove(it1.next());
+		if(!nodeagent.deletedFiles.isEmpty()){
+			Iterator<String> it1 = nodeagent.deletedFiles.iterator();
+			int i = nodeagent.deletedFiles.size();
+			for(int j=i-1;j>=0;j--) {
+				if(TotalFileList.remove(nodeagent.deletedFiles.get(j))) { //returns true if deleted, false if not present
+					nodeagent.deletedFiles.remove(j);
+				} else { System.out.println("File in deletedFiles does not exist:  "+nodeagent.deletedFiles.get(j)); }
 			}
-		}
-	
-		Iterator<FileInfo> it2 = nodeagent.replicatedFiles.iterator();
-		while(it2.hasNext()){
-			if(!TotalFileList.contains(it2.next())){
-				TotalFileList.add(it2.next());
-			}
-		}
 		
+			Iterator<FileInfo> it2 = nodeagent.replicatedFiles.iterator();
+			i=nodeagent.replicatedFiles.size();
+			for(int j=i-1;j>=0;j--) {
+				if(TotalFileList.remove(nodeagent.replicatedFiles.get(j))) { //returns true if deleted, false if not present
+					nodeagent.replicatedFiles.remove(j);
+				} else {
+					System.out.println("File in deletedFiles does not exist:  "+nodeagent.replicatedFiles.get(j));
+				}
+			}
+		}
+			
 		nodeagent=null;
 	}
 	

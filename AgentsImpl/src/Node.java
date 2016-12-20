@@ -28,7 +28,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 	public boolean check;
 	public ArrayList<FileInfo> replicatedFiles;
 	public ArrayList<FileInfo> localFiles;
-	public ArrayList<FileInfo> deletedFiles;
+	public ArrayList<String> deletedFiles;
 	public Boolean serverSet = false;
 
 	public Node() throws ClassNotFoundException, IOException, RemoteException {	
@@ -36,6 +36,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 		check = false;
 		localFiles = new ArrayList<FileInfo>();
 		replicatedFiles = new ArrayList<FileInfo>();
+		deletedFiles = new ArrayList<String>();
 	}
 
 	// This is the menu that will appear on the console ones the connection with the server is established.
@@ -669,7 +670,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 					//implement check for downloads here?
 					
 					//File has to be deleted from the agent's list
-					deletedFiles.add(localFiles.get(i));
+					deletedFiles.add(localFiles.get(i).getNameFile());
 					nf = (NodeInterface) Naming.lookup("//" + ipToSend + "/Node");
 					nf.deleteFile(localFiles.get(i));
 				}
@@ -761,22 +762,11 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 	}
 	
 	public void startAgentFileList(AgentFileList agent)throws RemoteException, MalformedURLException, NotBoundException{
-		//agent.setNode(this);
+		agent.setNode(this);
 		Thread thread = new Thread(agent);
 		System.out.println("print 1");
 		thread.start();
 		System.out.println("print 2");
-		try {
-			thread.join();
-			System.out.println("print 3");
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		nf = (NodeInterface) Naming.lookup("//"+nextIP+"/Node");
-		System.out.println("print 4");
-		nf.startAgentFileList(agent);
-		System.out.println("print 5");
 	}
 	
 	

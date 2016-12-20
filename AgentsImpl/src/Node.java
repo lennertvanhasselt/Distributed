@@ -36,6 +36,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 		check = false;
 		localFiles = new ArrayList<FileInfo>();
 		replicatedFiles = new ArrayList<FileInfo>();
+		deletedFiles = new ArrayList<FileInfo>();
 	}
 
 	// This is the menu that will appear on the console ones the connection with the server is established.
@@ -761,7 +762,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 	}
 	
 	public void startAgentFileList(AgentFileList agent)throws RemoteException, MalformedURLException, NotBoundException{
-		//agent.setNode(this);
+		agent.setNode(this);
 		Thread thread = new Thread(agent);
 		System.out.println("print 1");
 		thread.start();
@@ -773,10 +774,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		nf = (NodeInterface) Naming.lookup("//"+nextIP+"/Node");
-		System.out.println("print 4");
-		nf.startAgentFileList(agent);
-		System.out.println("print 5");
 	}
 	
 	

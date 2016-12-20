@@ -1,11 +1,16 @@
 
 import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 public class AgentFileList implements Runnable, Serializable {
 	private static final long serialVersionUID = 1L;
 	private Node nodeagent;
+	private NodeInterface nf;
 	private ArrayList<FileInfo> TotalFileList = new ArrayList<FileInfo>();
 
 	public AgentFileList()
@@ -15,7 +20,17 @@ public class AgentFileList implements Runnable, Serializable {
 	@Override
 	public void run() {	
 		System.out.println("#zwam");
-		update();
+		//update();
+		try {
+			System.out.println("print 4");
+			nf = (NodeInterface) Naming.lookup("//"+nodeagent.getNextIP()+"/Node");
+			nf.startAgentFileList(this);
+		} catch (MalformedURLException | RemoteException | NotBoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		System.out.println("print 5");
+		nodeagent=null;
 	}
 	
 	private void update()
@@ -34,12 +49,10 @@ public class AgentFileList implements Runnable, Serializable {
 				TotalFileList.add(it2.next());
 			}
 		}
-		
-		nodeagent=null;
 	}
 	
-	public void setNode(Node node){
-		this.nodeagent=node;
+	public void setNode(Node nodeUpdate){
+		this.nodeagent=nodeUpdate;
 	}
 
 }

@@ -767,6 +767,12 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 		Thread thread = new Thread(agent);
 		System.out.println("print 1");
 		thread.start();
+		try {
+			thread.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		System.out.println("print 2");
 		NodeInterface nf = (NodeInterface) Naming.lookup("//"+nextIP+"/Node");
 		nf.startAgentFileList(agent);

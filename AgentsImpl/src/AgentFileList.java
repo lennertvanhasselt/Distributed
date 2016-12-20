@@ -35,5 +35,9 @@ public class AgentFileList implements Runnable, Serializable {
 		}
 		
 	}
+	
+	public void setNode(Node node){
+		this.nodeagent=node;
+	}
 
 }

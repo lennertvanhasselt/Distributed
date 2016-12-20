@@ -760,6 +760,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	}
 	
 	public void startAgentFileList(AgentFileList agent)throws RemoteException, MalformedURLException, NotBoundException{
+		agent.setNode(this);
 		Thread thread = new Thread(agent);
 		System.out.println("print 1");
 		thread.start();

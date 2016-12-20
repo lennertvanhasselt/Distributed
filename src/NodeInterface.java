@@ -15,4 +15,5 @@ public interface NodeInterface extends Remote{
 	void deleteFile(FileInfo fileInfo)throws RemoteException;
 	//void constructReplicatedList() throws RemoteException;
 	void newEntryReplicatedFiles(FileInfo fi) throws RemoteException, UnknownHostException;
+	void startAgentFileList(AgentFileList agent) throws RemoteException, MalformedURLException, NotBoundException;
 }

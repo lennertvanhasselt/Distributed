@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
@@ -15,7 +16,7 @@ import java.util.Scanner;
 import java.util.TreeMap;
 
 
-public class Node extends UnicastRemoteObject implements NodeInterface {
+public class Node extends UnicastRemoteObject implements NodeInterface, Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private int previousNode = -1, nextNode = -1, totalNodes = -1;
@@ -27,6 +28,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	public boolean check;
 	public ArrayList<FileInfo> replicatedFiles;
 	public ArrayList<FileInfo> localFiles;
+	public ArrayList<String> deletedFiles;
 	public Boolean serverSet = false;
 
 	public Node() throws ClassNotFoundException, IOException, RemoteException {	
@@ -34,6 +36,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		check = false;
 		localFiles = new ArrayList<FileInfo>();
 		replicatedFiles = new ArrayList<FileInfo>();
+		deletedFiles = new ArrayList<String>();
 	}
 
 	// This is the menu that will appear on the console ones the connection with the server is established.
@@ -753,6 +756,22 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 		file.delete();
 		//}
 		return;
+	}
+	
+	public void startAgentFileList(AgentFileList agent)throws RemoteException, MalformedURLException, NotBoundException{
+		agent.setNode(this);
+		Thread thread = new Thread(agent);
+		System.out.println("print 1");
+		thread.start();
+		try {
+			thread.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("print 2");
+		NodeInterface nf = (NodeInterface) Naming.lookup("//"+nextIP+"/Node");
+		nf.startAgentFileList(agent);
 	}
 	
 	/*TO COMPLETE

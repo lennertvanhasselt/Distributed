@@ -69,6 +69,7 @@ public class MainNode {
    	 					break;
    	 			case 5: AgentFileList agent = new AgentFileList(node);
    	 					String nextIP = node.getNextIP();
+   	 					System.out.println(nextIP);
    	 					NodeInterface nf = (NodeInterface) Naming.lookup("//"+nextIP+"/Node");
    	 					nf.startAgentFileList(agent);
    	 					break;

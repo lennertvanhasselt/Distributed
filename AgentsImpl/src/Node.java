@@ -761,15 +761,20 @@ public class Node extends UnicastRemoteObject implements NodeInterface {
 	
 	public void startAgentFileList(AgentFileList agent)throws RemoteException, MalformedURLException, NotBoundException{
 		Thread thread = new Thread(agent);
+		System.out.println("print 1");
 		thread.start();
+		System.out.println("print 2");
 		try {
 			thread.join();
+			System.out.println("print 3");
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		nf = (NodeInterface) Naming.lookup("//"+nextIP+"/Node");
+		System.out.println("print 4");
 		nf.startAgentFileList(agent);
+		System.out.println("print 5");
 	}
 	
 	

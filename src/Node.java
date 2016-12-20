@@ -584,7 +584,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 			ownerFile = cf.searchFile(replicatedFiles.get(i).getNameFile()).firstKey();
 			int hashFile = Math.abs((int) Integer.toUnsignedLong(replicatedFiles.get(i).getNameFile().hashCode()) % 32768);
 
-			if(replicatedFiles.get(i).getOriginalOwnerNode().firstKey() != ownerFile)
+			if(replicatedFiles.get(i).getOriginalOwnerNode().firstKey() != ownerFile || ownerFile != ownNode)
 			{
 				if (hashFile > nextNode && hashFile < ownNode) {
 					nf = (NodeInterface) Naming.lookup("//" + nextIP + "/Node");
@@ -767,7 +767,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 	public void startAgentFileList(AgentFileList agent)throws RemoteException, MalformedURLException, NotBoundException{
 		agent.setNode(this);
 		Thread thread = new Thread(agent);
-		System.out.println("print 1");
 		thread.start();
 		try {
 			thread.join();
@@ -775,7 +774,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("print 2");
 		NodeInterface nf = (NodeInterface) Naming.lookup("//"+nextIP+"/Node");
 		nf.startAgentFileList(agent);
 	}

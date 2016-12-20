@@ -21,7 +21,6 @@ public class AgentFileList implements Runnable, Serializable {
 	@Override
 	public void run() {	
 		try {
-			System.out.println("#zwam");
 			nodeagent.replicateNewFiles();
 			update();
 			nodeagent=null;

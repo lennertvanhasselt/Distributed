@@ -21,13 +21,7 @@ public class AgentFileList implements Runnable, Serializable {
 	public void run() {	
 		System.out.println("#zwam");
 		update();
-		try {
-			NodeInterface nf = (NodeInterface) Naming.lookup("//"+nodeagent.getNextIP()+"/Node");
-			nf.startAgentFileList(this);
-		} catch (RemoteException | MalformedURLException | NotBoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		nodeagent=null;
 	}
 	
 	private void update()
@@ -51,8 +45,7 @@ public class AgentFileList implements Runnable, Serializable {
 				}
 			}
 		}
-			
-		nodeagent=null;
+
 	}
 	
 	public void setNode(Node nodeUpdate){

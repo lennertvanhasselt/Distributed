@@ -28,6 +28,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 	public boolean check;
 	public ArrayList<FileInfo> replicatedFiles;
 	public ArrayList<FileInfo> localFiles;
+	public ArrayList<String> totalFileList;   //bedoeling is om hier een lijst van fileinfo van te maken
 	public ArrayList<String> deletedFiles;
 	public Boolean serverSet = false;
 
@@ -37,6 +38,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 		localFiles = new ArrayList<FileInfo>();
 		replicatedFiles = new ArrayList<FileInfo>();
 		deletedFiles = new ArrayList<String>();
+		totalFileList = new ArrayList<String>();
 	}
 
 	// This is the menu that will appear on the console ones the connection with the server is established.
@@ -48,6 +50,8 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 		System.out.println("2) check Previous - next node");
 		System.out.println("3) replicate local files");
 		System.out.println("4) Exit and delete node");
+		System.out.println("5) initial start agent");
+		System.out.println("6) get Total files"); 
 		System.out.println("Give your choice: ");
 		int menuChoice = scan.nextInt();
 		return menuChoice;	
@@ -777,6 +781,17 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 		}
 		NodeInterface nf = (NodeInterface) Naming.lookup("//"+nextIP+"/Node");
 		nf.startAgentFileList(agent);
+	}
+	
+	public void setTotalFileList(ArrayList<String> totalFileList){
+		this.totalFileList=totalFileList;
+	}
+	
+	public void printTotalFileList(){
+		Iterator<String> it = totalFileList.iterator();
+		while(it.hasNext()){
+			System.out.println("file:" +it.next());
+		}
 	}
 	
 	/*TO COMPLETE

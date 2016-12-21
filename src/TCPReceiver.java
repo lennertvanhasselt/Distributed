@@ -1,4 +1,5 @@
-import java.io.BufferedOutputStream;
+import java.io.BufferedInputStream;
+//import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,7 +15,7 @@ public class TCPReceiver implements Runnable {
 	int fileLength;
 	
 	FileOutputStream fos = null;
-	BufferedOutputStream bos = null;
+	BufferedInputStream bis = null;
 	
 	public TCPReceiver(String fileName, int fileLength){
 		this.fileName = fileName;
@@ -22,8 +23,7 @@ public class TCPReceiver implements Runnable {
 	}
 
 	public void run() {
-		int bytesRead;
-		int current = 0;
+		int current;
 		try {
 			
 			//serversocket will choose an available port
@@ -35,11 +35,17 @@ public class TCPReceiver implements Runnable {
 			System.out.println("accepted connection");
 			
 			//receive array
-		    byte [] mybytearray  = new byte [fileLength+50000000];
+		    byte [] mybytearray  = new byte [1024];
+		    int byteLength = 1024;
 		    InputStream is = sock.getInputStream();
 		    fos = new FileOutputStream("C:/temp/replicated/"+fileName);
-		    bos = new BufferedOutputStream(fos);
-		    bytesRead=is.read(mybytearray,0, mybytearray.length);
+		    bis = new BufferedInputStream(is, 1024);
+		    while((current = bis.read(mybytearray,0,1024)) != -1) {
+		    	byteLength = byteLength + 1024;
+		    	fos.write(mybytearray,0,current);
+		    }
+		    
+		    /*bytesRead=is.read(mybytearray,0, mybytearray.length);
 		    current = bytesRead;
 		    
 		    do {
@@ -50,12 +56,12 @@ public class TCPReceiver implements Runnable {
 		    	   
 		    //write array to file
 			bos.write(mybytearray, 0 , current);
-			bos.flush();
+			bos.flush(); */
 			System.out.println("File " + fileName
-			+ " downloaded (" + fileLength + " bytes read)");
+			+ " downloaded (" + byteLength + " bytes read)");
 						      
 			fos.close();
-			bos.close();
+			bis.close();
 			sock.close();
 			servsock.close();
 					

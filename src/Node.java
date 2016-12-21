@@ -659,6 +659,8 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 					} else {
 						ipToSend=owner.get(owner.firstKey()).toString().substring(1);
 					}
+					nf = (NodeInterface) Naming.lookup("//" + ipToSend + "/Node");
+					nf.newEntryReplicatedFiles(templocalFiles.get(i));
 					new Thread(new TCPSender(ipToSend,templocalFiles.get(i).getNameFile(), true)).start();
 				}
 			}

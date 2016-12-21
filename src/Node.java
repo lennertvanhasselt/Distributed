@@ -764,8 +764,17 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 	
 	public void deleteFile(FileInfo fileInfo) throws RemoteException{
 		//if(replicatedFiles.contains(fileInfo)) {
-		System.out.println("Deleting replicated file: "+fileInfo.getNameFile());
-		File file = new File("C:/temp/replicated/"+fileInfo.getNameFile());
+		String fileName = fileInfo.getNameFile();
+		if(!replicatedFiles.remove(fileInfo)){
+			int index=-1;
+			for(int i=replicatedFiles.size()-1;i>=0;i--) {
+				if(replicatedFiles.get(i).getNameFile().equals(fileName))
+					index=i;
+			}
+			replicatedFiles.remove(index);
+		}
+		System.out.println("Deleting replicated file: "+fileName);
+		File file = new File("C:/temp/replicated/"+fileName);
 		file.delete();
 		//}
 		return;

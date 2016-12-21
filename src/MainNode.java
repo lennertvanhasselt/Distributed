@@ -71,6 +71,7 @@ public class MainNode {
    	 					NodeInterface nf = (NodeInterface) Naming.lookup("//"+nextIP+"/Node");
    	 					nf.startAgentFileList(agent);
    	 					break;
+   	 			case 6: node.printTotalFileList();
    	 			default:exit = false;
    	 					break;
    	 			}

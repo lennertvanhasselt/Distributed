@@ -779,8 +779,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		NodeInterface nf = (NodeInterface) Naming.lookup("//"+nextIP+"/Node");
-		nf.startAgentFileList(agent);
+		new Thread(new RMIStarter(agent,nextIP)).start();
 	}
 	
 	public void setTotalFileList(ArrayList<String> totalFileList){

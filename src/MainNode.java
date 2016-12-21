@@ -22,7 +22,7 @@ public class MainNode {
 		//make sure rmi can be performed to the node
 		Node node = new Node();
 		
-		new Thread(new CheckFileList(node)).start();
+		//new Thread(new CheckFileList(node)).start();
 		
 		String bindLocationNode = "//localhost/Node";
 		try{

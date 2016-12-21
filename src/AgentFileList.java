@@ -12,7 +12,7 @@ public class AgentFileList implements Runnable, Serializable {
 	private static final long serialVersionUID = 1L;
 	private Node nodeagent;
 	private ArrayList<String> totalFileList = new ArrayList<String>();
-
+	private int i;
 
 	public AgentFileList()
 	{
@@ -36,21 +36,19 @@ public class AgentFileList implements Runnable, Serializable {
 	{
 		if(!nodeagent.deletedFiles.isEmpty()){
 			Iterator<String> it1 = nodeagent.deletedFiles.iterator();
-			int i = nodeagent.deletedFiles.size();
+			i = nodeagent.deletedFiles.size();
 			for(int j=i-1;j>=0;j--) {
 				if(totalFileList.remove(nodeagent.deletedFiles.get(j))) { //returns true if deleted, false if not present
 					nodeagent.deletedFiles.remove(j);
 				} else { System.out.println("File in deletedFiles does not exist:  "+nodeagent.deletedFiles.get(j)); }
 			}
-		
-			Iterator<FileInfo> it2 = nodeagent.replicatedFiles.iterator();
-			i=nodeagent.replicatedFiles.size();
-			for(int j=i-1;j>=0;j--) {
-				if(totalFileList.remove(nodeagent.replicatedFiles.get(j))) { //returns true if deleted, false if not present
-					nodeagent.replicatedFiles.remove(j);
-				} else {
-					System.out.println("File in deletedFiles does not exist:  "+nodeagent.replicatedFiles.get(j));
-				}
+		}
+		i=nodeagent.replicatedFiles.size();
+		String repFileName;
+		for(int j=0;j<i;j++) {
+			repFileName = nodeagent.replicatedFiles.get(j).getNameFile();
+			if(!totalFileList.contains(repFileName)) { //returns true if deleted, false if not present
+				totalFileList.add(repFileName);
 			}
 		}
 

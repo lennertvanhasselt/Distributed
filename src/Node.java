@@ -346,7 +346,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 						System.out.println("previousIP: "+this.previousIP);
 					}
 				}
-				updateFiles();
+				updateFiles2();
 			}
 			else {
 				if (previousNode > ownNode) {
@@ -791,6 +791,50 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 		while(it.hasNext()){
 			System.out.println("file:" +it.next());
 		}
+	}
+	
+	public void updateFiles2() throws RemoteException, ClassNotFoundException, MalformedURLException, NotBoundException, UnknownHostException {
+		int totalRepFiles = replicatedFiles.size();
+		int ownerNode, originalOwner;
+		for (int i = totalRepFiles-1; i >= 0; i--) {
+			//get ownerNode of the specific replicated file
+			ownerNode = cf.searchFile(replicatedFiles.get(i).getNameFile()).firstKey();
+			originalOwner = replicatedFiles.get(i).getOriginalOwnerNode().firstKey();
+			if(ownNode != ownerNode){
+				if(originalOwner == nextNode) {
+					if(ownerNode == previousNode){
+						nf = (NodeInterface) Naming.lookup("//" + previousIP + "/Node");
+						nf.newEntryReplicatedFiles(replicatedFiles.get(i));
+						Thread thread1 = new Thread(new TCPSender(previousIP,replicatedFiles.get(i).getNameFile(), false));
+						thread1.start();
+						try {
+							thread1.join();
+							deleteFile(replicatedFiles.get(i));
+							replicatedFiles.remove(i);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}						
+				}
+				else { // originalOwner == previousNode
+					if(ownerNode == nextNode || ownerNode == previousNode) {
+						nf = (NodeInterface) Naming.lookup("//" + nextIP + "/Node");
+						nf.newEntryReplicatedFiles(replicatedFiles.get(i));
+						Thread thread1 = new Thread(new TCPSender(nextIP,replicatedFiles.get(i).getNameFile(), false));
+						thread1.start();
+						try {
+							thread1.join();
+							deleteFile(replicatedFiles.get(i));
+							replicatedFiles.remove(i);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+			}			
+		}		
 	}
 	
 	/*TO COMPLETE

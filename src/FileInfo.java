@@ -2,6 +2,8 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.TreeMap;
 
+//keeps name of file, downloaded, the original owner
+//and the node where the hash of the file points to (replicate).
 public class FileInfo implements Serializable {
 	
 	private static final long serialVersionUID = 1L;

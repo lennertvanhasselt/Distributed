@@ -8,7 +8,7 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.util.TreeMap;
 
-// This includes all functions that are needed for the correct working of ClientInfo
+// Mostly used to keep and update the list of nodes.
 public class ListNodes {
 	
 	private TreeMap<Integer,InetAddress> table;
@@ -17,14 +17,15 @@ public class ListNodes {
 	public ListNodes() throws ClassNotFoundException, IOException
 	{
 		table = new TreeMap<Integer,InetAddress>();
-		/*try {
+		try {
 			//Check if there already is a file
 			FileInputStream fileIn = new FileInputStream("/temp/table.ser");
 	        ObjectInputStream in = new ObjectInputStream(fileIn);
 	        table = (TreeMap) in.readObject();
 	        in.close();
 	        fileIn.close();
-		} catch(FileNotFoundException i) {*/     //uncomment when for real
+		} catch(FileNotFoundException i) {
+			//if file is not found, make a new file.
 	        try{
 	        	FileOutputStream fileOut = new FileOutputStream("/temp/table.ser");
 	        	ObjectOutputStream out = new ObjectOutputStream(fileOut);
@@ -34,10 +35,10 @@ public class ListNodes {
 	        }catch(IOException j){
 	        	j.printStackTrace();
 	        }
-		//}
+		}
 	}
 	
-	// Returning the values of the TreeMap.
+	// Returning the TreeMap of Nodes.
 	public TreeMap<Integer, InetAddress> getMap() throws ClassNotFoundException
 	{
 		try{
@@ -53,8 +54,6 @@ public class ListNodes {
 	          i.printStackTrace();
 	          return null;
 	    }
-		
-		 //we could return the table or all values independently 
 	}
 	
 	// Adding another entry to the TreeMap.
@@ -201,15 +200,19 @@ public class ListNodes {
 		TreeMap<Integer,InetAddress> prevNext =new TreeMap<Integer,InetAddress>();
 		int previousNode;
 		int nextNode;
+		//if node is alone, he is previous and next
 		if(table.size()==1){
 			previousNode=node;
 			nextNode=node;
+		//node is last in table
 		} else if(table.higherKey(node)==null) {
 			previousNode=table.firstKey();
 			nextNode=table.lowerKey(node);
+		//node is first in table
 		} else if(table.lowerKey(node)==null) {
 			previousNode=table.higherKey(node);
 			nextNode=table.lastKey();
+		//node has normal next and previous
 		} else {
 			previousNode = table.higherKey(node);
 			nextNode = table.lowerKey(node);

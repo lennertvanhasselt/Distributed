@@ -28,9 +28,9 @@ public class MainServer {
 	        System.out.println("NodeServer is ready at:" + bindLocation);
             System.out.println("java RMI registry created.");
             new Thread(new MulticastReceiverServer()).start();
-            //for testing purposes
             while(true){
             	int i = Integer.parseInt(scan.nextLine());
+            	//print all nodes in the system
             	if(i==1){
             		ListNodes list = cli.getList();
             		TreeMap<Integer,InetAddress> map = list.getMap();

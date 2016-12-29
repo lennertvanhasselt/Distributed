@@ -3,6 +3,7 @@ import java.net.UnknownHostException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
+//Not implemented. Used to check own files every 30 seconds.
 public class CheckFileList implements Runnable{
 	
 	Node node;

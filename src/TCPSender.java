@@ -32,7 +32,7 @@ public class TCPSender implements Runnable{
 		File myFile;
 
 		try {
-			if(local)
+			if(local) //local tells method if sending is from local or from replicated
 				myFile = new File("C:/temp/local/"+fileName);
 			else
 				myFile = new File("C:/temp/replicated/"+fileName);
@@ -40,7 +40,8 @@ public class TCPSender implements Runnable{
 			int fileLength = (int) myFile.length();
 			
 			nf = (NodeInterface) Naming.lookup("//" + IpToSend + "/Node");
-			SOCKET_PORT = nf.setupTCPReceiver(fileName, fileLength);
+			SOCKET_PORT = nf.setupTCPReceiver(fileName, fileLength);	
+			//let other node know we want to send him the file, returns the SOCKET_PORT
 			System.out.println("received port: " + SOCKET_PORT);
 			
 			sock = new Socket(IpToSend, SOCKET_PORT);
@@ -49,10 +50,10 @@ public class TCPSender implements Runnable{
 			
 			
 			
-			byte [] mybytearray  = new byte [fileLength];
+			byte [] mybytearray  = new byte [fileLength]; 	//create an array of bytes of file
 	        fis = new FileInputStream(myFile);
 	        bis = new BufferedInputStream(fis);
-	        bis.read(mybytearray,0,mybytearray.length);
+	        bis.read(mybytearray,0,mybytearray.length); 	//read whole file in 1 array
 	        os = sock.getOutputStream();
 	        System.out.println("Sending " + fileName + "(" + mybytearray.length + " bytes)");
 	        os.write(mybytearray);
@@ -62,8 +63,6 @@ public class TCPSender implements Runnable{
 	        bis.close();
 	        os.close();
 	        sock.close();
-	        //nf.constructReplicatedList();
-			
 		} catch (IOException | NotBoundException e) {
 			e.printStackTrace();
 		}

@@ -6,7 +6,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.TreeMap;
 
-// Interface for RMI.
+// Interface for RMI between Node and Server
 public interface ClientInterface extends Remote{
 	void setNode(String clientName, InetAddress IP)throws RemoteException, ClassNotFoundException, MalformedURLException, NotBoundException, IOException;
 	TreeMap<Integer,InetAddress> searchFile(String search)throws RemoteException, ClassNotFoundException;

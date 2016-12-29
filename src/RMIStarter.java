@@ -15,10 +15,10 @@ public class RMIStarter implements Runnable{
 	public void run() {
 		NodeInterface nf;
 		try {
+			//give agent and start the agent on the next node
 			nf = (NodeInterface) Naming.lookup("//"+nextIP+"/Node");
 			nf.startAgentFileList(agent);
 		} catch (MalformedURLException | RemoteException | NotBoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

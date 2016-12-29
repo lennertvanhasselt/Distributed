@@ -22,13 +22,12 @@ public class MulticastReceive implements Runnable{
 				socket.receive(msgPacket); 										//receive the message
 				InetAddress ip = msgPacket.getAddress();  						//extract address from packet
 	            String hostname = new String(buf, 0, buf.length); 				//message to string
-	            hostname = hostname.replaceAll(Character.toString((char) 0),""); //delete empty bytes of buf
+	            hostname = hostname.replaceAll(Character.toString((char) 0),"");//delete empty bytes of buf
 	            System.out.println(ip+ " "+hostname);	            
 	            node.hashing(hostname, ip); //set prev/next node if necessary
 	            
 	         }
 			 } catch (IOException | ClassNotFoundException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 			}
 	}

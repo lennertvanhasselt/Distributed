@@ -16,16 +16,20 @@ public class MainNode {
 	 	int choice=0;
 		Scanner scan = new Scanner(System.in);
 		
+		InetAddress address = InetAddress.getLocalHost();
+	 	System.out.println(address.getHostAddress());
+		
 		System.out.println("Give the name of the node: ");
 		String nodename=scan.nextLine();
 		
-		//make sure rmi can be performed to the node
 		Node node = new Node();
 		
+		//not implemented bc of agents (checks local files every 30 secs)
 		//new Thread(new CheckFileList(node)).start();
 		
-		String bindLocationNode = "//localhost/Node";
+		//make sure rmi can be performed to the node
 		try{
+			String bindLocationNode = "//localhost/Node";
 			LocateRegistry.createRegistry(1099);
 			Naming.bind(bindLocationNode, node);
 	        System.out.println("NodeServer is ready at:" + bindLocationNode);
@@ -34,18 +38,17 @@ public class MainNode {
             System.out.println("java RMI registry already exists.");
 		}
 		
-		//start multicast to discover nameserver
-		InetAddress address = InetAddress.getLocalHost();
-	 	address = InetAddress.getByName(address.getHostAddress());
+		//start multicast to discover nameserver and other nodes
 		new Thread(new MulticastSender(nodename)).start();
 		
 		//wait for rmi to be performed by server
-		System.out.println("Wait for rmi to be performed by server");
+		System.out.println("Waiting for rmi to be performed by server");
 		while(node.check==false)
 	 	{
 	 		System.out.print("");   //without print, the check doesn't update.
 	 	}
 	 	System.out.println("nameserver recognized: " + node.mainServer);
+	 	//start multicastreceive to see other nodes join
 	 	new Thread(new MulticastReceive(node)).start();
 		try {
 			String name = "//"+node.mainServer+"/cliNode";

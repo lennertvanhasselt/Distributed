@@ -2,11 +2,9 @@
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
-import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 public class AgentFileList implements Runnable, Serializable {
 	private static final long serialVersionUID = 1L;
@@ -22,13 +20,16 @@ public class AgentFileList implements Runnable, Serializable {
 	@Override
 	public void run() {	
 		try {
+			//Check local files if files have been deleted/added
 			nodeagent.replicateNewFiles();
+			//update TotalFileList
 			update();
+			//send TotalFileList to node
 			nodeagent.setTotalFileList(totalFileList);
+			//reset nodeagent
 			nodeagent=null;
 		} catch (RemoteException | ClassNotFoundException | MalformedURLException | UnknownHostException
 				| NotBoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

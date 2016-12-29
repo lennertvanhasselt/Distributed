@@ -6,6 +6,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.TreeMap;
 
+//SERVER SIDE
 public class ClientInfo extends UnicastRemoteObject implements ClientInterface{
 	
 	private static final long serialVersionUID = 1L;
@@ -77,6 +78,7 @@ public class ClientInfo extends UnicastRemoteObject implements ClientInterface{
 		return list.getPreviousNext(node);
 	}
 	
+	//only used in mainserver to check the list of nodes
 	public ListNodes getList(){
 		return list;
 	}

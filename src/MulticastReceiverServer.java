@@ -27,15 +27,8 @@ public void run(){
 	            
 	            MainServer.cli.setNode(hostname,ip); 							//add node to NameServer and send hash
 	         }
-			 } catch (IOException e) {
-					System.err.println("IOException");
+			 } catch (IOException | ClassNotFoundException | NotBoundException e) {
 					e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				System.err.println("ClassNotFoundException");
-				e.printStackTrace();
-			} catch (NotBoundException e) {
-				System.err.println("NotBoundException");
-				e.printStackTrace();
 			}
 	}
 }

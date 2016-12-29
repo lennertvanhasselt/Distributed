@@ -37,26 +37,15 @@ public class TCPReceiver implements Runnable {
 			//receive array
 		    byte [] mybytearray  = new byte [1024];
 		    int byteLength = 1024;
-		    InputStream is = sock.getInputStream();
+		    InputStream is = sock.getInputStream(); 	//get info from sender
 		    fos = new FileOutputStream("C:/temp/replicated/"+fileName);
-		    bis = new BufferedInputStream(is, 1024);
-		    while((current = bis.read(mybytearray,0,1024)) != -1) {
+		    bis = new BufferedInputStream(is, 1024); 	//put info in bytes of 1024
+		    while((current = bis.read(mybytearray,0,1024)) != -1) { //while read != EOF
+		    //current is the amount of bytes read.
 		    	byteLength = byteLength + 1024;
 		    	fos.write(mybytearray,0,current);
 		    }
 		    
-		    /*bytesRead=is.read(mybytearray,0, mybytearray.length);
-		    current = bytesRead;
-		    
-		    do {
-		         bytesRead =
-		            is.read(mybytearray, current, (mybytearray.length-current));
-		         if(bytesRead >= 0) current += bytesRead;
-		      } while(bytesRead > -1);
-		    	   
-		    //write array to file
-			bos.write(mybytearray, 0 , current);
-			bos.flush(); */
 			System.out.println("File " + fileName
 			+ " downloaded (" + byteLength + " bytes read)");
 						      

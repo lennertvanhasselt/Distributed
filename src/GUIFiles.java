@@ -8,7 +8,7 @@ import javax.swing.*;
 public class GUIFiles extends JPanel {
 	SystemYGUI g;
 	
-	public GUIFiles(SystemYGUI menu){
+	public GUIFiles(SystemYGUI menu) throws InterruptedException{
 		g = menu;
 		MainNode mainNode = GUILogin.getMainnode();
 		String[] fileList;
@@ -18,6 +18,7 @@ public class GUIFiles extends JPanel {
 		setPreferredSize(size);
 		setBorder(BorderFactory.createTitledBorder("Filelist"));
 		
+		GUILogin.getThread().join();
 		//Swing knoppen definiëren en de grootte er van instellen
 		if (!mainNode.node.totalFileList.isEmpty()) {
 			int length = mainNode.node.totalFileList.size();

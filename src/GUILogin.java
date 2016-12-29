@@ -10,6 +10,7 @@ public class GUILogin extends JPanel {
 	SystemYGUI g;
 	static String name;
 	static MainNode mainnode;
+	static Thread thread;
 	
 	public GUILogin(SystemYGUI menu){
 		g = menu;
@@ -71,7 +72,8 @@ public class GUILogin extends JPanel {
 				name = nodeName.getText();
 				SystemYGUI.choice = 0;
 				mainnode = new MainNode(name);
-				new Thread(mainnode).start();
+				thread = new Thread(mainnode);
+				thread.start();
 				g.ChoiceInMenu();
 			}
     	});
@@ -80,5 +82,10 @@ public class GUILogin extends JPanel {
 	public static MainNode getMainnode()
 	{
 		return mainnode;
+	}
+	
+	public static Thread getThread()
+	{
+		return thread;
 	}
 }

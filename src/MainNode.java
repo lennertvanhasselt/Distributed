@@ -1,26 +1,31 @@
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.UnknownHostException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.Naming;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.util.Scanner;
 
 // Make connection with the server and give the name of your node.
 // After the connection is established a menu appears where different options are available to use.
 // To make a choice in the menu, just press the number in front of the option.
-public class MainNode {
-
-	public static void main(String[] args) throws ClassNotFoundException, IOException {
-	 	boolean exit = false;
-	 	int choice=0;
-		Scanner scan = new Scanner(System.in);
-		
-		System.out.println("Give the name of the node: ");
-		String nodename=scan.nextLine();
-		
+public class MainNode implements Runnable {
+	Node node;
+	String nodename;
+	public MainNode(String chosenName)
+	{
+	 	nodename = chosenName;
+	}
+	public void run()
+	{	
 		//make sure rmi can be performed to the node
-		Node node = new Node();
+		try {
+			node = new Node();
+		} catch (ClassNotFoundException | IOException e1) {
+			e1.printStackTrace();
+		}
 		
 		//new Thread(new CheckFileList(node)).start();
 		
@@ -32,11 +37,17 @@ public class MainNode {
             System.out.println("java RMI registry created.");
         } catch (MalformedURLException | AlreadyBoundException e) {
             System.out.println("java RMI registry already exists.");
+		} catch (RemoteException e) {
+			e.printStackTrace();
 		}
 		
-		//start multicast to discover nameserver
-		InetAddress address = InetAddress.getLocalHost();
-	 	address = InetAddress.getByName(address.getHostAddress());
+		//start multicast to discover nameserver;
+	 	try {
+	 		InetAddress address = InetAddress.getLocalHost();
+			address = InetAddress.getByName(address.getHostAddress());
+		} catch (UnknownHostException e1) {
+			e1.printStackTrace();
+		}
 		new Thread(new MulticastSender(nodename)).start();
 		
 		//wait for rmi to be performed by server
@@ -46,7 +57,13 @@ public class MainNode {
 	 		System.out.print("");   //without print, the check doesn't update.
 	 	}
 	 	System.out.println("nameserver recognized: " + node.mainServer);
-	 	new Thread(new MulticastReceive(node)).start();
+	}
+	
+	public void choice(int choice)
+	{
+	 	boolean exit = false;
+	 	Scanner scan = new Scanner(System.in);
+		new Thread(new MulticastReceive(node)).start();
 		try {
 			String name = "//"+node.mainServer+"/cliNode";
    	 		ClientInterface cf = (ClientInterface) Naming.lookup(name);
@@ -54,7 +71,6 @@ public class MainNode {
    	 		
    	 		while(exit == false)
    	 		{
-   	 			choice = node.menu(scan);
    	 			switch (choice) {
    	 			case 1: node.searchFile(scan);
    	 					break;
@@ -82,5 +98,9 @@ public class MainNode {
 	         System.err.println("FileServer exception: "+ e.getMessage());
 	       e.printStackTrace();
 	    }
+	}
+	public Node getNode()
+	{
+		return node;
 	}
 }

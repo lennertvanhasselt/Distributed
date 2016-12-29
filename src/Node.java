@@ -540,34 +540,34 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 			}
 		}
 		
-		Iterator<FileInfo> it = localFiles.iterator();
-		
 		if(previousNode == ownNode){
 			return;
 		}
 		
 		String ipToSend;
 		String fileName;
-		FileInfo fi;
-		
 		TreeMap<Integer,InetAddress> owner;
+		TreeMap<Integer,InetAddress> previousNodeMap=new TreeMap<Integer,InetAddress>();
 		
-		while(it.hasNext()){
-			fi = it.next();
-			fileName = fi.getNameFile();
+		for(int i = 0; i<localFiles.size(); i++){
+			fileName = localFiles.get(i).getNameFile();
 			owner = cf.searchFile(fileName);
 			
 			if(ownNode == owner.firstKey()){
-				ipToSend=previousIP;
-			} else {
-				ipToSend=owner.get(owner.firstKey()).toString().substring(1);
+				ipToSend = previousIP;
+				previousNodeMap.clear();
+				previousNodeMap.put(previousNode, InetAddress.getByName(previousIP));
+				localFiles.get(i).setReplicateNode(previousNodeMap);
+			}else{
+				ipToSend = owner.get(owner.firstKey()).toString().substring(1);
+				localFiles.get(i).setReplicateNode(owner);
 			}
 			
 			System.out.println("send file " + fileName + " to " +ipToSend);
 			nf = (NodeInterface) Naming.lookup("//" + ipToSend + "/Node");
-			nf.newEntryReplicatedFiles(fi);
+			nf.newEntryReplicatedFiles(localFiles.get(i));
 			new Thread(new TCPSender(ipToSend,fileName, true)).start();	
-		}
+		}		
 	}
 	
 	public boolean newEntryReplicatedFiles(FileInfo fi) throws RemoteException, UnknownHostException, MalformedURLException, NotBoundException {

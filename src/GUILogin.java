@@ -74,7 +74,11 @@ public class GUILogin extends JPanel {
 				mainnode = new MainNode(name);
 				thread = new Thread(mainnode);
 				thread.start();
-				g.ChoiceInMenu();
+				try {
+					g.ChoiceInMenu();
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
 			}
     	});
 	}

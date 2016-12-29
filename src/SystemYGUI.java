@@ -14,8 +14,9 @@ public class SystemYGUI extends JFrame
 	
 	 /**
      * Main method voor aanmaken frame
+	 * @throws InterruptedException 
      */
-    public static void main(String[] args)
+    public static void main(String[] args) throws InterruptedException
     {
     	SystemYGUI menu = new SystemYGUI();
     	menu.setSize(600,600);
@@ -24,7 +25,7 @@ public class SystemYGUI extends JFrame
         menu.setTitle("System Y");
     }
 
-    public SystemYGUI()
+    public SystemYGUI() throws InterruptedException
     {
     	// Panels weergeven
     	JPanel panel = new GUILogin(this);
@@ -37,8 +38,9 @@ public class SystemYGUI extends JFrame
     
     /**
      * Afhankelijk van de keuze een ander panel weergeven.
+     * @throws InterruptedException 
      */
-    public void ChoiceInMenu()
+    public void ChoiceInMenu() throws InterruptedException
     {
     	switch (choice)
 		 {

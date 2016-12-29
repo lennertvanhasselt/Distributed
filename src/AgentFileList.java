@@ -11,7 +11,7 @@ import java.util.Iterator;
 public class AgentFileList implements Runnable, Serializable {
 	private static final long serialVersionUID = 1L;
 	private Node nodeagent;
-	private ArrayList<String> totalFileList = new ArrayList<String>();
+	private ArrayList<FileInfo> totalFileList = new ArrayList<FileInfo>();
 	private int i;
 
 	public AgentFileList()
@@ -48,7 +48,15 @@ public class AgentFileList implements Runnable, Serializable {
 		for(int j=0;j<i;j++) {
 			repFileName = nodeagent.replicatedFiles.get(j).getNameFile();
 			if(!totalFileList.contains(repFileName)) { //returns true if deleted, false if not present
-				totalFileList.add(repFileName);
+				totalFileList.add(nodeagent.replicatedFiles.get(j));
+			}
+		}
+		
+		for(int j = 0; j<totalFileList.size();j++){
+			for(int k = 0; k<nodeagent.localFiles.size();k++){
+				if(totalFileList.get(j).getNameFile().equals(nodeagent.localFiles.get(k).getNameFile())){
+					nodeagent.localFiles.set(k, totalFileList.get(j)); 
+				}
 			}
 		}
 

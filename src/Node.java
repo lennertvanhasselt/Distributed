@@ -28,7 +28,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 	public boolean check;
 	public ArrayList<FileInfo> replicatedFiles;
 	public ArrayList<FileInfo> localFiles;
-	public ArrayList<String> totalFileList;   //bedoeling is om hier een lijst van fileinfo van te maken
+	public ArrayList<FileInfo> totalFileList;   //bedoeling is om hier een lijst van fileinfo van te maken
 	public ArrayList<String> deletedFiles;
 	public Boolean serverSet = false;
 
@@ -38,7 +38,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 		localFiles = new ArrayList<FileInfo>();
 		replicatedFiles = new ArrayList<FileInfo>();
 		deletedFiles = new ArrayList<String>();
-		totalFileList = new ArrayList<String>();
+		totalFileList = new ArrayList<FileInfo>();
 	}
 
 	// This is the menu that will appear on the console ones the connection with the server is established.
@@ -811,14 +811,16 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 			new Thread(new RMIStarter(agent,nextIP)).start();
 	}
 	
-	public void setTotalFileList(ArrayList<String> totalFileList){
+	public void setTotalFileList(ArrayList<FileInfo> totalFileList){
 		this.totalFileList=totalFileList;
 	}
 	
 	public void printTotalFileList(){
-		Iterator<String> it = totalFileList.iterator();
+		Iterator<FileInfo> it = totalFileList.iterator();
+		int index = 0;
 		while(it.hasNext()){
-			System.out.println("file:" +it.next());
+			System.out.println(index + ": file:" +it.next().getNameFile());
+			index++;
 		}
 	}
 	

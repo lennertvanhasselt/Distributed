@@ -11,7 +11,6 @@ public class GUIFiles extends JPanel {
 	public GUIFiles(SystemYGUI menu){
 		g = menu;
 		MainNode mainNode = GUILogin.getMainnode();
-		String[] fileList;
 		
 		//Grootte instellen van het panel en een titel eraan geven.
 		Dimension size = getPreferredSize();
@@ -19,15 +18,10 @@ public class GUIFiles extends JPanel {
 		setBorder(BorderFactory.createTitledBorder("Filelist"));
 		
 		//Swing knoppen definiëren en de grootte er van instellen
-		if (!mainNode.node.totalFileList.isEmpty()) {
-			int length = mainNode.node.totalFileList.size();
-			fileList = new String[length];
-			for(int i = 0;i<length;i++){
-				fileList[i]=mainNode.node.totalFileList.get(i).getNameFile();
-			}
-		} else {
-			fileList = new String[1];
-			fileList[1]="No other Nodes";
+		int length = mainNode.node.totalFileList.size();
+		String[] fileList = new String[length];
+		for(int i = 0;i<length;i++){
+			fileList[i]=mainNode.node.totalFileList.get(i).getNameFile();
 		}
 		
 		JButton logout = new JButton("Logout");

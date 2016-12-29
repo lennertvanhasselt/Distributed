@@ -171,7 +171,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 		} else
 			System.out.println("error Node nn, pn");
 
-		System.out.println("hier");
 
 		// If previous node is not his own node
 		if (pn != ownNode) {
@@ -246,6 +245,9 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 				System.out.println("previousNode: "+this.previousNode);
 				System.out.println("previousIP: "+this.previousIP);
 				replicateLocalFiles();
+				AgentFileList agent = new AgentFileList();
+ 				NodeInterface nf = (NodeInterface) Naming.lookup("//"+nextIP+"/Node");
+ 				nf.startAgentFileList(agent);
 
 				// When 2 nodes are located in the system.
 			} else if(nextNode == previousNode) {
@@ -803,7 +805,10 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		new Thread(new RMIStarter(agent,nextIP)).start();
+		
+		// When only 1 node in the system, agent has to be set on hold
+		if (ownNode != nextNode && ownNode != previousNode)
+			new Thread(new RMIStarter(agent,nextIP)).start();
 	}
 	
 	public void setTotalFileList(ArrayList<String> totalFileList){

@@ -12,7 +12,6 @@ public class AgentFileList implements Runnable, Serializable {
 	private static final long serialVersionUID = 1L;
 	private Node nodeagent;
 	private ArrayList<FileInfo> totalFileList = new ArrayList<FileInfo>();
-	private ArrayList<String> totalFileListStrings = new ArrayList<String>();
 	private int i;
 
 	public AgentFileList()
@@ -35,39 +34,32 @@ public class AgentFileList implements Runnable, Serializable {
 	
 	private void update()
 	{
-
-		//this loop deletes the files that are in deletedfiles from the total filelist
 		if(!nodeagent.deletedFiles.isEmpty()){
-			for(int j=0; j<totalFileList.size();j++){
-				if(nodeagent.deletedFiles.contains(totalFileList.get(j).getNameFile())){
-					totalFileList.remove(j);
-				}
+			Iterator<String> it1 = nodeagent.deletedFiles.iterator();
+			i = nodeagent.deletedFiles.size();
+			for(int j=i-1;j>=0;j--) {
+				if(totalFileList.remove(nodeagent.deletedFiles.get(j))) { //returns true if deleted, false if not present
+					nodeagent.deletedFiles.remove(j);
+				} else { System.out.println("File in deletedFiles does not exist:  "+nodeagent.deletedFiles.get(j)); }
 			}
-			nodeagent.deletedFiles.clear();
 		}
-		
-		//this loop adds new files from the replicated file list to the totalFileList
 		i=nodeagent.replicatedFiles.size();
 		String repFileName;
 		for(int j=0;j<i;j++) {
 			repFileName = nodeagent.replicatedFiles.get(j).getNameFile();
-			if(!totalFileListStrings.contains(repFileName)) { //returns true if deleted, false if not present
+			if(!totalFileList.contains(repFileName)) { //returns true if deleted, false if not present
 				totalFileList.add(nodeagent.replicatedFiles.get(j));
-				totalFileListStrings.add(nodeagent.replicatedFiles.get(j).getNameFile());
 			}
 		}
 		
-		//this loop replaces the Fileinfo's of localFileList with the updated fileInfo's from TotalFileList
 		for(int j = 0; j<totalFileList.size();j++){
-			if (totalFileList.get(j).getOriginalOwnerNode().firstKey()==nodeagent.getOwnNode())
-			{
-				for(int k = 0; k<nodeagent.localFiles.size();k++){
-					if(totalFileList.get(j).getNameFile().equals(nodeagent.localFiles.get(k).getNameFile())){
-						nodeagent.localFiles.set(k, totalFileList.get(j)); 
-					}
-				}			
+			for(int k = 0; k<nodeagent.localFiles.size();k++){
+				if(totalFileList.get(j).getNameFile().equals(nodeagent.localFiles.get(k).getNameFile())){
+					nodeagent.localFiles.set(k, totalFileList.get(j)); 
+				}
 			}
 		}
+
 	}
 	
 	public void setNode(Node nodeUpdate){

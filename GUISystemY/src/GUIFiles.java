@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import javax.swing.*;
 
+//Screen where a specific file can be selected to apply an action on it
 public class GUIFiles extends JPanel {
 	SystemYGUI g;
 	
@@ -12,12 +13,10 @@ public class GUIFiles extends JPanel {
 		g = menu;
 		MainNode mainNode = GUILogin.getMainnode();
 		
-		//Grootte instellen van het panel en een titel eraan geven.
 		Dimension size = getPreferredSize();
 		setPreferredSize(size);
 		setBorder(BorderFactory.createTitledBorder("Filelist"));
 		
-		//Swing knoppen definiëren en de grootte er van instellen
 		int length = mainNode.node.totalFileList.size();
 		String[] fileList = new String[length];
 		for(int i = 0;i<length;i++){
@@ -35,13 +34,11 @@ public class GUIFiles extends JPanel {
 		download.setPreferredSize(new Dimension(150,60));
 		delete.setPreferredSize(new Dimension(150,60));
 		deleteLocal.setPreferredSize(new Dimension(150,60));
-    
-		//Swing componenten toewijzen op de GridBagLayout
+ 
 		setLayout(new GridBagLayout());
 		GridBagConstraints gc = new GridBagConstraints();
     
-		// 1ste Rij 
-		gc.weightx = 1; // hoeveel plaats de knop inneemt
+		gc.weightx = 1; 
 		gc.weighty = 1;
     
 		gc.gridx = 0; 
@@ -65,7 +62,7 @@ public class GUIFiles extends JPanel {
     	add(logout, gc);
     
     
-		// Actionlisteners
+		// Actionlistener
     	logout.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
     			int selectedOption = JOptionPane.showConfirmDialog(null, 

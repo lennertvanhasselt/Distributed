@@ -3,9 +3,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.io.IOException;
 
-/**
- * Aanmaken van het panel om in te loggen of om een gebruiker aan te maken.
- */
+// Login screen where user chooses his name
 public class GUILogin extends JPanel {
 	SystemYGUI g;
 	static String name;
@@ -13,12 +11,12 @@ public class GUILogin extends JPanel {
 	
 	public GUILogin(SystemYGUI menu){
 		g = menu;
-		//Grootte instellen van het panel en een titel eraan geven.
+		//size and title of the panel
 		Dimension size = getPreferredSize();
 		setPreferredSize(size);
 		setBorder(BorderFactory.createTitledBorder("Login"));
 		
-		//Swing knoppen definiëren en de grootte er van instellen
+		//Defining the Swing buttons and it's size
 		JTextField nodeName = new JTextField();
 		nodeName.setColumns(10);
 		JLabel nameRequest = new JLabel("Give the name for the node: ");
@@ -27,11 +25,11 @@ public class GUILogin extends JPanel {
 		shutdown.setPreferredSize(new Dimension(150, 30));
 		login.setPreferredSize(new Dimension(150, 30));
     
-		//Swing componenten toewijzen op de GridBagLayout
+		//Add components to GridBagLayout
 		setLayout(new GridBagLayout());
 		GridBagConstraints gc = new GridBagConstraints();
     
-		gc.weightx = 1; // hoeveel plaats de knop inneemt
+		gc.weightx = 1;
 		gc.weighty = 1;		
 		gc.gridx = 1; 
 		gc.gridy = 1;
@@ -49,9 +47,9 @@ public class GUILogin extends JPanel {
     	gc.gridy = 4;
     	add(shutdown, gc);
     	
-		// Actionlisteners op knoppen
+		// Actionlisteners on Buttons
     	
-    	//actionlistener die een waarschuwingsvenster geeft als je wil afsluiten
+    	//Actionlistener for shutdown
     	shutdown.addActionListener(new ActionListener(){
     		@Override
     		public void actionPerformed(ActionEvent e) {
@@ -65,7 +63,7 @@ public class GUILogin extends JPanel {
     		}
     	});
     	
-    	//
+    	//Actionlistener for login
     	login.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 				name = nodeName.getText();
@@ -77,6 +75,7 @@ public class GUILogin extends JPanel {
     	});
 	}
 	
+	// getfunction for the created mainNode
 	public static MainNode getMainnode()
 	{
 		return mainnode;

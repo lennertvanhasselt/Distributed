@@ -3,18 +3,14 @@ import java.io.IOException;
 
 import javax.swing.*;
 
-/**
- * Aanmaken van het frame en laten switchen tussen verschillende panels afhankelijk van de keuze.
- */
+// Main GUI control Class
 public class SystemYGUI extends JFrame
 {
 	JPanel currentPanel;
 	public static int choice = -1;
 	GUILogin login;
 	
-	 /**
-     * Main method voor aanmaken frame
-     */
+	// Create a frame for the GUI
     public static void main(String[] args)
     {
     	SystemYGUI menu = new SystemYGUI();
@@ -24,9 +20,9 @@ public class SystemYGUI extends JFrame
         menu.setTitle("System Y");
     }
 
+    // Display panels
     public SystemYGUI()
     {
-    	// Panels weergeven
     	JPanel panel = new GUILogin(this);
     	setLayout(new BorderLayout());
         this.currentPanel = panel;
@@ -35,9 +31,7 @@ public class SystemYGUI extends JFrame
         ChoiceInMenu();
     }
     
-    /**
-     * Afhankelijk van de keuze een ander panel weergeven.
-     */
+    // Depending on a choice the panel will be updated
     public void ChoiceInMenu()
     {
     	switch (choice)
@@ -61,9 +55,7 @@ public class SystemYGUI extends JFrame
 		}
     }
     
-    /**
-     *  Welk panel weergeven moet worden.
-     */
+    // Used to update panel
     public void setCurrentPanel(JPanel currentPanel)
     {
         this.currentPanel = currentPanel;

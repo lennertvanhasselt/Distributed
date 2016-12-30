@@ -59,7 +59,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 
 	// The option where the user can give a filename and receive the IP of the node who has that file.
 	// When the node has received the IP of the location it will start to ping this node to make sure it has connection with it.
-	// If the connection is not working and it can't find the node, an update of the network will take place with the node deleted. 
+	// If there is no connection and it can't find the node, an update of the network will take place with the node deleted. 
 	public InetAddress searchFile(Scanner scan) throws ClassNotFoundException, IOException
 	{
 		System.out.println("Which file do you want?");
@@ -104,7 +104,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 			if(previousNode != nextNode) {
 				sendReplicatedFilesToPrevious();
 			}
-			// When more than 1 node in the system.
+			// When more than 1 node in the system the previous and next has to be adjust
 			if (ownNode != previousNode && ownNode != nextNode) {
 				contactedNode = previousNode;
 				System.out.println(previousIP);
@@ -116,6 +116,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 				nf.setPreviousNode(previousNode, previousIP);
 				deleteLocalFiles();
 			}
+			// Confirm that the node was deleted
 			Boolean answer = cf.deleteNode(ownNode);
 			if (answer == true)
 				System.out.println("Node deleted");
@@ -153,12 +154,9 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 		int first = prevNext.firstKey();
 		int last = prevNext.lastKey();
 
-
-
-		//Delete the corrupt node before checking others? Otherwise an error will result in not deleting the corrupt node
 		cf.deleteNode(node); 
 		System.out.println("Delete " + node);
-
+	
 		if (first < node && last > node) {
 			pn = first;
 			nn = last;
@@ -170,7 +168,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 			pn = last;
 		} else
 			System.out.println("error Node nn, pn");
-
 
 		// If previous node is not his own node
 		if (pn != ownNode) {
@@ -207,8 +204,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 			previousNode=pn;
 			previousIP = prevNext.get(pn).toString().substring(1);
 		}
-
-		//cf.deleteNode(node);
 		return;
 	}
 
@@ -230,8 +225,8 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 				previousNode = ownNode;
 				nextNode = ownNode;
 
-				// When only 1 node is located in the system.
-				// -->It will be added as the previous and the next node.
+			// When only 1 node is located in the system.
+			// -->It will be added as the previous and the next node.
 			} else if (ownNode == previousNode && ownNode == nextNode) {
 				nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
 				System.out.println("ownNode: "+ownNode+"  ownIP: "+ownIP+ "send to "+IP);
@@ -249,10 +244,12 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
  				NodeInterface nf = (NodeInterface) Naming.lookup("//"+nextIP+"/Node");
  				nf.startAgentFileList(agent);
 
-				// When 2 nodes are located in the system.
+			// When 2 nodes are located in the system.
 			} else if(nextNode == previousNode) {
 				if (nextNode < ownNode) {
-
+					
+					// The new node will become the nextNode of the own node
+					// -----------New----------Prev/Next---------------Own---------------
 					if (hashed < nextNode) {
 						//checkOwnedFiles(hashed, IP);
 						nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
@@ -263,14 +260,18 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 						System.out.println("nextIP: "+this.nextIP);
 						//updateFiles();
 					}
-
+					
+					// The new node will become the previousNode of the own node
+					// -----------Prev/Next----------New---------------Own---------------
 					else if (hashed > nextNode && hashed < ownNode) {
 						previousNode = hashed;
 						previousIP = IP;
 						System.out.println("previousNode: "+this.previousNode);
 						System.out.println("previousIP: "+this.previousIP);
 					}
-
+					
+					// The new node will become the previousNode of the own node because of hashvalue+1 
+					// -----------Prev/Next-New----------Own------------------------------
 					else if (hashed == nextNode && hashed < ownNode) {
 						hashed++;
 						previousNode = hashed;
@@ -278,7 +279,9 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 						System.out.println("previousNode: "+this.previousNode);
 						System.out.println("previousIP: "+this.previousIP);
 					}
-
+					
+					// The new node will become the nextNode of the own node
+					// -----------Prev/Next-------------Own----------New------------------
 					else if (hashed > ownNode) {
 						//checkOwnedFiles(hashed, IP);
 						nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
@@ -289,7 +292,9 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 						System.out.println("nextIP: "+this.nextIP);
 						//updateFiles();
 					}
-
+					
+					// The new node will become the nextNode of the own node because of hashvalue+1 
+					// -----------Prev/Next-------------Own-New---------------------------
 					else if (hashed == ownNode) {
 						hashed++;
 						//checkOwnedFiles(hashed, IP);
@@ -302,14 +307,18 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 						//updateFiles();
 					}
 				} else  {
-
+					
+					// The new node will become the previousNode of the own node
+					// -----------New-------------------------Own-------Prev/Next--------
 					if (hashed < ownNode) {
 						previousNode = hashed;
 						previousIP = IP;
 						System.out.println("previousNode: "+this.previousNode);
 						System.out.println("previousIP: "+this.previousIP);
 					}
-
+					
+					// The new node will become the nextNode of the own node
+					// ---------------Own-----------------New-----------Prev/Next--------
 					else if (hashed > ownNode && hashed < nextNode) {
 						//checkOwnedFiles(hashed, IP);
 						nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
@@ -320,7 +329,9 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 						System.out.println("nextIP: "+this.nextIP);
 						//updateFiles();
 					}
-
+					
+					// The new node will become the nextNode of the own node because of hashvalue +1
+					// ---------------Own-New--------------------------Prev/Next--------
 					else if (hashed == ownNode && hashed < nextNode) {
 						hashed++;
 						//checkOwnedFiles(hashed, IP);
@@ -332,14 +343,18 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 						System.out.println("nextIP: "+this.nextIP);
 						//updateFiles();
 					}
-
+					
+					// The new node will become the previousNode of the own node
+					// ---------------Own-----------Prev/Next---------------------New---
 					else if (hashed > nextNode) {
 						previousNode = hashed;
 						previousIP = IP;
 						System.out.println("previousNode: "+this.previousNode);
 						System.out.println("previousIP: "+this.previousIP);
 					}
-
+					
+					// The new node will become the previousNode of the own node because of hashvalue +1
+					// ---------------Own-----------Prev/Next-New-----------------------
 					else if (hashed == nextNode) {
 						hashed++;
 						previousNode = hashed;
@@ -348,17 +363,24 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 						System.out.println("previousIP: "+this.previousIP);
 					}
 				}
+				// When only 2 nodes in system and a 3th one is joining we use updateFiles2()
 				updateFiles2();
 			}
+			// When more then 2 nodes are located in the system
 			else {
 				if (previousNode > ownNode) {
+					
+					// The new node will become the previousNode of the own node
+					// --(or New)---Own-----------Next--------------------------Prev----New----
 					if (hashed < ownNode || hashed > previousNode) {
 						previousNode = hashed;
 						previousIP = IP;
 						System.out.println("previousNode: "+this.previousNode);
 						System.out.println("previousIP: "+this.previousIP);
 					}
-
+					
+					// The new node will become the nextNode of the own node
+					// -----Own------New-----Next--------------------------Prev--------
 					else if (hashed < nextNode && hashed > ownNode) {
 						//checkOwnedFiles(hashed, IP);
 						nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
@@ -370,15 +392,20 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 						updateFiles();
 					}
 				}
-
+				
 				else if (previousNode < ownNode && nextNode > ownNode) {
+					
+					// The new node will become the previousNode of the own node
+					// ---Prev-----------New----------Own---------------Next-----------
 					if (hashed > previousNode && hashed < ownNode) {
 						previousNode = hashed;
 						previousIP = IP;
 						System.out.println("previousNode: "+this.previousNode);
 						System.out.println("previousIP: "+this.previousIP);
 					}
-
+					
+					// The new node will become the nextNode of the own node
+					// ---Prev---------------------Own-------New--------Next-----------
 					else if (hashed > ownNode && hashed < nextNode) {
 						//checkOwnedFiles(hashed, IP);
 						nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
@@ -392,6 +419,9 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 				}
 
 				else if (nextNode < ownNode) {
+					
+					// The new node will become the nextNode of the own node
+					// ---(or New)--Next-----------Prev------------Own-------New------------
 					if (hashed > ownNode || hashed < nextNode) {
 						//checkOwnedFiles(hashed, IP);
 						nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
@@ -402,7 +432,9 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 						System.out.println("nextIP: "+this.nextIP);
 						updateFiles();
 					}
-
+					
+					// The new node will become the previousNode of the own node
+					// -----Next-----------Prev------New------Own----------------------
 					else if (hashed > previousNode && hashed < ownNode) {
 						previousNode = hashed;
 						previousIP = IP;
@@ -438,7 +470,8 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 		ownIP = address.toString().substring(1);
 
 		System.out.println("setNameServer IP: "+ownIP);
-
+		
+		// When no node is in the system at the moment
 		if (nextNode == -1 && previousNode == -1)
 		{
 			previousIP = ownIP;
@@ -450,7 +483,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 		check = true;
 	}
 
-	// Changing the previous and the next node and ip for this certain node.
+	// Changing the previous, next node and ip for this certain node.
 	public void changePrevNext(int nextNode, int previousNode, String nextIP, String previousIP)throws RemoteException, ClassNotFoundException, MalformedURLException, NotBoundException, UnknownHostException
 	{
 		System.out.println("changePrevNext");
@@ -462,68 +495,10 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 		replicateLocalFiles();
 	}
 
-	// Sets total nodes
-	public void setTotalNodes(int totalNodes)
-	{
-		this.totalNodes = totalNodes;
-	}
-
-	// Sets ClientInterface
-	public void setClientInterface(ClientInterface cf)
-	{
-		this.cf = cf;
-		serverSet = true;
-		System.out.println("setClientInterface");
-	}
-
 	// Used to display that someone is checking a file on your node.
 	public void checkUpdate() throws RemoteException, ClassNotFoundException {
 		System.out.println("Someone is checking your files... weird...");
-
 	}
-	
-	public String getNextIP()
-	{
-		return nextIP;
-	}
-
-	// Used to get previous node
-	public int getPreviousNode()
-	{
-		return previousNode;
-	}
-
-	// Used to get next node
-	public int getNextNode()
-	{
-		return nextNode;
-	}
-
-	// Used to get own node
-	public int getOwnNode()
-	{
-		return ownNode;
-	}
-
-	// Set the ip and node of the previous node.
-	public void setPreviousNode(int previousNode, String previousIP)throws RemoteException, ClassNotFoundException
-	{	
-		this.previousNode = previousNode;
-		this.previousIP = previousIP;
-		System.out.println("set previous Node");
-		System.out.println("previousNode: "+this.previousNode);
-		System.out.println("previousIP: "+this.previousIP);
-	}
-
-	// Set the ip and node of the next node.
-	public void setNextNode(int nextNode, String nextIP)throws RemoteException, ClassNotFoundException
-	{
-		this.nextNode = nextNode;
-		this.nextIP = nextIP;
-		System.out.println("set next Node");
-		System.out.println("nextNode: "+this.nextNode);
-		System.out.println("nextIP: "+this.nextIP);
-	}	
 	
 	//when entering the system the local files will be replicated
 	public void replicateLocalFiles() throws RemoteException, ClassNotFoundException, MalformedURLException, NotBoundException, UnknownHostException{
@@ -540,6 +515,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 			}
 		}
 		
+		// When only one node is in the system no replications have to be made
 		if(previousNode == ownNode){
 			return;
 		}
@@ -553,16 +529,20 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 			fileName = localFiles.get(i).getNameFile();
 			owner = cf.searchFile(fileName);
 			
+			// When a file from ownNode maps on it's own it has to be send to the previous one
 			if(ownNode == owner.firstKey()){
 				ipToSend = previousIP;
 				previousNodeMap.clear();
 				previousNodeMap.put(previousNode, InetAddress.getByName(previousIP));
 				localFiles.get(i).setReplicateNode(previousNodeMap);
+				
+			// When a file doesn't map on ownNode, it has to be send to it's specific location
 			}else{
 				ipToSend = owner.get(owner.firstKey()).toString().substring(1);
 				localFiles.get(i).setReplicateNode(owner);
 			}
 			
+			// Displaying from where to where it will be send
 			System.out.println("send file " + fileName + " to " +ipToSend);
 			nf = (NodeInterface) Naming.lookup("//" + ipToSend + "/Node");
 			nf.newEntryReplicatedFiles(localFiles.get(i));
@@ -571,6 +551,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 	}
 	
 	public boolean newEntryReplicatedFiles(FileInfo fi) throws RemoteException, UnknownHostException, MalformedURLException, NotBoundException {
+		// When a replicated file maps on the original owner, it has to be sended to the previous node
 		if(fi.getOriginalOwnerNode().firstKey() == ownNode)
 		{
 			nf = (NodeInterface) Naming.lookup("//" + previousIP + "/Node");
@@ -578,6 +559,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 			new Thread(new TCPSender(previousIP,fi.getNameFile(), true)).start();
 			return false;
 		}
+		// When a replicated file maps on ownNode, it will make a list of replicated files
 		else
 		{
 			System.out.print("newEntryReplicatedFiles: ");
@@ -592,57 +574,9 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 			return true; 
 		}
 	}
-	
-	//This method 
-	public void updateFiles() throws RemoteException, MalformedURLException, NotBoundException, UnknownHostException, ClassNotFoundException {
-		System.out.println("updateFiles");
-		int totalRepFiles = replicatedFiles.size();
-		int ownerFile;
-		for (int i = totalRepFiles-1; i >= 0; i--) {
-			ownerFile = cf.searchFile(replicatedFiles.get(i).getNameFile()).firstKey();
-			int hashFile = Math.abs((int) Integer.toUnsignedLong(replicatedFiles.get(i).getNameFile().hashCode()) % 32768);
-
-			if(replicatedFiles.get(i).getOriginalOwnerNode().firstKey() != ownerFile || ownerFile != ownNode)
-			{
-				if (hashFile > nextNode && hashFile < ownNode) {
-					nf = (NodeInterface) Naming.lookup("//" + nextIP + "/Node");
-					nf.newEntryReplicatedFiles(replicatedFiles.get(i));
-					Thread thread1 = new Thread(new TCPSender(nextIP,replicatedFiles.get(i).getNameFile(), false));
-					thread1.start();
-					try {
-						thread1.join();
-						deleteFile(replicatedFiles.get(i));
-						replicatedFiles.remove(i);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					
-				}
-				else if (hashFile > nextNode || hashFile < ownNode) {
-					nf = (NodeInterface) Naming.lookup("//" + nextIP + "/Node");
-					nf.newEntryReplicatedFiles(replicatedFiles.get(i));
-					Thread thread2 = new Thread(new TCPSender(nextIP,replicatedFiles.get(i).getNameFile(), false));
-					thread2.start();
-					try {
-						thread2.join();
-						deleteFile(replicatedFiles.get(i));
-						replicatedFiles.remove(i);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}			
-			}
-		}
-		
-//		for(int i = filesToRemove.size(); i>0; i--) {
-//			deleteFile(replicatedFiles.get(filesToRemove.get(i)));
-//			replicatedFiles.remove(filesToRemove.get(i));
-//		}
-	}
 
 	public void replicateNewFiles() throws RemoteException, ClassNotFoundException, MalformedURLException, NotBoundException, UnknownHostException {
+		// When more than 1 node in system
 		if(previousNode!=ownNode && previousNode!=-1) {
 			ArrayList<FileInfo> templocalFiles = new ArrayList<FileInfo>();
 			File[] fileArray = new File("C:/temp/local/").listFiles();
@@ -705,7 +639,8 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 				localFiles.removeAll(localFiles);
 		}
 	}
-
+	
+	// When the files maps on the original owner it has to be sent to the new owner which is the previousNode
 	public void sendReplicatedFilesToPrevious() throws UnknownHostException, RemoteException, MalformedURLException, NotBoundException {
 		int totalRepFiles = replicatedFiles.size();
 		nf = (NodeInterface) Naming.lookup("//" + previousIP + "/Node");
@@ -718,6 +653,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 		}		
 	}
 	
+	// Used to set up an TCP receive point
 	public int setupTCPReceiver(String fileName, int fileLength) throws RemoteException{
 		TCPReceiver rec = new TCPReceiver(fileName,fileLength);
 		Thread thread = new Thread(rec);
@@ -729,9 +665,223 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 		
 		System.out.println("returning " + rec.SOCKET_PORT);
 		return rec.SOCKET_PORT;
+	}	
+	
+	// Used to delete a specific file located at ownNode on the system
+	public void deleteFile(FileInfo fileInfo) throws RemoteException{
+		//if(replicatedFiles.contains(fileInfo)) {
+		String fileName = fileInfo.getNameFile();
+		if(!replicatedFiles.remove(fileInfo)){
+			int index=-1;
+			for(int i=replicatedFiles.size()-1;i>=0;i--) {
+				if(replicatedFiles.get(i).getNameFile().equals(fileName))
+					index=i;
+			}
+			replicatedFiles.remove(index);
+		}
+		System.out.println("Deleting replicated file: "+fileName);
+		File file = new File("C:/temp/replicated/"+fileName);
+		file.delete();
+		//}
+		return;
 	}
 	
-	//check if local files map on new next node
+	// Used to start the agent
+	public void startAgentFileList(AgentFileList agent)throws RemoteException, MalformedURLException, NotBoundException{
+		agent.setNode(this);
+		Thread thread = new Thread(agent);
+		thread.start();
+		try {
+			thread.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		// When only 1 node in the system, agent has to be set on hold
+		if (ownNode != nextNode && ownNode != previousNode)
+			new Thread(new RMIStarter(agent,nextIP)).start();
+	}
+	
+	// Print the totalFileList
+	public void printTotalFileList(){
+		Iterator<FileInfo> it = totalFileList.iterator();
+		int index = 0;
+		while(it.hasNext()){
+			System.out.println(index + ": file:" +it.next().getNameFile());
+			index++;
+		}
+	}
+	
+	// Used to update the files when only 2 nodes are in the system and the 3th one joins
+	public void updateFiles2() throws RemoteException, ClassNotFoundException, MalformedURLException, NotBoundException, UnknownHostException {
+		int totalRepFiles = replicatedFiles.size();
+		int ownerNode, originalOwner;
+		for (int i = totalRepFiles-1; i >= 0; i--) {
+			//get ownerNode of the specific replicated file
+			ownerNode = cf.searchFile(replicatedFiles.get(i).getNameFile()).firstKey();
+			originalOwner = replicatedFiles.get(i).getOriginalOwnerNode().firstKey();
+			// If the ownNode isn't the owner of the replicated file
+			if(ownNode != ownerNode){
+				// If the originalOwner of the file is the nextNode
+				if(originalOwner == nextNode) {
+					// And if the owner of the replicated file is the previousNode --> send file to previousNode
+					if(ownerNode == previousNode){
+						nf = (NodeInterface) Naming.lookup("//" + previousIP + "/Node");
+						nf.newEntryReplicatedFiles(replicatedFiles.get(i));
+						Thread thread1 = new Thread(new TCPSender(previousIP,replicatedFiles.get(i).getNameFile(), false));
+						thread1.start();
+						try {
+							thread1.join();
+							deleteFile(replicatedFiles.get(i));
+							replicatedFiles.remove(i);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}						
+				}
+				// If the originalOwner of the file is the previousNode
+				else { 
+					// And if the owner of the replicated file is the nextNode or previousNode --> send file to nextNode
+					if(ownerNode == nextNode || ownerNode == previousNode) {
+						nf = (NodeInterface) Naming.lookup("//" + nextIP + "/Node");
+						nf.newEntryReplicatedFiles(replicatedFiles.get(i));
+						Thread thread1 = new Thread(new TCPSender(nextIP,replicatedFiles.get(i).getNameFile(), false));
+						thread1.start();
+						try {
+							thread1.join();
+							deleteFile(replicatedFiles.get(i));
+							replicatedFiles.remove(i);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}			
+		}		
+	}
+	
+	// Used to update the files when more than 3 nodes are in the system
+	public void updateFiles() throws RemoteException, MalformedURLException, NotBoundException, UnknownHostException, ClassNotFoundException {
+		System.out.println("updateFiles");
+		int totalRepFiles = replicatedFiles.size();
+		int ownerFile;
+		for (int i = totalRepFiles-1; i >= 0; i--) {
+			ownerFile = cf.searchFile(replicatedFiles.get(i).getNameFile()).firstKey();
+			int hashFile = Math.abs((int) Integer.toUnsignedLong(replicatedFiles.get(i).getNameFile().hashCode()) % 32768);
+			
+			// If the owner of the replicated file is not the originalOwner or ownNode
+			if(replicatedFiles.get(i).getOriginalOwnerNode().firstKey() != ownerFile || ownerFile != ownNode)
+			{
+
+				// -----------Next----------New--------Prev-------Own---------------
+				// Send to the next
+				if (hashFile > nextNode && hashFile < ownNode) {
+					nf = (NodeInterface) Naming.lookup("//" + nextIP + "/Node");
+					nf.newEntryReplicatedFiles(replicatedFiles.get(i));
+					Thread thread1 = new Thread(new TCPSender(nextIP,replicatedFiles.get(i).getNameFile(), false));
+					thread1.start();
+					try {
+						thread1.join();
+						deleteFile(replicatedFiles.get(i));
+						replicatedFiles.remove(i);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					
+				}
+				// -----------Next----------New--------Prev----(or New)---Own---------------
+				// Send to the next
+				else if (hashFile > nextNode || hashFile < ownNode) {
+					nf = (NodeInterface) Naming.lookup("//" + nextIP + "/Node");
+					nf.newEntryReplicatedFiles(replicatedFiles.get(i));
+					Thread thread2 = new Thread(new TCPSender(nextIP,replicatedFiles.get(i).getNameFile(), false));
+					thread2.start();
+					try {
+						thread2.join();
+						deleteFile(replicatedFiles.get(i));
+						replicatedFiles.remove(i);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}			
+			}
+		}
+		
+//		for(int i = filesToRemove.size(); i>0; i--) {
+//			deleteFile(replicatedFiles.get(filesToRemove.get(i)));
+//			replicatedFiles.remove(filesToRemove.get(i));
+//		}
+	}
+	
+	
+	// Used to get next ip from node
+	public String getNextIP()
+	{
+		return nextIP;
+	}
+
+	// Used to get previous node
+	public int getPreviousNode()
+	{
+		return previousNode;
+	}
+
+	// Used to get next node
+	public int getNextNode()
+	{
+		return nextNode;
+	}
+
+	// Used to get own node
+	public int getOwnNode()
+	{
+		return ownNode;
+	}
+	
+	// Sets total nodes
+	public void setTotalNodes(int totalNodes)
+	{
+		this.totalNodes = totalNodes;
+	}
+
+	// Sets ClientInterface
+	public void setClientInterface(ClientInterface cf)
+	{
+		this.cf = cf;
+		serverSet = true;
+		System.out.println("setClientInterface");
+	}
+
+	// Sets the ip and node of the previous node.
+	public void setPreviousNode(int previousNode, String previousIP)throws RemoteException, ClassNotFoundException
+	{	
+		this.previousNode = previousNode;
+		this.previousIP = previousIP;
+		System.out.println("set previous Node");
+		System.out.println("previousNode: "+this.previousNode);
+		System.out.println("previousIP: "+this.previousIP);
+	}
+	
+	// Sets the totalFileList.
+	public void setTotalFileList(ArrayList<FileInfo> totalFileList){
+		this.totalFileList=totalFileList;
+	}
+	
+
+	// Sets the ip and node of the next node.
+	public void setNextNode(int nextNode, String nextIP)throws RemoteException, ClassNotFoundException
+	{
+		this.nextNode = nextNode;
+		this.nextIP = nextIP;
+		System.out.println("set next Node");
+		System.out.println("nextNode: "+this.nextNode);
+		System.out.println("nextIP: "+this.nextIP);
+	}
+	
+	
+	// Check if local files map on new next node
+	// THIS ONE WAS USED IN A PREVIOUS BUILD AND ISN'T USED AT THE MOMENT
+	/*
 	public void checkOwnedFiles(int node, String ip) throws MalformedURLException, RemoteException, NotBoundException, UnknownHostException {
 		int totalFiles = localFiles.size();
 		int hashFile;
@@ -776,97 +926,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 			}
 		}
 	}
-	
-	public void deleteFile(FileInfo fileInfo) throws RemoteException{
-		//if(replicatedFiles.contains(fileInfo)) {
-		String fileName = fileInfo.getNameFile();
-		if(!replicatedFiles.remove(fileInfo)){
-			int index=-1;
-			for(int i=replicatedFiles.size()-1;i>=0;i--) {
-				if(replicatedFiles.get(i).getNameFile().equals(fileName))
-					index=i;
-			}
-			replicatedFiles.remove(index);
-		}
-		System.out.println("Deleting replicated file: "+fileName);
-		File file = new File("C:/temp/replicated/"+fileName);
-		file.delete();
-		//}
-		return;
-	}
-	
-	public void startAgentFileList(AgentFileList agent)throws RemoteException, MalformedURLException, NotBoundException{
-		agent.setNode(this);
-		Thread thread = new Thread(agent);
-		thread.start();
-		try {
-			thread.join();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		// When only 1 node in the system, agent has to be set on hold
-		if (ownNode != nextNode && ownNode != previousNode)
-			new Thread(new RMIStarter(agent,nextIP)).start();
-	}
-	
-	public void setTotalFileList(ArrayList<FileInfo> totalFileList){
-		this.totalFileList=totalFileList;
-	}
-	
-	public void printTotalFileList(){
-		Iterator<FileInfo> it = totalFileList.iterator();
-		int index = 0;
-		while(it.hasNext()){
-			System.out.println(index + ": file:" +it.next().getNameFile());
-			index++;
-		}
-	}
-	
-	public void updateFiles2() throws RemoteException, ClassNotFoundException, MalformedURLException, NotBoundException, UnknownHostException {
-		int totalRepFiles = replicatedFiles.size();
-		int ownerNode, originalOwner;
-		for (int i = totalRepFiles-1; i >= 0; i--) {
-			//get ownerNode of the specific replicated file
-			ownerNode = cf.searchFile(replicatedFiles.get(i).getNameFile()).firstKey();
-			originalOwner = replicatedFiles.get(i).getOriginalOwnerNode().firstKey();
-			if(ownNode != ownerNode){
-				if(originalOwner == nextNode) {
-					if(ownerNode == previousNode){
-						nf = (NodeInterface) Naming.lookup("//" + previousIP + "/Node");
-						nf.newEntryReplicatedFiles(replicatedFiles.get(i));
-						Thread thread1 = new Thread(new TCPSender(previousIP,replicatedFiles.get(i).getNameFile(), false));
-						thread1.start();
-						try {
-							thread1.join();
-							deleteFile(replicatedFiles.get(i));
-							replicatedFiles.remove(i);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}						
-				}
-				else { // originalOwner == previousNode
-					if(ownerNode == nextNode || ownerNode == previousNode) {
-						nf = (NodeInterface) Naming.lookup("//" + nextIP + "/Node");
-						nf.newEntryReplicatedFiles(replicatedFiles.get(i));
-						Thread thread1 = new Thread(new TCPSender(nextIP,replicatedFiles.get(i).getNameFile(), false));
-						thread1.start();
-						try {
-							thread1.join();
-							deleteFile(replicatedFiles.get(i));
-							replicatedFiles.remove(i);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-				}
-			}			
-		}		
-	}
+	*/
 	
 	/*TO COMPLETE
 	public void constructReplicatedList() throws RemoteException {

@@ -28,7 +28,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 	public boolean check;
 	public ArrayList<FileInfo> replicatedFiles;
 	public ArrayList<FileInfo> localFiles;
-	public ArrayList<FileInfo> totalFileList;
+	public ArrayList<String> totalFileList;   //bedoeling is om hier een lijst van fileinfo van te maken
 	public ArrayList<String> deletedFiles;
 	public Boolean serverSet = false;
 
@@ -38,10 +38,10 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 		localFiles = new ArrayList<FileInfo>();
 		replicatedFiles = new ArrayList<FileInfo>();
 		deletedFiles = new ArrayList<String>();
-		totalFileList = new ArrayList<FileInfo>();
+		totalFileList = new ArrayList<String>();
 	}
 
-	// The menu that will appear on the console ones the connection with the server is established.
+	// This is the menu that will appear on the console ones the connection with the server is established.
 	public int menu(Scanner scan)
 	{
 		System.out.println("                  Menu                  ");
@@ -100,15 +100,15 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 	public void deleteNode() throws ClassNotFoundException, IOException{
 		int contactedNode = -1;
 		try {
-			// When more than 2 nodes in system.
 			if(previousNode != nextNode) {
 				sendReplicatedFilesToPrevious();
 			}
-			// When more than 1 node in the system.
+			
 			if (ownNode != previousNode && ownNode != nextNode) {
 				contactedNode = previousNode;
 				System.out.println(previousIP);
 				nf = (NodeInterface) Naming.lookup("//" + previousIP + "/Node");
+				System.out.println("tot hier");
 				
 				nf.setNextNode(nextNode, nextIP);
 				contactedNode = nextNode;
@@ -171,6 +171,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 		} else
 			System.out.println("error Node nn, pn");
 
+		System.out.println("hier");
 
 		// If previous node is not his own node
 		if (pn != ownNode) {
@@ -245,9 +246,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 				System.out.println("previousNode: "+this.previousNode);
 				System.out.println("previousIP: "+this.previousIP);
 				replicateLocalFiles();
-				AgentFileList agent = new AgentFileList();
- 				NodeInterface nf = (NodeInterface) Naming.lookup("//"+nextIP+"/Node");
- 				nf.startAgentFileList(agent);
 
 				// When 2 nodes are located in the system.
 			} else if(nextNode == previousNode) {
@@ -540,57 +538,46 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 			}
 		}
 		
+		Iterator<FileInfo> it = localFiles.iterator();
+		
 		if(previousNode == ownNode){
 			return;
 		}
 		
 		String ipToSend;
 		String fileName;
-		TreeMap<Integer,InetAddress> owner;
-		TreeMap<Integer,InetAddress> previousNodeMap=new TreeMap<Integer,InetAddress>();
+		FileInfo fi;
 		
-		for(int i = 0; i<localFiles.size(); i++){
-			fileName = localFiles.get(i).getNameFile();
+		TreeMap<Integer,InetAddress> owner;
+		
+		while(it.hasNext()){
+			fi = it.next();
+			fileName = fi.getNameFile();
 			owner = cf.searchFile(fileName);
 			
 			if(ownNode == owner.firstKey()){
-				ipToSend = previousIP;
-				previousNodeMap.clear();
-				previousNodeMap.put(previousNode, InetAddress.getByName(previousIP));
-				localFiles.get(i).setReplicateNode(previousNodeMap);
-			}else{
-				ipToSend = owner.get(owner.firstKey()).toString().substring(1);
-				localFiles.get(i).setReplicateNode(owner);
+				ipToSend=previousIP;
+			} else {
+				ipToSend=owner.get(owner.firstKey()).toString().substring(1);
 			}
 			
 			System.out.println("send file " + fileName + " to " +ipToSend);
 			nf = (NodeInterface) Naming.lookup("//" + ipToSend + "/Node");
-			nf.newEntryReplicatedFiles(localFiles.get(i));
+			nf.newEntryReplicatedFiles(fi);
 			new Thread(new TCPSender(ipToSend,fileName, true)).start();	
-		}		
+		}
 	}
 	
-	public boolean newEntryReplicatedFiles(FileInfo fi) throws RemoteException, UnknownHostException, MalformedURLException, NotBoundException {
-		if(fi.getOriginalOwnerNode().firstKey() == ownNode)
-		{
-			nf = (NodeInterface) Naming.lookup("//" + previousIP + "/Node");
-			nf.newEntryReplicatedFiles(fi);
-			new Thread(new TCPSender(previousIP,fi.getNameFile(), true)).start();
-			return false;
-		}
-		else
-		{
-			System.out.print("newEntryReplicatedFiles: ");
-			System.out.println(fi.getNameFile());
-			TreeMap<Integer, InetAddress> me = new TreeMap<Integer, InetAddress>();
-			InetAddress address = InetAddress.getLocalHost();
-		 	address = InetAddress.getByName(address.getHostAddress());
-			me.put(ownNode, address);
-			fi.setReplicateNode(me);
-			replicatedFiles.add(fi);
-			System.out.println("FileInfo: " + fi.getNameFile());
-			return true; 
-		}
+	public void newEntryReplicatedFiles(FileInfo fi) throws RemoteException, UnknownHostException {
+		System.out.print("newEntryReplicatedFiles: ");
+		System.out.println(fi.getNameFile());
+		TreeMap<Integer, InetAddress> me = new TreeMap<Integer, InetAddress>();
+		InetAddress address = InetAddress.getLocalHost();
+	 	address = InetAddress.getByName(address.getHostAddress());
+		me.put(ownNode, address);
+		fi.setReplicateNode(me);
+		replicatedFiles.add(fi);
+		System.out.println("FileInfo: " + fi.getNameFile());
 	}
 	
 	//This method 
@@ -709,12 +696,10 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 	public void sendReplicatedFilesToPrevious() throws UnknownHostException, RemoteException, MalformedURLException, NotBoundException {
 		int totalRepFiles = replicatedFiles.size();
 		nf = (NodeInterface) Naming.lookup("//" + previousIP + "/Node");
-		for(int i = totalRepFiles-1; i >= 0 ; i--)
+		for(int i = 0; i < totalRepFiles; i++)
 		{
-			if (nf.newEntryReplicatedFiles(replicatedFiles.get(i)))
-				new Thread(new TCPSender(previousIP,replicatedFiles.get(i).getNameFile(), false)).start();
-			
-			deleteFile(replicatedFiles.get(i));
+			nf.newEntryReplicatedFiles(replicatedFiles.get(i));
+			new Thread(new TCPSender(previousIP,replicatedFiles.get(i).getNameFile(), false)).start();
 		}		
 	}
 	
@@ -779,17 +764,8 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 	
 	public void deleteFile(FileInfo fileInfo) throws RemoteException{
 		//if(replicatedFiles.contains(fileInfo)) {
-		String fileName = fileInfo.getNameFile();
-		if(!replicatedFiles.remove(fileInfo)){
-			int index=-1;
-			for(int i=replicatedFiles.size()-1;i>=0;i--) {
-				if(replicatedFiles.get(i).getNameFile().equals(fileName))
-					index=i;
-			}
-			replicatedFiles.remove(index);
-		}
-		System.out.println("Deleting replicated file: "+fileName);
-		File file = new File("C:/temp/replicated/"+fileName);
+		System.out.println("Deleting replicated file: "+fileInfo.getNameFile());
+		File file = new File("C:/temp/replicated/"+fileInfo.getNameFile());
 		file.delete();
 		//}
 		return;
@@ -805,22 +781,17 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		// When only 1 node in the system, agent has to be set on hold
-		if (ownNode != nextNode && ownNode != previousNode)
-			new Thread(new RMIStarter(agent,nextIP)).start();
+		new Thread(new RMIStarter(agent,nextIP)).start();
 	}
 	
-	public void setTotalFileList(ArrayList<FileInfo> totalFileList){
+	public void setTotalFileList(ArrayList<String> totalFileList){
 		this.totalFileList=totalFileList;
 	}
 	
 	public void printTotalFileList(){
-		Iterator<FileInfo> it = totalFileList.iterator();
-		int index = 0;
+		Iterator<String> it = totalFileList.iterator();
 		while(it.hasNext()){
-			System.out.println(index + ": file:" +it.next().getNameFile());
-			index++;
+			System.out.println("file:" +it.next());
 		}
 	}
 	

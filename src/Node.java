@@ -574,66 +574,76 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 			return true; 
 		}
 	}
-
+	
+	//check local files to replicate in system (and keep it updated)
 	public void replicateNewFiles() throws RemoteException, ClassNotFoundException, MalformedURLException, NotBoundException, UnknownHostException {
 		// When more than 1 node in system
 		if(previousNode!=ownNode && previousNode!=-1) {
 			ArrayList<FileInfo> templocalFiles = new ArrayList<FileInfo>();
-			File[] fileArray = new File("C:/temp/local/").listFiles();
+			File[] fileArray = new File("C:/temp/local/").listFiles(); 		//get all files from local
 			FileInfo fi;
-			TreeMap<Integer, InetAddress> me = new TreeMap<Integer, InetAddress>();
+			TreeMap<Integer, InetAddress> me = new TreeMap<Integer, InetAddress>(); 	
 			InetAddress address = InetAddress.getLocalHost();
 		 	address = InetAddress.getByName(address.getHostAddress());
-			me.put(ownNode, address);
-			for(File file : fileArray){
+			me.put(ownNode, address);		//TreeMap filled with own info
+			for(File file : fileArray){		//separate every file to get names
 				if(file.isFile()){
-					fi = new FileInfo(file.getName(), me);
+					fi = new FileInfo(file.getName(), me);  	
 					templocalFiles.add(fi);
 				}
 			}
 			int tempTotalLocalFiles = templocalFiles.size();
 			ArrayList<String> tempFileNames = new ArrayList<String>();
 			for(int i=0; i < localFiles.size(); i++)
-				tempFileNames.add(localFiles.get(i).getNameFile());
+				tempFileNames.add(localFiles.get(i).getNameFile()); 	//fill String ArrayList with all files in localFiles
 
+			String ipToSend;
+			//check for new files
 			for(int i=0; i < tempTotalLocalFiles; i++) {
-				if (!tempFileNames.contains(templocalFiles.get(i).getNameFile())) {
+				if (!tempFileNames.contains(templocalFiles.get(i).getNameFile())) { 
 					System.out.println("========================>  "+templocalFiles.get(i).getNameFile());
-					String ipToSend;
+					//check where the hash of file is pointing to
 					TreeMap<Integer,InetAddress> owner = cf.searchFile(templocalFiles.get(i).getNameFile());
+					//if hash points to himself, send to previous
 					if(ownNode == owner.firstKey()){
 						ipToSend=previousIP;
 					} else {
+					//else use info gotten from server
 						ipToSend=owner.get(owner.firstKey()).toString().substring(1);
 					}
 					nf = (NodeInterface) Naming.lookup("//" + ipToSend + "/Node");
+					//add local file to replicated of node
 					nf.newEntryReplicatedFiles(templocalFiles.get(i));
 					new Thread(new TCPSender(ipToSend,templocalFiles.get(i).getNameFile(), true)).start();
 				}
 			}
 			tempFileNames.clear();
+			//now fill tempFileNames with names of files we found in map /local
 			for(int i=0; i < templocalFiles.size(); i++)
 				tempFileNames.add(templocalFiles.get(i).getNameFile());
 			
+			//check for deleted files
 			for(int i=0; i < localFiles.size(); i++) {
 				if(!tempFileNames.contains(localFiles.get(i).getNameFile())) {
 					System.out.println(localFiles.get(i).getNameFile()+" not found, deleting replicated...");
-					String ipToSend;
+					//check where the hash of file is pointing to
 					TreeMap<Integer,InetAddress> owner = cf.searchFile(localFiles.get(i).getNameFile());
+					//if hash points to himself, send to previous
 					if(ownNode == owner.firstKey()){
 						ipToSend=previousIP;
 					} else {
 						ipToSend=owner.get(owner.firstKey()).toString().substring(1);
 					}
-					//implement check for downloads here?
-					
 					nf = (NodeInterface) Naming.lookup("//" + ipToSend + "/Node");
 					System.out.println("deleting "+localFiles.get(i).getNameFile()+" at "+ipToSend);
+					//delete file at node
 					nf.deleteFile(localFiles.get(i));
 				}
 			}
+			//all changes have been dealt with so we change the old ArrayList to the new one.
 			localFiles = templocalFiles;
 		} else {
+			//Node is alone, if localFiles is not empty, it gets emptied to reset the system
 			System.out.println("no other nodes...");
 			if(!localFiles.isEmpty())
 				localFiles.removeAll(localFiles);

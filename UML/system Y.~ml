@@ -1984,7 +1984,7 @@
 <XPD:REF name="Owner">2wFNKeS01kKB/5NuTbn6tgAA</XPD:REF>
 </XPD:OBJ>
 <XPD:OBJ name="Attributes[6]" type="UMLAttribute" guid="GpU5x2jsEkuA6JUoGSSNfQAA">
-<XPD:ATTR name="Name" type="string">ArrayList&lt;String&gt; totalFileList</XPD:ATTR>
+<XPD:ATTR name="Name" type="string">ArrayList&lt;FileInfo&gt; totalFileList</XPD:ATTR>
 <XPD:REF name="Owner">2wFNKeS01kKB/5NuTbn6tgAA</XPD:REF>
 </XPD:OBJ>
 <XPD:OBJ name="Attributes[7]" type="UMLAttribute" guid="wWWryvtXNUufafwMLTtclQAA">

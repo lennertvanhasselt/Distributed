@@ -32,6 +32,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 	public ArrayList<String> deletedFiles;
 	public Boolean serverSet = false;
 	public int indexToLock=-1;
+	public int indexToUnlock=-1;
 
 	public Node() throws ClassNotFoundException, IOException, RemoteException {	
 		mainServer = "";
@@ -864,7 +865,16 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 				ipToReceive = replicateNode.firstEntry().getValue().getHostAddress();
 				nf = (NodeInterface) Naming.lookup("//"+ipToReceive+"/Node");
 				nf.sendDownload(index, ownIP);
-			}		
+			}	
+			
+			//unlock the file
+			System.out.println("unlocking file");
+			indexToUnlock=index;
+			while(indexToUnlock!=-1){
+				System.out.print("");
+			}
+			System.out.println("File: " + totalFileList.get(index).getNameFile() + " is unlocked FileLock=" +totalFileList.get(index).getLock());
+			
 		}else System.out.println("this file is locked");
 		
 

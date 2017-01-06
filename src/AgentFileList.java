@@ -24,6 +24,8 @@ public class AgentFileList implements Runnable, Serializable {
 			nodeagent.replicateNewFiles();
 			//update TotalFileList
 			update();
+			//lock files
+			checkLock();
 			//send TotalFileList to node
 			nodeagent.setTotalFileList(totalFileList);
 			//reset nodeagent
@@ -38,7 +40,8 @@ public class AgentFileList implements Runnable, Serializable {
 		int indexToLock;
 		if(nodeagent.lockThread.isAlive()){
 			indexToLock=nodeagent.filelocker.indexFileToLock;
-			totalFileList.get(i).lock();
+			totalFileList.get(indexToLock).lock();
+			nodeagent.lockThread.notify();
 		}
 	}
 	

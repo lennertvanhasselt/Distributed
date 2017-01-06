@@ -75,6 +75,10 @@ public class MainNode {
    	 					nf.startAgentFileList(agent);
    	 					break;
    	 			case 6: node.printTotalFileList();
+   	 					break;
+   	 			case 7: System.out.print("Give index: ");
+   	 					int index = new Scanner(System.in).nextInt();
+   	 					node.downloadFile(index);
    	 			default:exit = false;
    	 					break;
    	 			}

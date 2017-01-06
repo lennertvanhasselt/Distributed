@@ -37,11 +37,11 @@ public class AgentFileList implements Runnable, Serializable {
 	}
 	
 	private void checkLock(){
-		int indexToLock;
-		if(nodeagent.lockThread.isAlive()){
-			indexToLock=nodeagent.filelocker.indexFileToLock;
-			totalFileList.get(indexToLock).lock();
-			nodeagent.lockThread.notify();
+		if(nodeagent.indexToLock!=-1){
+			if(nodeagent.indexToLock>=0 && nodeagent.indexToLock < totalFileList.size()){
+				totalFileList.get(nodeagent.indexToLock).lock();
+				nodeagent.indexToLock=-1;
+			}
 		}
 	}
 	

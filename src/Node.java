@@ -823,6 +823,46 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 //		}
 	}
 	
+	//this method will dowload files from other nodes
+	public void downloadFile(int index) throws MalformedURLException, RemoteException, NotBoundException{
+		Scanner scan = new Scanner(System.in);
+		FileInfo fileToDownload = totalFileList.get(index);
+		TreeMap<Integer,InetAddress> replicateNode = fileToDownload.getReplicateNode();
+		TreeMap<Integer,InetAddress> originalOwnerNode = fileToDownload.getOriginalOwnerNode();
+		String ipToReceive;
+		
+		if(replicateNode.firstKey()==ownNode){
+			System.out.println("This file is already downloaded");
+			System.out.print("Download anyway (y/n): ");  //maybe the file is corrupted on this node, download again
+			if(scan.next().equals("y")){
+				ipToReceive = replicateNode.firstEntry().getValue().getHostAddress();
+				nf = (NodeInterface) Naming.lookup("//"+ipToReceive+"/node");
+				nf.sendDownload(index, ipToReceive);
+			}
+		}else if(originalOwnerNode.firstKey()==ownNode){
+			System.out.println("This file is already present on this node, in local");
+			System.out.print("Download anyway (y/n): "); //maybe the users wants this file also in the replicated dir
+			if(scan.next().equals("y")){
+				ipToReceive = replicateNode.firstEntry().getValue().getHostAddress();
+				nf = (NodeInterface) Naming.lookup("//"+ipToReceive+"/node");
+				nf.sendDownload(index, ipToReceive);
+			}
+		}else{
+			ipToReceive = replicateNode.firstEntry().getValue().getHostAddress();
+			nf = (NodeInterface) Naming.lookup("//"+ipToReceive+"/node");
+			nf.sendDownload(index, ipToReceive);
+		}
+		scan.close();
+	}
+	
+	//this method is called when another node wants to download a file from your node
+	//this method will then send the file to the node who is calling this method
+	public void sendDownload(int index, String ipToSend)throws RemoteException, MalformedURLException, NotBoundException{
+		FileInfo fileToSend = totalFileList.get(index);
+		Thread th = new Thread(new TCPSender(ipToSend,fileToSend.getNameFile(),false));
+		th.start();
+	}
+	
 	
 	// Used to get next ip from node
 	public String getNextIP()

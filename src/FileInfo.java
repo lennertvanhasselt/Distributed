@@ -11,6 +11,7 @@ public class FileInfo implements Serializable {
 	public TreeMap<Integer,InetAddress> originalOwnerNode;
 	public int downloaded;
 	public TreeMap<Integer,InetAddress> replicateNode;
+	public boolean lock = false;
 	
 	public FileInfo(String nameFile, TreeMap<Integer,InetAddress> originalOwnerNode){
 		this.nameFile = nameFile;
@@ -54,5 +55,17 @@ public class FileInfo implements Serializable {
 	
 	public int getDownloaded() {
 		return downloaded;
+	}
+	
+	public void lock(){
+		lock = true;
+	}
+	
+	public void unLock(){
+		lock = false;
+	}
+	
+	public boolean getLock(){
+		return lock;
 	}
 }

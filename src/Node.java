@@ -31,6 +31,8 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 	public ArrayList<FileInfo> totalFileList;
 	public ArrayList<String> deletedFiles;
 	public Boolean serverSet = false;
+	public Thread lockThread;
+	public FileLocker filelocker;
 
 	public Node() throws ClassNotFoundException, IOException, RemoteException {	
 		mainServer = "";
@@ -825,33 +827,48 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 	
 	//this method will dowload files from other nodes
 	public void downloadFile(int index) throws MalformedURLException, RemoteException, NotBoundException{
+		filelocker = new FileLocker(index);
+		lockThread = new Thread(filelocker);
+		try {
+			lockThread.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("File: " + totalFileList.get(index).getNameFile() + " is locked");
+		
+		
 		Scanner scan = new Scanner(System.in);
 		FileInfo fileToDownload = totalFileList.get(index);
 		TreeMap<Integer,InetAddress> replicateNode = fileToDownload.getReplicateNode();
 		TreeMap<Integer,InetAddress> originalOwnerNode = fileToDownload.getOriginalOwnerNode();
 		String ipToReceive;
 		
-		if(replicateNode.firstKey()==ownNode){
-			System.out.println("This file is already downloaded");
-			System.out.print("Download anyway (y/n): ");  //maybe the file is corrupted on this node, download again
-			if(scan.next().equals("y")){
+		if(!totalFileList.get(index).getLock()){
+			if(replicateNode.firstKey()==ownNode){
+				System.out.println("This file is already downloaded");
+				System.out.print("Download anyway (y/n): ");  //maybe the file is corrupted on this node, download again
+				if(scan.next().equals("y")){
+					ipToReceive = replicateNode.firstEntry().getValue().getHostAddress();
+					nf = (NodeInterface) Naming.lookup("//"+ipToReceive+"/node");
+					nf.sendDownload(index, ipToReceive);
+				}
+			}else if(originalOwnerNode.firstKey()==ownNode){
+				System.out.println("This file is already present on this node, in local");
+				System.out.print("Download anyway (y/n): "); //maybe the users wants this file also in the replicated dir
+				if(scan.next().equals("y")){
+					ipToReceive = replicateNode.firstEntry().getValue().getHostAddress();
+					nf = (NodeInterface) Naming.lookup("//"+ipToReceive+"/node");
+					nf.sendDownload(index, ipToReceive);
+				}
+			}else{
 				ipToReceive = replicateNode.firstEntry().getValue().getHostAddress();
 				nf = (NodeInterface) Naming.lookup("//"+ipToReceive+"/node");
 				nf.sendDownload(index, ipToReceive);
-			}
-		}else if(originalOwnerNode.firstKey()==ownNode){
-			System.out.println("This file is already present on this node, in local");
-			System.out.print("Download anyway (y/n): "); //maybe the users wants this file also in the replicated dir
-			if(scan.next().equals("y")){
-				ipToReceive = replicateNode.firstEntry().getValue().getHostAddress();
-				nf = (NodeInterface) Naming.lookup("//"+ipToReceive+"/node");
-				nf.sendDownload(index, ipToReceive);
-			}
-		}else{
-			ipToReceive = replicateNode.firstEntry().getValue().getHostAddress();
-			nf = (NodeInterface) Naming.lookup("//"+ipToReceive+"/node");
-			nf.sendDownload(index, ipToReceive);
-		}
+			}		
+		}else System.out.println("this file is locked");
+		
+
 		scan.close();
 	}
 	

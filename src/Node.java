@@ -55,6 +55,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 		System.out.println("4) Exit and delete node");
 		System.out.println("5) initial start agent");
 		System.out.println("6) get Total files"); 
+		System.out.println("7) download a file");
 		System.out.println("Give your choice: ");
 		int menuChoice = scan.nextInt();
 		return menuChoice;	
@@ -872,7 +873,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 			System.out.println("File: " + totalFileList.get(index).getNameFile() + " is unlocked FileLock=" +totalFileList.get(index).getLock());
 			
 		}else System.out.println("this file is locked");
-		scan.close();
 	}
 	
 	//this method is called when another node wants to download a file from your node

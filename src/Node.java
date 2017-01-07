@@ -836,14 +836,12 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 		TreeMap<Integer,InetAddress> replicateNode = fileToDownload.getReplicateNode();
 		TreeMap<Integer,InetAddress> originalOwnerNode = fileToDownload.getOriginalOwnerNode();
 		String ipToReceive;
-		System.out.println("Filelock=" + totalFileList.get(index).getLock());
 		if(!totalFileList.get(index).getLock()){
 			
 			while(indexToLock!=-1){
 				System.out.print("");
 			}
-			System.out.println("File: " + totalFileList.get(index).getNameFile() + " is locked");
-			System.out.println("Filelock=" + totalFileList.get(index).getLock());
+			System.out.println("File: " + totalFileList.get(index).getNameFile() + " is locked FileLock=" +totalFileList.get(index).getLock());
 			
 			if(replicateNode.firstKey()==ownNode){
 				System.out.println("This file is already downloaded");
@@ -876,8 +874,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 			System.out.println("File: " + totalFileList.get(index).getNameFile() + " is unlocked FileLock=" +totalFileList.get(index).getLock());
 			
 		}else System.out.println("this file is locked");
-		
-
 		scan.close();
 	}
 	

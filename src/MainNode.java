@@ -77,10 +77,8 @@ public class MainNode {
    	 			case 6: node.printTotalFileList();
    	 					break;
    	 			case 7: System.out.print("Give index: ");
-   	 					Scanner scan02 = new Scanner(System.in);
-   	 					int index = scan02.nextInt();
-   	 					node.downloadFile(index);
-   	 					scan02.close();
+   	 					int index = scan.nextInt(); 	 					
+   	 					node.downloadFile(index,scan);
    	 			default:exit = false;
    	 					break;
    	 			}

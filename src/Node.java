@@ -33,6 +33,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 	public Boolean serverSet = false;
 	public int indexToLock=-1;
 	public int indexToUnlock=-1;
+	
 
 	public Node() throws ClassNotFoundException, IOException, RemoteException {	
 		mainServer = "";
@@ -826,18 +827,16 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 	}
 	
 	//this method will dowload files from other nodes
-	public void downloadFile(int index) throws MalformedURLException, RemoteException, NotBoundException{
+	public void downloadFile(int index, Scanner scan) throws MalformedURLException, RemoteException, NotBoundException{
 		indexToLock = index;
-
-		
-		
-		Scanner scan = new Scanner(System.in);
 		FileInfo fileToDownload = totalFileList.get(index);
 		TreeMap<Integer,InetAddress> replicateNode = fileToDownload.getReplicateNode();
 		TreeMap<Integer,InetAddress> originalOwnerNode = fileToDownload.getOriginalOwnerNode();
 		String ipToReceive;
+		
 		if(!totalFileList.get(index).getLock()){
 			
+			//lock the file
 			while(indexToLock!=-1){
 				System.out.print("");
 			}
@@ -866,7 +865,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 			}	
 			
 			//unlock the file
-			System.out.println("unlocking file");
 			indexToUnlock=index;
 			while(indexToUnlock!=-1){
 				System.out.print("");
@@ -883,6 +881,12 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 		FileInfo fileToSend = totalFileList.get(index);
 		Thread th = new Thread(new TCPSender(ipToSend,fileToSend.getNameFile(),false));
 		th.start();
+		try {
+			th.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	

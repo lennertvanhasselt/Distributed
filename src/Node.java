@@ -555,7 +555,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 	}
 	
 	public boolean newEntryReplicatedFiles(FileInfo fi) throws RemoteException, UnknownHostException, MalformedURLException, NotBoundException {
-		// When a replicated file maps on the original owner, it has to be sended to the previous node
+		// When a replicated file maps on the original owner, it has to be sent to the previous node
 		if(fi.getOriginalOwnerNode().firstKey() == ownNode)
 		{
 			nf = (NodeInterface) Naming.lookup("//" + previousIP + "/Node");
@@ -660,9 +660,16 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 		nf = (NodeInterface) Naming.lookup("//" + previousIP + "/Node");
 		for(int i = totalRepFiles-1; i >= 0 ; i--)
 		{
-			if (nf.newEntryReplicatedFiles(replicatedFiles.get(i)))
-				new Thread(new TCPSender(previousIP,replicatedFiles.get(i).getNameFile(), false)).start();
-			
+			if (nf.newEntryReplicatedFiles(replicatedFiles.get(i))){
+				Thread th = new Thread(new TCPSender(previousIP,replicatedFiles.get(i).getNameFile(), false));
+				th.start();
+				try {
+					th.join();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 			deleteFile(replicatedFiles.get(i));
 		}		
 	}
@@ -838,6 +845,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 		if(!totalFileList.get(index).getLock()){
 			
 			//lock the file
+			System.out.println(totalNodes);
 			while(indexToLock!=-1){
 				System.out.print("");
 			}

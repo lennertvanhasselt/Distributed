@@ -17,6 +17,8 @@ public class GUIFiles extends JPanel {
 		setPreferredSize(size);
 		setBorder(BorderFactory.createTitledBorder("Filelist"));
 		
+
+		
 		int length = mainNode.node.totalFileList.size();
 		String[] fileList = new String[length];
 		for(int i = 0;i<length;i++){

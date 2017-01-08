@@ -111,9 +111,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 			// When more than 1 node in the system the previous and next has to be adjust
 			if (ownNode != previousNode && ownNode != nextNode) {
 				contactedNode = previousNode;
-				System.out.println(previousIP);
-				nf = (NodeInterface) Naming.lookup("//" + previousIP + "/Node");
-				
+				nf = (NodeInterface) Naming.lookup("//" + previousIP + "/Node");				
 				nf.setNextNode(nextNode, nextIP);
 				contactedNode = nextNode;
 				nf = (NodeInterface) Naming.lookup("//" + nextIP + "/Node");
@@ -233,16 +231,11 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 			// -->It will be added as the previous and the next node.
 			} else if (ownNode == previousNode && ownNode == nextNode) {
 				nf = (NodeInterface) Naming.lookup("//" + IP + "/Node");
-				System.out.println("ownNode: "+ownNode+"  ownIP: "+ownIP+ "send to "+IP);
 				nf.changePrevNext(ownNode, ownNode, ownIP, ownIP);
 				previousNode = hashed;
 				nextNode = hashed;
 				previousIP = IP;
 				nextIP = IP;
-				System.out.println("nextNode: "+this.nextNode);
-				System.out.println("nextIP: "+this.nextIP);
-				System.out.println("previousNode: "+this.previousNode);
-				System.out.println("previousIP: "+this.previousIP);
 				replicateLocalFiles();
 				AgentFileList agent = new AgentFileList();
  				NodeInterface nf = (NodeInterface) Naming.lookup("//"+nextIP+"/Node");
@@ -260,8 +253,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 						nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
 						nextNode = hashed;
 						nextIP = IP;
-						System.out.println("nextNode: "+this.nextNode);
-						System.out.println("nextIP: "+this.nextIP);
 						//updateFiles();
 					}
 					
@@ -270,8 +261,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 					else if (hashed > nextNode && hashed < ownNode) {
 						previousNode = hashed;
 						previousIP = IP;
-						System.out.println("previousNode: "+this.previousNode);
-						System.out.println("previousIP: "+this.previousIP);
 					}
 					
 					// The new node will become the previousNode of the own node because of hashvalue+1 
@@ -280,8 +269,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 						hashed++;
 						previousNode = hashed;
 						previousIP = IP;
-						System.out.println("previousNode: "+this.previousNode);
-						System.out.println("previousIP: "+this.previousIP);
 					}
 					
 					// The new node will become the nextNode of the own node
@@ -292,8 +279,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 						nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
 						nextNode = hashed;
 						nextIP = IP;
-						System.out.println("nextNode: "+this.nextNode);
-						System.out.println("nextIP: "+this.nextIP);
 						//updateFiles();
 					}
 					
@@ -306,8 +291,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 						nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
 						nextNode = hashed;
 						nextIP = IP;
-						System.out.println("nextNode: "+this.nextNode);
-						System.out.println("nextIP: "+this.nextIP);
 						//updateFiles();
 					}
 				} else  {
@@ -317,8 +300,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 					if (hashed < ownNode) {
 						previousNode = hashed;
 						previousIP = IP;
-						System.out.println("previousNode: "+this.previousNode);
-						System.out.println("previousIP: "+this.previousIP);
 					}
 					
 					// The new node will become the nextNode of the own node
@@ -329,8 +310,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 						nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
 						nextNode = hashed;
 						nextIP = IP;
-						System.out.println("nextNode: "+this.nextNode);
-						System.out.println("nextIP: "+this.nextIP);
 						//updateFiles();
 					}
 					
@@ -343,8 +322,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 						nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
 						nextNode = hashed;
 						nextIP = IP;
-						System.out.println("nextNode: "+this.nextNode);
-						System.out.println("nextIP: "+this.nextIP);
 						//updateFiles();
 					}
 					
@@ -353,8 +330,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 					else if (hashed > nextNode) {
 						previousNode = hashed;
 						previousIP = IP;
-						System.out.println("previousNode: "+this.previousNode);
-						System.out.println("previousIP: "+this.previousIP);
 					}
 					
 					// The new node will become the previousNode of the own node because of hashvalue +1
@@ -363,8 +338,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 						hashed++;
 						previousNode = hashed;
 						previousIP = IP;
-						System.out.println("previousNode: "+this.previousNode);
-						System.out.println("previousIP: "+this.previousIP);
 					}
 				}
 				// When only 2 nodes in system and a 3th one is joining we use updateFiles2()
@@ -379,8 +352,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 					if (hashed < ownNode || hashed > previousNode) {
 						previousNode = hashed;
 						previousIP = IP;
-						System.out.println("previousNode: "+this.previousNode);
-						System.out.println("previousIP: "+this.previousIP);
 					}
 					
 					// The new node will become the nextNode of the own node
@@ -391,8 +362,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 						nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
 						nextNode = hashed;
 						nextIP = IP;
-						System.out.println("nextNode: "+this.nextNode);
-						System.out.println("nextIP: "+this.nextIP);
 						updateFiles();
 					}
 				}
@@ -404,8 +373,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 					if (hashed > previousNode && hashed < ownNode) {
 						previousNode = hashed;
 						previousIP = IP;
-						System.out.println("previousNode: "+this.previousNode);
-						System.out.println("previousIP: "+this.previousIP);
 					}
 					
 					// The new node will become the nextNode of the own node
@@ -416,8 +383,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 						nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
 						nextNode = hashed;
 						nextIP = IP;
-						System.out.println("nextNode: "+this.nextNode);
-						System.out.println("nextIP: "+this.nextIP);
 						updateFiles();
 					}					
 				}
@@ -432,8 +397,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 						nf.changePrevNext(nextNode, ownNode, nextIP, ownIP);
 						nextNode = hashed;
 						nextIP = IP;
-						System.out.println("nextNode: "+this.nextNode);
-						System.out.println("nextIP: "+this.nextIP);
 						updateFiles();
 					}
 					
@@ -442,12 +405,10 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 					else if (hashed > previousNode && hashed < ownNode) {
 						previousNode = hashed;
 						previousIP = IP;
-						System.out.println("previousNode: "+this.previousNode);
-						System.out.println("previousIP: "+this.previousIP);
 					}					
 				}
 			}
-
+			System.out.println("new node, previous: " + previousNode + " next: " + nextNode);
 			return true;
 
 		} catch (NotBoundException e) {
@@ -455,25 +416,21 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 			e.printStackTrace();
 			return false;
 		}
+		
+
 	}
 
 	// First initialisation of the node when it is connected with the server.
 	// It receives it's ip, node and total amounts of nodes located in the system
 	public void setNameServer(String ip, int ownNode, int totalNodes) throws RemoteException, ClassNotFoundException, UnknownHostException
 	{
-		System.out.println("SetNameServer");
 		mainServer = ip;
 		this.ownNode = ownNode;
 		this.totalNodes = totalNodes;
-		System.out.println(mainServer);
-		System.out.println(this.ownNode);
-		System.out.println(this.totalNodes);
 
 		InetAddress address = InetAddress.getLocalHost();
 		address = InetAddress.getByName(address.getHostAddress());
 		ownIP = address.toString().substring(1);
-
-		System.out.println("setNameServer IP: "+ownIP);
 		
 		// When no node is in the system at the moment
 		if (nextNode == -1 && previousNode == -1)
@@ -490,7 +447,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 	// Changing the previous, next node and ip for this certain node.
 	public void changePrevNext(int nextNode, int previousNode, String nextIP, String previousIP)throws RemoteException, ClassNotFoundException, MalformedURLException, NotBoundException, UnknownHostException
 	{
-		System.out.println("changePrevNext");
 		setNextNode(nextNode, nextIP);
 		setPreviousNode(previousNode,previousIP);
 		while(!serverSet) {
@@ -547,7 +503,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 			}
 			
 			// Displaying from where to where it will be send
-			System.out.println("send file " + fileName + " to " +ipToSend);
 			nf = (NodeInterface) Naming.lookup("//" + ipToSend + "/Node");
 			nf.newEntryReplicatedFiles(localFiles.get(i));
 			new Thread(new TCPSender(ipToSend,fileName, true)).start();	
@@ -566,15 +521,12 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 		// When a replicated file maps on ownNode, it will make a list of replicated files
 		else
 		{
-			System.out.print("newEntryReplicatedFiles: ");
-			System.out.println(fi.getNameFile());
 			TreeMap<Integer, InetAddress> me = new TreeMap<Integer, InetAddress>();
 			InetAddress address = InetAddress.getLocalHost();
 		 	address = InetAddress.getByName(address.getHostAddress());
 			me.put(ownNode, address);
 			fi.setReplicateNode(me);
 			replicatedFiles.add(fi);
-			System.out.println("FileInfo: " + fi.getNameFile());
 			return true; 
 		}
 	}
@@ -683,8 +635,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 		while(rec.SOCKET_PORT==0){
 			System.out.print("");
 		}
-		
-		System.out.println("returning " + rec.SOCKET_PORT);
 		return rec.SOCKET_PORT;
 	}	
 	
@@ -700,6 +650,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 			}
 			replicatedFiles.remove(index);
 		}
+		deletedFiles.add(fileName);
 		System.out.println("Deleting replicated file: "+fileName);
 		File file = new File("C:/temp/replicated/"+fileName);
 		file.delete();
@@ -725,11 +676,8 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 	
 	// Print the totalFileList
 	public void printTotalFileList(){
-		Iterator<FileInfo> it = totalFileList.iterator();
-		int index = 0;
-		while(it.hasNext()){
-			System.out.println(index + ": file:" +it.next().getNameFile());
-			index++;
+		for(int i = 0;i<totalFileList.size();i++){
+			System.out.println(i + ": " + totalFileList.get(i).getNameFile());
 		}
 	}
 	
@@ -754,7 +702,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 						try {
 							thread1.join();
 							deleteFile(replicatedFiles.get(i));
-							replicatedFiles.remove(i);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
@@ -771,7 +718,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 						try {
 							thread1.join();
 							deleteFile(replicatedFiles.get(i));
-							replicatedFiles.remove(i);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
@@ -804,7 +750,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 					try {
 						thread1.join();
 						deleteFile(replicatedFiles.get(i));
-						replicatedFiles.remove(i);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -820,7 +765,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 					try {
 						thread2.join();
 						deleteFile(replicatedFiles.get(i));
-						replicatedFiles.remove(i);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -849,11 +793,11 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 			while(indexToLock!=-1){
 				System.out.print("");
 			}
-			System.out.println("File: " + totalFileList.get(index).getNameFile() + " is locked FileLock=" +totalFileList.get(index).getLock());
+			System.out.println("File: " + totalFileList.get(index).getNameFile() + " is locked");
 			
 			if(replicateNode.firstKey()==ownNode){
-				System.out.println("This file is already downloaded");
-				System.out.print("Download anyway (y/n): ");  //maybe the file is corrupted on this node, download again
+				System.out.println("This file is already replicated on this node");
+				System.out.print("Download anyway (y/n): ");
 				if(scan.next().equals("y")){
 					ipToReceive = replicateNode.firstEntry().getValue().getHostAddress();
 					nf = (NodeInterface) Naming.lookup("//"+ipToReceive+"/Node");
@@ -878,7 +822,7 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 			while(indexToUnlock!=-1){
 				System.out.print("");
 			}
-			System.out.println("File: " + totalFileList.get(index).getNameFile() + " is unlocked FileLock=" +totalFileList.get(index).getLock());
+			System.out.println("File: " + totalFileList.get(index).getNameFile() + " is unlocked");
 			
 		}else System.out.println("this file is locked");
 	}
@@ -933,7 +877,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 	{
 		this.cf = cf;
 		serverSet = true;
-		System.out.println("setClientInterface");
 	}
 
 	// Sets the ip and node of the previous node.
@@ -941,9 +884,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 	{	
 		this.previousNode = previousNode;
 		this.previousIP = previousIP;
-		System.out.println("set previous Node");
-		System.out.println("previousNode: "+this.previousNode);
-		System.out.println("previousIP: "+this.previousIP);
 	}
 	
 	// Sets the totalFileList.
@@ -957,9 +897,6 @@ public class Node extends UnicastRemoteObject implements NodeInterface, Serializ
 	{
 		this.nextNode = nextNode;
 		this.nextIP = nextIP;
-		System.out.println("set next Node");
-		System.out.println("nextNode: "+this.nextNode);
-		System.out.println("nextIP: "+this.nextIP);
 	}
 	
 	

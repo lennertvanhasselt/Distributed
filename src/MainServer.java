@@ -7,7 +7,7 @@ import java.rmi.registry.LocateRegistry;
 import java.util.Scanner;
 import java.util.TreeMap;
 
-//GROUP 8 #ZWAM
+//GROUP 8
 
 public class MainServer {
 	

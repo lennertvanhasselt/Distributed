@@ -32,8 +32,7 @@ public class MainNode {
 			String bindLocationNode = "//localhost/Node";
 			LocateRegistry.createRegistry(1099);
 			Naming.bind(bindLocationNode, node);
-	        System.out.println("NodeServer is ready at:" + bindLocationNode);
-            System.out.println("java RMI registry created.");
+	        System.out.println("Node Registry is ready at:" + bindLocationNode);
         } catch (MalformedURLException | AlreadyBoundException e) {
             System.out.println("java RMI registry already exists.");
 		}
@@ -42,7 +41,6 @@ public class MainNode {
 		new Thread(new MulticastSender(nodename)).start();
 		
 		//wait for rmi to be performed by server
-		System.out.println("Waiting for rmi to be performed by server");
 		while(node.check==false)
 	 	{
 	 		System.out.print("");   //without print, the check doesn't update.
@@ -76,9 +74,15 @@ public class MainNode {
    	 					break;
    	 			case 6: node.printTotalFileList();
    	 					break;
-   	 			case 7: System.out.print("Give index: ");
-   	 					int index = scan.nextInt(); 	 					
-   	 					node.downloadFile(index,scan);
+   	 			case 7: if(node.ownNode==node.getNextNode()&&node.ownNode==node.getPreviousNode()){
+   	 						System.out.println("Only one node in the system");
+   	 					}else{
+   	   	 					node.printTotalFileList();
+   	   	 					System.out.print("Give index: ");
+   	   	 					int index = scan.nextInt(); 	 					
+   	   	 					node.downloadFile(index,scan);
+   	 					}
+   	 					break;
    	 			default:exit = false;
    	 					break;
    	 			}

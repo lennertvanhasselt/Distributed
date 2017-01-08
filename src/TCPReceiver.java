@@ -29,10 +29,7 @@ public class TCPReceiver implements Runnable {
 			//serversocket will choose an available port
 			servsock = new ServerSocket(0);
 			SOCKET_PORT = servsock.getLocalPort();
-			System.out.println("Assigned port: " + SOCKET_PORT);
-			System.out.println("waiting for connection....");
 			sock=servsock.accept();
-			System.out.println("accepted connection");
 			
 			//receive array
 		    byte [] mybytearray  = new byte [1024];

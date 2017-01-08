@@ -42,7 +42,6 @@ public class TCPSender implements Runnable{
 			nf = (NodeInterface) Naming.lookup("//" + IpToSend + "/Node");
 			SOCKET_PORT = nf.setupTCPReceiver(fileName, fileLength);	
 			//let other node know we want to send him the file, returns the SOCKET_PORT
-			System.out.println("received port: " + SOCKET_PORT);
 			
 			sock = new Socket(IpToSend, SOCKET_PORT);
 			
@@ -55,10 +54,8 @@ public class TCPSender implements Runnable{
 	        bis = new BufferedInputStream(fis);
 	        bis.read(mybytearray,0,mybytearray.length); 	//read whole file in 1 array
 	        os = sock.getOutputStream();
-	        System.out.println("Sending " + fileName + "(" + mybytearray.length + " bytes)");
 	        os.write(mybytearray);
 	        os.flush();
-	        System.out.println("Done.");	
 	        
 	        bis.close();
 	        os.close();

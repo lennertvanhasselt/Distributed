@@ -64,6 +64,7 @@ public class AgentFileList implements Runnable, Serializable {
 			for(int j=0; j<totalFileList.size();j++){
 				if(nodeagent.deletedFiles.contains(totalFileList.get(j).getNameFile())){
 					totalFileList.remove(j);
+					totalFileListStrings.remove(j);
 				}
 			}
 			nodeagent.deletedFiles.clear();
